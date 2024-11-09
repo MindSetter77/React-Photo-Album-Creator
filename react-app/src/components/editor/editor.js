@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 import TuneIcon from '@mui/icons-material/Tune';
 import ShareIcon from '@mui/icons-material/Share';
+import SettingsIcon from '@mui/icons-material/Settings';
+import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import { ChromePicker } from 'react-color';
 import { Button, Typography, TextField, Card, CardMedia, Slider, Select, MenuItem, FormControl, InputLabel, FormControlLabel, Checkbox } from '@mui/material';
 
@@ -14,6 +16,7 @@ const Editor = ({ user }) => {
 
   useEffect(() => {
     fetchAlbumPhotos("28_newalbum")
+
   }, [])
 
 
@@ -28,16 +31,13 @@ const Editor = ({ user }) => {
 
   const [leftPanel, setLeftPanel] = useState('info');
   const [pageSize, setPageSize] = useState('A4');
-  const [pageSizeCustom, setPageSizeCustom] = useState(false);
   
   const [originalPageWidth, setOriginalPageWidth] = useState(1240)
   const [originalPageHeight, setOriginalPageHeight] = useState(1754)
 
-
   const [pageHeight, setPageHeight] = useState(1754); // A4 height in pixels
   const [pageWidth, setPageWidth] = useState(1240); // A4 width in pixels
   const [zoom, setZoom] = useState(100);
-  
 
   const [changeBackground, setChangeBackground] = useState(false);
   const [colorPickerColor, setColorPickerColor] = useState('#ffffff');
@@ -62,6 +62,24 @@ const Editor = ({ user }) => {
     // Tworzymy tablicę 2D
     return Array.from({ length: rows }, (_, rowIndex) => 
         Array.from({ length: cols }, (_, colIndex) => 100) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [textColor, setTextColor] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [showLayerPicker, setShowLayerPicker] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => false) // Wypełnienie wartościami domyślnymi
     );
   });
 
@@ -141,7 +159,7 @@ const Editor = ({ user }) => {
     setPageWidth(pageWidth - stepW)
     setZoom(zoom - 10)
 
-    //printTables()
+    printTables()
   }
 
   const zoomIn = () => {
@@ -154,7 +172,6 @@ const Editor = ({ user }) => {
 
   const setPhotosPanel = () => {
     setLeftPanel('photos')
-    
   }
 
   const photoChooseClick = (url) => {
@@ -173,15 +190,36 @@ const Editor = ({ user }) => {
     const cpyY = [...yTable]
     cpyY[pageNumber].push(0)
     setYTable(cpyY)
-    
   }
 
   const typographyChooseClick = () => {
     let obj = "TYPOGRAPHY.false.false.false.40.napis.Roboto, sans-serif"
 
     const copyOfItems = [...layerTable];
+    let index = copyOfItems[pageNumber].length
     copyOfItems[pageNumber].push(obj)
     setlayerTable(copyOfItems)
+
+    const cpyW = [...widthTable]
+    cpyW[pageNumber].push(100)
+    setWidthTable(cpyW)
+
+    const cpyX = [...xTable]
+    cpyX[pageNumber].push(0)
+    setXTable(cpyX)
+
+    const cpyY = [...yTable]
+    cpyY[pageNumber].push(0)
+    setYTable(cpyY)
+
+
+    let cpySLP = [...showLayerPicker]
+    cpySLP[pageNumber][index] = false
+    setShowLayerPicker(cpySLP)
+
+    let asd = [...textColor]
+    asd[pageNumber][index] = "#000000"
+    setTextColor(asd)
   }
 
   const rmPhotoClick = (index) => {
@@ -200,6 +238,10 @@ const Editor = ({ user }) => {
     const copyOfYTable = [...yTable]
     copyOfYTable[pageNumber].splice(index, 1)
     setYTable(copyOfYTable)
+
+    const copyOfColor = [...textColor]
+    copyOfColor[pageNumber].splice(index, 1)
+    setTextColor(copyOfColor)
   }
 
   const handleWidthSliderChange = (pageNumber, index, value) => {
@@ -259,6 +301,13 @@ const Editor = ({ user }) => {
       copyOfY[pageNumber][index-1] = movedY
       copyOfY[pageNumber][index] = downY
       setYTable(copyOfY)
+
+      let copyOfColor = [...textColor]
+      let movedC = copyOfColor[pageNumber][index]
+      let downC = copyOfColor[pageNumber][index-1]
+      copyOfColor[pageNumber][index-1] = movedC
+      copyOfColor[pageNumber][index] = downC
+      setTextColor(copyOfColor)
     }
   }
 
@@ -293,6 +342,13 @@ const Editor = ({ user }) => {
       copyOfY[pageNumber][index+1] = movedY
       copyOfY[pageNumber][index] = downY
       setYTable(copyOfY)
+
+      let copyOfColor = [...textColor]
+      let movedC = copyOfColor[pageNumber][index]
+      let downC = copyOfColor[pageNumber][index+1]
+      copyOfColor[pageNumber][index+1] = movedC
+      copyOfColor[pageNumber][index] = downC
+      setTextColor(copyOfColor)
     }
   }
 
@@ -333,6 +389,8 @@ const Editor = ({ user }) => {
     console.log(xTable[pageNumber])
     console.log(`y table: ${yTable[pageNumber].length}`)
     console.log(yTable[pageNumber])
+    console.log(`text color table: ${textColor[pageNumber].length}`)
+    console.log(textColor[pageNumber])
   }
 
   const clickWithPhotoImport = () => {
@@ -340,20 +398,51 @@ const Editor = ({ user }) => {
     
   }
 
+  const alignWidth = (index) => {
+    let width = widthTable[pageNumber][index] 
+    let mnoznik = width / 100
+    let wielkoscZdjeciaOriginal = originalPageWidth * mnoznik
+
+    if(wielkoscZdjeciaOriginal < originalPageWidth){
+      let roznica = Math.round((originalPageWidth - wielkoscZdjeciaOriginal) / 2)
+
+      let copyX = [...xTable]
+      copyX[pageNumber][index] = roznica
+      setXTable(copyX)
+    }
+  }
+
+  const setSingleColorText = (color, index) => {
+    let tablecpy = [...textColor]
+    tablecpy[pageNumber][index] = color
+    setTextColor(tablecpy)
+  }
+
+  const handleColorPickerVisibility = (index) => {
+    let tablicaCpy = [...showLayerPicker]
+
+    if(tablicaCpy[pageNumber][index] === false){
+      tablicaCpy[pageNumber][index] = true
+    } else {
+      tablicaCpy[pageNumber][index] = false
+    }
+    setShowLayerPicker(tablicaCpy)
+  }
+
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-      <div style={{ width: '200px', height: '100%', backgroundColor: '#1b4965' }}>
-        <Button onClick={() => {clickWithPhotoImport()}} style={{ marginTop: '10px', marginLeft: '10px', color: '#bee9e8', marginBottom: '20px' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
+      <div style={{display: 'flex', flexDirection: 'column', width: '250px', height: '100%', backgroundColor: '#1b4965', borderRight: '2px solid purple' }}>
+        <Button onClick={() => {clickWithPhotoImport()}} style={{justifyContent: 'flex-start', color: '#bee9e8' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <ImportContactsIcon style={{ fontSize: '20px', marginRight: '5px' }} />Book info
         </Button>
-        <Button onClick={() => setLeftPanel('customize')} style={{ marginTop: '10px', marginLeft: '10px', color: '#bee9e8', marginBottom: '20px' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
+        <Button onClick={() => setLeftPanel('customize')} style={{justifyContent: 'flex-start', color: '#bee9e8' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <TuneIcon style={{ fontSize: '20px', marginRight: '5px' }} />Customize
         </Button>
-        <Button onClick={() => setPhotosPanel()  } style={{ marginTop: '10px', marginLeft: '10px', color: '#bee9e8', marginBottom: '20px' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
-          <ShareIcon style={{ fontSize: '20px', marginRight: '5px' }} />Photos
+        <Button onClick={() => setPhotosPanel()  } style={{justifyContent: 'flex-start', color: '#bee9e8' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
+          <InsertPhotoIcon style={{ fontSize: '20px', marginRight: '5px' }} />Photos
         </Button>
-        <Button onClick={() => setLeftPanel('settings')} style={{ marginTop: '10px', marginLeft: '10px', color: '#bee9e8', marginBottom: '20px' }}><Typography style={{fontSize: '13px'}}>Page Settings</Typography></Button>
-        <Button onClick={() => setLeftPanel('share')} style={{ marginTop: '10px', marginLeft: '10px', color: '#bee9e8', marginBottom: '20px' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
+        <Button onClick={() => setLeftPanel('settings')} style={{justifyContent: 'flex-start', color: '#bee9e8' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}><SettingsIcon/> Page settings</Button>
+        <Button onClick={() => setLeftPanel('share')} style={{justifyContent: 'flex-start', color: '#bee9e8' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <ShareIcon style={{ fontSize: '20px', marginRight: '5px' }} />Share
         </Button>
       </div>
@@ -417,7 +506,7 @@ const Editor = ({ user }) => {
                 </div>
                 <ChromePicker
                   color={colorPickerColor}
-                  onChangeComplete={(color) => setColorPickerColor(color.hex)}
+                  onChangeComplete={(color) => setSingleColorText(color.hex)}
                 />
               </div>
             )}
@@ -485,8 +574,9 @@ const Editor = ({ user }) => {
                       </div>
                     </div >
                     <div >
-                    <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginLeft: '6px' , marginRight: '6px', marginTop: '5px'}}>d</div>
-                    <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginLeft: '6px', marginRight: '6px', marginTop: '5px'}}>up</div>
+                      <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginLeft: '6px' , marginRight: '6px', marginTop: '5px'}}>d</div>
+                      <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginLeft: '6px', marginRight: '6px', marginTop: '5px'}}>up</div>
+                      <div onClick={() => alignWidth(index)}> w </div>
                     </div>
                   </div>
                 </div>): item.startsWith("TYPOGRAPHY")?(
@@ -545,7 +635,18 @@ const Editor = ({ user }) => {
                           <Typography style={{marginRight: '5px'}}>Y</Typography>
                           <Slider value={yTable[pageNumber][index] || 0} onChange={(event, value) => handleYSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageHeight}/>
                         </div>
-                      
+                      <div style={{display: 'flex'}}>
+                        <Typography>Color: </Typography>
+                        <div onClick={() => handleColorPickerVisibility(index)} style={{width: '15px', height: '15px', backgroundColor: `${textColor[pageNumber][index]}`, marginTop: '5px', marginLeft: '5px'}}></div>
+                        {`${showLayerPicker[pageNumber][index]}`}
+                        {showLayerPicker[pageNumber][index] === true ? (
+                          <ChromePicker
+                          color={textColor[pageNumber][index]}
+                          onChangeComplete={(color) => setSingleColorText(color.hex, index)}
+                        />
+                        ) : (<div>a</div>)}
+                        
+                      </div>
                       </div>
                     </div>
                     
@@ -561,7 +662,7 @@ const Editor = ({ user }) => {
         )}
       </div>
 
-      <div style={{ backgroundColor: 'lightgray', padding: '10px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div style={{ backgroundColor: 'lightgray', padding: '10px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflowX: 'auto', overflowY: 'auto' }}>
           <Card style={{
               backgroundColor: colorPickerColor,
               width: pageWidth,
@@ -573,7 +674,7 @@ const Editor = ({ user }) => {
                 item.slice(0, 10) !== 'TYPOGRAPHY' ? (
                 <img key={index} src={item} style={{position: 'absolute', left: `${xTable[pageNumber][index]*(zoom/100)}px`, top: `${yTable[pageNumber][index]*(zoom/100)}px`, width: `${widthTable[pageNumber][index]}%`}} />
               ):(
-                <div style={{position: 'absolute', left: `${xTable[pageNumber][index]*(zoom/100)}px`, top: `${yTable[pageNumber][index]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
+                <div style={{color: `${textColor[pageNumber][index]}` , position: 'absolute', left: `${xTable[pageNumber][index]*(zoom/100)}px`, top: `${yTable[pageNumber][index]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
                 
               )))}
           </Card>
