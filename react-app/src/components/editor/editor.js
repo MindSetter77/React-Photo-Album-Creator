@@ -19,6 +19,12 @@ const Editor = ({ user }) => {
 
   }, [])
 
+  const leftColor = "#845ec2"; // koralowy
+  const middleColor = "#d65db1"; // brzoskwiniowy
+  const rightBackgroundColor = "#ffe5d9"; // delikatny różowy
+  const borderColor = '#48cae4'; // ciemna malina
+  const buttonColor = "white"; // bordowy
+
 
 
   const fonts = [
@@ -93,6 +99,15 @@ const Editor = ({ user }) => {
   });
 
   const [yTable, setYTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [lessMoreTable, setLessMoreTable] = useState(() => {
     const rows = 50;
     const cols = 0;
     // Tworzymy tablicę 2D
@@ -190,6 +205,11 @@ const Editor = ({ user }) => {
     const cpyY = [...yTable]
     cpyY[pageNumber].push(0)
     setYTable(cpyY)
+
+    const lessMoreTableCpy = [...lessMoreTable]
+    lessMoreTable[pageNumber].push('More')
+    setLessMoreTable(lessMoreTableCpy)
+
   }
 
   const typographyChooseClick = () => {
@@ -220,6 +240,10 @@ const Editor = ({ user }) => {
     let asd = [...textColor]
     asd[pageNumber][index] = "#000000"
     setTextColor(asd)
+
+    let lessMoreTableCpy = [...lessMoreTable]
+    lessMoreTableCpy[pageNumber][index] = 'More'
+    setLessMoreTable(lessMoreTableCpy)
   }
 
   const rmPhotoClick = (index) => {
@@ -242,6 +266,10 @@ const Editor = ({ user }) => {
     const copyOfColor = [...textColor]
     copyOfColor[pageNumber].splice(index, 1)
     setTextColor(copyOfColor)
+
+    let lessMoreTableCpy = [...lessMoreTable]
+    lessMoreTableCpy[pageNumber].splice(index, 1)
+    setLessMoreTable(lessMoreTableCpy)
   }
 
   const handleWidthSliderChange = (pageNumber, index, value) => {
@@ -308,6 +336,13 @@ const Editor = ({ user }) => {
       copyOfColor[pageNumber][index-1] = movedC
       copyOfColor[pageNumber][index] = downC
       setTextColor(copyOfColor)
+
+      let lessMoreTableCpy = [...lessMoreTable]
+      let movedLM = lessMoreTableCpy[pageNumber][index]
+      let downLM = lessMoreTableCpy[pageNumber][index-1]
+      lessMoreTableCpy[pageNumber][index-1] = movedLM
+      lessMoreTableCpy[pageNumber][index] = downLM
+      setLessMoreTable(lessMoreTableCpy)
     }
   }
 
@@ -349,6 +384,13 @@ const Editor = ({ user }) => {
       copyOfColor[pageNumber][index+1] = movedC
       copyOfColor[pageNumber][index] = downC
       setTextColor(copyOfColor)
+
+      let lessMoreTableCpy = [...lessMoreTable]
+      let movedLM = lessMoreTableCpy[pageNumber][index]
+      let downLM = lessMoreTableCpy[pageNumber][index+1]
+      lessMoreTableCpy[pageNumber][index+1] = movedLM
+      lessMoreTableCpy[pageNumber][index] = downLM
+      setLessMoreTable(lessMoreTableCpy)
     }
   }
 
@@ -391,6 +433,9 @@ const Editor = ({ user }) => {
     console.log(yTable[pageNumber])
     console.log(`text color table: ${textColor[pageNumber].length}`)
     console.log(textColor[pageNumber])
+
+    console.log(`lessMoreTable table: ${lessMoreTable[pageNumber].length}`)
+    console.log(lessMoreTable[pageNumber])
   }
 
   const clickWithPhotoImport = () => {
@@ -429,24 +474,67 @@ const Editor = ({ user }) => {
     setShowLayerPicker(tablicaCpy)
   }
 
+  const lessMoreClick = (index) => {
+    let lessMoreTableCpy = [...lessMoreTable]
+    if(lessMoreTableCpy[pageNumber][index] === 'More'){
+      lessMoreTableCpy[pageNumber][index] = 'Less'
+    } else {
+      lessMoreTableCpy[pageNumber][index] = 'More'
+    }
+    setLessMoreTable(lessMoreTableCpy)
+  }
+
+  const getLayerTitle = (layer) =>{
+    let divided = layer.split('.')
+    let num = divided[5].length
+    
+    let show = divided[5]
+
+    if(num === 0){
+      show = "Text Layer"
+    }
+    if(num > 20){
+      let asd = divided[5].substring(0, 20)
+      show = asd + '...'
+    }
+
+    return show
+  }
+
+  const setRealPageNumber = (pageNumber, value) => {
+    console.log(pageNumber, value)
+
+    if(value === 1){
+      if(pageNumber<allPageNumber){
+        pageNumber++
+      }
+    } else {
+      if(pageNumber!==1){
+        pageNumber--
+      }
+    }
+    setPageNumber(pageNumber)
+
+  }
+
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-      <div style={{display: 'flex', flexDirection: 'column', width: '250px', height: '100%', backgroundColor: '#1b4965', borderRight: '2px solid purple' }}>
-        <Button onClick={() => {clickWithPhotoImport()}} style={{justifyContent: 'flex-start', color: '#bee9e8' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
+      <div style={{display: 'flex', flexDirection: 'column', width: '250px', height: '100%', background: `linear-gradient(180deg, #023e8a, #0077b6)`, borderRight: `2px solid #023e8a`, boxShadow: '10px 0 15px 0 rgba(0, 0, 0, 0.2)', zIndex: 2 }}>
+        <Button onClick={() => {clickWithPhotoImport()}} style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'info' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <ImportContactsIcon style={{ fontSize: '20px', marginRight: '5px' }} />Book info
         </Button>
-        <Button onClick={() => setLeftPanel('customize')} style={{justifyContent: 'flex-start', color: '#bee9e8' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
+        <Button onClick={() => setLeftPanel('customize')} style={{justifyContent: 'flex-start', color: `${buttonColor}`,  backgroundColor: leftPanel === 'customize' ? '#62b6cb' : 'transparent'}} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <TuneIcon style={{ fontSize: '20px', marginRight: '5px' }} />Customize
         </Button>
-        <Button onClick={() => setPhotosPanel()  } style={{justifyContent: 'flex-start', color: '#bee9e8' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
+        <Button onClick={() => setPhotosPanel()  } style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'photos' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <InsertPhotoIcon style={{ fontSize: '20px', marginRight: '5px' }} />Photos
         </Button>
-        <Button onClick={() => setLeftPanel('settings')} style={{justifyContent: 'flex-start', color: '#bee9e8' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}><SettingsIcon/> Page settings</Button>
-        <Button onClick={() => setLeftPanel('share')} style={{justifyContent: 'flex-start', color: '#bee9e8' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
+        <Button onClick={() => setLeftPanel('settings')} style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'settings' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}><SettingsIcon/> Page settings</Button>
+        <Button onClick={() => setLeftPanel('share')} style={{marginTop: 'auto', justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'share' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <ShareIcon style={{ fontSize: '20px', marginRight: '5px' }} />Share
         </Button>
       </div>
-      <div style={{ width: 'calc(100% - 300px)', height: '100%', maxWidth: '400px', backgroundColor: '#cae9ff', overflowY: 'auto'}}>
+      <div style={{ width: 'calc(100% - 300px)', height: '100%', maxWidth: '400px', background: `linear-gradient(120deg, #48cae4, #ade8f4)`, boxShadow: '10px 0 15px 0 rgba(0, 0, 0, 0.2)', borderRight: `2px solid ${borderColor}`, zIndex: 1}}>
         {leftPanel === 'info' ? (
           <div style={{ display: 'flex', flexDirection: 'column', padding: '20px', fontFamily: 'Roboto' }}>
             <Typography style={{ fontSize: '18px', marginBottom: '10px' }}>Book information</Typography>
@@ -532,129 +620,186 @@ const Editor = ({ user }) => {
         ) : leftPanel === 'settings' ? (
           <div>
             <Typography style={{padding: '5px', fontSize: '20px'}}>{`Settings of page: ${pageNumber}`}</Typography>
-            <div style={{display: 'flex', width: '100%', height: '150px', overflowX: 'auto'}}>
-              {photosOfPanel.length > 0 ? (
-                photosOfPanel.map((photoUrl, index) => (
-                  
-                  <div style={{display: 'flex', alignItems: 'center'}}>
-                    <img onClick={() => {photoChooseClick(photoUrl)}} key={index} src={photoUrl} alt={`Photo ${index + 1}`} style={{ width: '100px', height: 'auto', margin: '5px' }} />
-                  </div>
-                ))
-              ) : (
-                <p>No photos available.</p>
-              )}
+            <div style={{ width: '95%', borderRadius: '15px', border: '2px solid white', overflow: 'hidden',  marginLeft: 'auto', marginRight: 'auto' }}>
+              <div style={{ height: '25px', width: '100%', backgroundColor: 'white', zIndex: 10, display: 'flex' }}>
+                <Typography style={{ marginLeft: '5px', width: '100%' }}>Choose photos</Typography>
+              </div>
+              <div style={{ flexDirection: 'column', display: 'flex', overflowX: 'auto', overflowY: 'hidden', backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: '15px' }}>
+                
+                <div style={{ display: 'flex', marginTop: '10px' }}>
+                  {photosOfPanel.length > 0 ? (
+                    photosOfPanel.map((photoUrl, index) => (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+                        <img
+                          onClick={() => { photoChooseClick(photoUrl); }}
+                          key={index}
+                          src={photoUrl}
+                          alt={`Photo ${index + 1}`}
+                          style={{ borderRadius: '10px', border: '1px solid white', maxHeight: '60px', boxShadow: '0 5px 30px rgba(0, 0, 0, 0.3), 0 -5px 30px rgba(0, 0, 0, 0.3), 5px 0 30px rgba(0, 0, 0, 0.3), -5px 0 30px rgba(0, 0, 0, 0.3)', width: '100px', height: 'auto', margin: '5px' }}
+                        />
+                        <Typography style={{ marginTop: '5px' }}>{photoUrl.substring(41, 51)}</Typography>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No photos available.</p>
+                  )}
+                </div>
+              </div>
             </div>
-            <Button onClick={() => typographyChooseClick()} style={{border: '2px solid black', width: '80%', margin: '10px', marginBottom: '5px'}}>Add text</Button>
-            <Typography style={{padding: '5px'}}>{`Photos selected: ${layerTable[pageNumber].length}`}</Typography>
+            <Button onClick={() => typographyChooseClick()} style={{border: '2px solid white', backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: '15px', width: '95%', margin: '10px', marginBottom: '5px'}}><Typography style={{fontSize: '16px'}}>Add text</Typography></Button>
+            <Typography style={{padding: '5px'}}>Layers</Typography>
             
             <div>
+              <div style={{flex: '1', minHeight: '500px', maxHeight: '500px', width: '95%', overflowY: 'scroll', marginLeft: 'auto', marginRight: 'auto', backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: '15px', border: '2px solid white'}}>
               {layerTable[pageNumber].reverse().map((item, index) => (
                 item.startsWith("http")?(
-                <div style={{border: '2px solid black', margin: '5px'}}>
-                  <div style={{display: 'flex'}}>
-                    <img onClick={() => rmPhotoClick(index)}  key={index} src={item} alt={`Photo ${index + 1}`} style={{ width: '100px', height: 'auto', margin: '5px' }} />
-                    <div style={{ width: '100%', padding: '5px'}}>
-                      <Typography>{`Photo ${index+1}`}</Typography>
-                      <div style={{display: 'flex'}}> 
-                        <Typography>Width: </Typography>
-                        <Slider defaultValue={100} aria-label="Default" valueLabelDisplay="auto" min={1} max={200} onChange={(event, value) => handleWidthSliderChange(pageNumber, index, value)}/>
+                
+                <div style={{marginTop: '5px', marginBottom: '5px', marginLeft: '5px', display: 'flex', flexDirection: 'column', width: '96%', border: '2px solid white', borderRadius: '15px', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
+                  {lessMoreTable[pageNumber][index] === 'Less' ? (
+                    <div>
+                      <div style={{display: 'flex'}}>
+                        <img onClick={() => rmPhotoClick(index)}  key={index} src={item} alt={`Photo ${index + 1}`} style={{ width: '100px', height: 'auto', margin: '5px' }} />
+                        <div style={{ width: '100%', padding: '5px'}}>
+                          <div style={{display: 'flex'}}>
+                            <Typography >{`Photo ${index+1}`}</Typography>
+                            <div onClick={() => lessMoreClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '45px', height: '20px', border: '2px solid black', marginLeft: 'auto'}}>{`${lessMoreTable[pageNumber][index]}`}</div>
+                            <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black', marginLeft: '5px'}}>↑</div>
+                            <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black',  marginRight: '5px', marginLeft: '5px'}}>↓</div>
+                            <div onClick={() => rmPhotoClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black'}}>×</div>
+                          </div>
+                          <div style={{display: 'flex'}}> 
+                            <Typography>Width: </Typography>
+                            <Slider defaultValue={100} aria-label="Default" valueLabelDisplay="auto" min={1} max={200} onChange={(event, value) => handleWidthSliderChange(pageNumber, index, value)}/>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{display: 'flex'}}>
+                        <div style={{width: '90%'}}>
+                          <Typography>Position:</Typography>
+                          <div style={{display: 'flex', margin: '5px'}}>
+                            <Typography style={{margin: '5px', marginRight: '10px'}}>X</Typography>
+                            <Slider value={xTable[pageNumber][index] || 0} onChange={(event, value) => handleXSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageWidth}/>
+                          </div>
+                          <div style={{display: 'flex', margin: '5px'}}>
+                            <Typography style={{margin: '5px', marginRight: '10px'}}>Y</Typography>
+                            <Slider value={yTable[pageNumber][index] || 0} onChange={(event, value) => handleYSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageHeight}/>
+                          </div>
+                        </div >
+                        <div >
+                          <div onClick={() => alignWidth(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginLeft: '6px', marginRight: '6px', marginTop: '5px'}}> w </div>
+                        </div>
+                    </div>
+                    </div>
+                  ):(
+                    <div>
+                      <div style={{display: 'flex', alignItems: 'center'}}>
+                        <img onClick={() => rmPhotoClick(index)}  key={index} src={item} alt={`Photo ${index + 1}`} style={{ width: '50px', height: 'auto', margin: '5px' }} />
+                        <div style={{ width: '100%', padding: '5px'}}>
+                          <div style={{display: 'flex'}}>
+                            <Typography >{`Photo ${index+1}`}</Typography>
+                            <div onClick={() => lessMoreClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '45px', height: '20px', border: '2px solid black', marginLeft: 'auto'}}>{`${lessMoreTable[pageNumber][index]}`}</div>
+                            <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black', marginLeft: '5px'}}>↑</div>
+                            <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black',  marginRight: '5px', marginLeft: '5px'}}>↓</div>
+                            <div onClick={() => rmPhotoClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black'}}>×</div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div style={{display: 'flex'}}>
-                    <div style={{width: '90%'}}>
-                      <Typography>Position:</Typography>
-                      <div style={{display: 'flex', margin: '5px'}}>
-                        <Typography style={{margin: '5px', marginRight: '10px'}}>X</Typography>
-                        <Slider value={xTable[pageNumber][index] || 0} onChange={(event, value) => handleXSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageWidth}/>
-                      </div>
-                      <div style={{display: 'flex', margin: '5px'}}>
-                        <Typography style={{margin: '5px', marginRight: '10px'}}>Y</Typography>
-                        <Slider value={yTable[pageNumber][index] || 0} onChange={(event, value) => handleYSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageHeight}/>
-                      </div>
-                    </div >
-                    <div >
-                      <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginLeft: '6px' , marginRight: '6px', marginTop: '5px'}}>d</div>
-                      <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginLeft: '6px', marginRight: '6px', marginTop: '5px'}}>up</div>
-                      <div onClick={() => alignWidth(index)}> w </div>
-                    </div>
-                  </div>
+                  )}
+                  
+                  
                 </div>): item.startsWith("TYPOGRAPHY")?(
                   <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-                    <div style={{display: 'flex', flexDirection: 'column', width: '96%', border: '2px solid black'}}>
-                      <Typography onClick={() => rmPhotoClick(index)} >Text</Typography>
-                      <div style={{display: 'flex'}}>
-                        <TextField
-                          id="outlined-required"
-                          label="text"
-                          defaultValue={item.split(".")[5]}
-                          multiline
-                          minRows={6}
-                          maxRows={6}
-                          style={{margin: '5px', marginRight: '10px', width: '90%'}}
-                          onChange={(event) => editText(event.target.value, item, pageNumber, index, 5)}
-                        />
-                        <div>
-                          <div onClick={() => {item.split(".")[1] === "false" ? editText('true', item, pageNumber, index, 1) : editText('false', item, pageNumber, index, 1)}}  style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginRight: '6px', fontWeight: 'bold'}}>B</div>
-                          <div onClick={() => {item.split(".")[2] === "false" ? editText('true', item, pageNumber, index, 2) : editText('false', item, pageNumber, index, 2)}} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginRight: '6px', marginTop: '5px', fontStyle: 'italic'}}>I</div>
-                          <div onClick={() => {item.split(".")[3] === "false" ? editText('true', item, pageNumber, index, 3) : editText('false', item, pageNumber, index, 3)} } style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginRight: '6px', marginTop: '5px', textDecoration: 'underline'}}>U</div>
-                          <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginRight: '6px', marginTop: '5px'}}>d</div>
-                          <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginRight: '6px', marginTop: '5px'}}>up</div>
-                        </div>
-                      </div>
-                      <div style={{display: 'flex', alignItems: 'center', width: '96%',margin: '5px'}}>
-                      <Typography>Font:</Typography>
-                      <FormControl style={{width: '50%'}}>
-                        <Select
-                          labelId="font-select-label"
-                          value={`${item.split(".")[6]}`}
-                          onChange={(event) => {editText(event.target.value, item, pageNumber, index, 6)}}
-                          style={{height: '30px'}}
-                        >
-                          {fonts.map((font) => (
-                            <MenuItem key={font.name} value={font.value}>
-                              {font.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <Typography style={{marginLeft: '10px', marginRight: '10px'}}>Font size:</Typography>
-                      <div style={{display: 'flex',alignItems: 'center', width: '50px'}}>
-                        <div onClick={() => {editText(parseInt(item.split(".")[4])-1, item, pageNumber, index, 4)}} style={{cursor: 'pointer'}} >←</div>
-                        <Typography style={{fontSize: '18px', marginTop: '3px'}}>{`${item.split(".")[4]}`}</Typography>
-                        <div onClick={() => {editText(parseInt(item.split(".")[4])+1, item, pageNumber, index, 4)}} style={{cursor: 'pointer'}} >→</div>
-                      </div>
+                    <div style={{marginTop: '5px', marginBottom: '5px', display: 'flex', flexDirection: 'column', width: '96%', border: '2px solid white', borderRadius: '15px', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
+                      <div style={{display: 'flex', marginTop: '10px', marginBottom: '10px'}}>
+
+                        <Typography style={{marginLeft: '10px'}}>{getLayerTitle(layerTable[pageNumber][index])}</Typography>
+                        <div onClick={() => lessMoreClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '45px', height: '20px', border: '2px solid black', marginLeft: 'auto'}}>{`${lessMoreTable[pageNumber][index]}`}</div>
+                        <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black', marginLeft: '5px'}}>↑</div>
+                        <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black',  marginRight: '5px', marginLeft: '5px'}}>↓</div>
+                        <div onClick={() => rmPhotoClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black',  marginRight: '5px'}}>×</div>
                       
                       </div>
-                      <div>
+                      {lessMoreTable[pageNumber][index] !== 'Less' ? null : (
+                        <div>
                         <div style={{display: 'flex'}}>
-                          <Typography style={{marginRight: '5px'}}>X</Typography>
-                          <Slider value={xTable[pageNumber][index] || 0} onChange={(event, value) => handleXSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageWidth}/>
+                          <TextField
+                            id="outlined-required"
+                            label="text"
+                            defaultValue={item.split(".")[5]}
+                            multiline
+                            minRows={3}
+                            maxRows={3}
+                            style={{margin: '5px', marginRight: '10px', width: '90%'}}
+                            onChange={(event) => editText(event.target.value, item, pageNumber, index, 5)}
+                          />
+                          <div style={{marginTop: '5px', marginRight: '5px'}}>
+                            <div onClick={() => {item.split(".")[1] === "false" ? editText('true', item, pageNumber, index, 1) : editText('false', item, pageNumber, index, 1)}}  style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '9px', width: '25px', height: '25px', border: '2px solid black', fontWeight: 'bold', userSelect: 'none'}}>B</div>
+                            <div onClick={() => {item.split(".")[2] === "false" ? editText('true', item, pageNumber, index, 2) : editText('false', item, pageNumber, index, 2)}} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '9px', width: '25px', height: '25px', border: '2px solid black', marginTop: '5px', fontStyle: 'italic', userSelect: 'none'}}>I</div>
+                            <div onClick={() => {item.split(".")[3] === "false" ? editText('true', item, pageNumber, index, 3) : editText('false', item, pageNumber, index, 3)} } style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '9px', width: '25px', height: '25px', border: '2px solid black', marginTop: '5px', textDecoration: 'underline', userSelect: 'none'}}>U</div>
+                          </div>
                         </div>
+                        <div style={{display: 'flex', alignItems: 'center', width: '100%',margin: '5px'}}>
+                          <Typography>Font:</Typography>
+                          <FormControl style={{width: '40%'}}>
+                          <Select
+                            labelId="font-select-label"
+                            value={`${item.split(".")[6]}`}
+                            onChange={(event) => {editText(event.target.value, item, pageNumber, index, 6)}}
+                            style={{height: '30px', width: '150px'}}
+                          >
+                            {fonts.map((font) => (
+                              <MenuItem key={font.name} value={font.value}>
+                                {font.name}
+                              </MenuItem>
+                            ))}
+                            </Select>
+                          </FormControl>
+                          <div style={{display: 'flex', alignItems: 'center', marginLeft: '25px'}}>
+                            <Typography style={{marginLeft: '10px'}}>size:</Typography>
+                            <div style={{display: 'flex',alignItems: 'center', width: '95px'}}>
+                              <div onClick={() => {editText(parseInt(item.split(".")[4])-1, item, pageNumber, index, 4)}} style={{marginLeft: 'auto', cursor: 'pointer', userSelect: 'none', width: '25px', height: '25px', border: '2px solid black', borderRadius: '10px'}} >←</div>
+                              <Typography style={{fontSize: '18px', marginTop: '3px', marginRight: '5px', marginLeft: '5px'}}>{`${item.split(".")[4]}`}</Typography>
+                              <div onClick={() => {editText(parseInt(item.split(".")[4])+1, item, pageNumber, index, 4)}} style={{cursor: 'pointer', userSelect: 'none', width: '25px', height: '25px', border: '2px solid black', borderRadius: '10px'}} >→</div>
+                            </div>
+                          </div>
+                        
+                        </div>
+                        <div>
+                          <div style={{display: 'flex'}}>
+                            <Typography style={{marginRight: '5px', marginLeft: '5px', marginTop: '3px'}}>X</Typography>
+                            <Slider style={{width: '200px', marginLeft: '10px'}} value={xTable[pageNumber][index] || 0} onChange={(event, value) => handleXSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageWidth}/>
+                            <Typography style={{marginTop: '3px'}} >{`${xTable[pageNumber][index]}`}</Typography>
+                          </div>
+                          <div style={{display: 'flex', marginLeft: '5px'}}>
+                            <Typography style={{marginRight: '5px'}}>Y</Typography>
+                            <Slider style={{width: '200px', marginLeft: '10px'}} value={yTable[pageNumber][index] || 0} onChange={(event, value) => handleYSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageHeight}/>
+                            <Typography style={{marginTop: '3px'}}>{`${yTable[pageNumber][index]}`}</Typography>
+                          </div>
                         <div style={{display: 'flex'}}>
-                          <Typography style={{marginRight: '5px'}}>Y</Typography>
-                          <Slider value={yTable[pageNumber][index] || 0} onChange={(event, value) => handleYSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageHeight}/>
+                          <Typography style={{marginLeft: '5px', marginBottom: '5px'}}>Color: </Typography>
+                          <div onClick={() => handleColorPickerVisibility(index)} style={{width: '15px', height: '15px', backgroundColor: `${textColor[pageNumber][index]}`, marginTop: '5px', marginLeft: '5px'}}></div>
+                          {showLayerPicker[pageNumber][index] === true ? (
+                            <ChromePicker
+                            color={textColor[pageNumber][index]}
+                            onChangeComplete={(color) => setSingleColorText(color.hex, index)}
+                          />
+                          ) : (<div></div>)}
+                          </div>
                         </div>
-                      <div style={{display: 'flex'}}>
-                        <Typography>Color: </Typography>
-                        <div onClick={() => handleColorPickerVisibility(index)} style={{width: '15px', height: '15px', backgroundColor: `${textColor[pageNumber][index]}`, marginTop: '5px', marginLeft: '5px'}}></div>
-                        {`${showLayerPicker[pageNumber][index]}`}
-                        {showLayerPicker[pageNumber][index] === true ? (
-                          <ChromePicker
-                          color={textColor[pageNumber][index]}
-                          onChangeComplete={(color) => setSingleColorText(color.hex, index)}
-                        />
-                        ) : (<div>a</div>)}
                         
                       </div>
-                      </div>
-                    </div>
-                    
+                      )}
+                      
+                      
                   </div>
+                    
+                </div>
                   
-                ) : (<div>asd</div>)
+                ) : (<div></div>)
                 
               ))}
+              </div>
             </div>
           </div>
         ) : (
@@ -662,13 +807,14 @@ const Editor = ({ user }) => {
         )}
       </div>
 
-      <div style={{ backgroundColor: 'lightgray', padding: '10px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflowX: 'auto', overflowY: 'auto' }}>
+      <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, padding: '10px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflowX: 'auto', overflowY: 'auto' }}>
           <Card style={{
               backgroundColor: colorPickerColor,
               width: pageWidth,
               height: pageHeight,
               objectFit: 'contain',
-              position: 'relative'
+              position: 'relative',
+              boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)' // Dodanie cienia
             }}>
               {layerTable[pageNumber].map((item, index) => (
                 item.slice(0, 10) !== 'TYPOGRAPHY' ? (
@@ -683,9 +829,9 @@ const Editor = ({ user }) => {
             <Button onClick={() => { zoomOut() }}><ZoomOutIcon/></Button>
             <Typography style={{marginLeft: '10px', marginRight: '10px'}}>{`${zoom}%`}</Typography>
             <Button onClick={() => { zoomIn() }}><ZoomInIcon/></Button>
-            <Button style={{width: '10px'}} onClick={() => {setPageNumber(pageNumber-1)}}>◀</Button>
+            <Button style={{width: '10px'}} onClick={() => {setRealPageNumber(pageNumber, -1)}}>◀</Button>
             <Typography>{`Page: ${pageNumber}/${allPageNumber}`}</Typography>
-            <Button style={{width: '10px'}} onClick={() => {setPageNumber(pageNumber+1)}}>▶</Button>
+            <Button style={{width: '10px'}} onClick={() => {setRealPageNumber(pageNumber, 1)}}>▶</Button>
           </div>
       </div>
     </div>
