@@ -249,6 +249,43 @@ app.get('/getPublicAlbums', (req, res) => {
   });
 });
 
+app.post('/getSharedData', (req, res) => {
+  const jsonData = req.body;
+
+  const album_id = jsonData.album_id
+
+  // Opcjonalnie zapisz dane do pliku
+  const filePath = path.join(__dirname, 'albums', album_id, 'data.json');
+  fs.writeFile(filePath, JSON.stringify(jsonData, null, 2), (err) => {
+    if (err) {
+      console.error('Error writing file:', err);
+      return res.status(500).json({ error: 'Failed to save data' });
+    }
+    console.log('Data saved successfully:', jsonData);
+    res.status(200).json({ message: 'Data saved successfully' });
+  });
+});
+
+app.get('/getSharedData/:album_id', (req, res) => {
+  const { album_id } = req.params;
+
+  const filePath = path.join(__dirname, 'albums', album_id, 'data.json');
+
+  // Sprawdź, czy plik istnieje
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: 'Data not found' });
+  }
+
+  // Odczytaj plik i wyślij zawartość
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading file:', err);
+      return res.status(500).json({ error: 'Failed to read data' });
+    }
+    res.status(200).json(JSON.parse(data));
+  });
+});
+
 
 // Nasłuch na określonym porcie
 app.listen(port, () => {

@@ -6,7 +6,11 @@ import SettingsPanel from './SettingsPanel';
 import '@fontsource/roboto'; // Importuje domyślną wersję czcionki Roboto
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-const Creator = ({user, setCurrentPage}) => {
+import { useNavigate } from 'react-router-dom';
+
+const Creator = ({user}) => {
+  const navigate = useNavigate()
+
   const [images, setImages] = useState([]);
   const [buttonClick, setButtonClick] = useState('1');
   const [uploadedFileCount, setUploadedFileCount] = useState(0);
@@ -71,7 +75,9 @@ const Creator = ({user, setCurrentPage}) => {
         setErrorMessage("You need to choose alteast 8 photos")
         return
       }
-      setCurrentPage('profile')
+
+      navigate("/profile")
+      //USENAVIGATE
     }
   };
   

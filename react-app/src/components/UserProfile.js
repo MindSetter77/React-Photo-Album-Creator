@@ -2,18 +2,18 @@ import React, {useState, useEffect} from 'react';
 import { Avatar, Box, Button, Container, CssBaseline, Grid, Typography, useTheme } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 
 
-
-function getFirstName(currentUser, setCurrentPage) {
+function getFirstName(currentUser) {
   if (currentUser && currentUser.result && currentUser.result.length > 0) {
     return currentUser.result[0].firstName;
   }
   return ''; // Lub możesz zwrócić null lub undefined, jeśli chcesz obsługiwać te przypadki w inny sposób
 }
 
-const UserProfile = ({ currentUser, setCurrentPage }) => {
-  
+const UserProfile = ({ currentUser, setChoosenAlbum }) => {
+  const navigate = useNavigate()
   const theme = useTheme()
   const [albums, setAlbums] = useState([]);
 
@@ -46,8 +46,18 @@ const UserProfile = ({ currentUser, setCurrentPage }) => {
     }
   }, [currentUser]);
 
+  const navigateToEditor = (album_id) => {
+    setChoosenAlbum(album_id)
+    navigate("/editor")
+  }
+
+  const viewClick = (album_id) => {
+    setChoosenAlbum(album_id); // Ustawienie wybranego albumu
+    let url = `/viewer/${album_id}`; // Stworzenie URL
+    navigate(url); // Nawigacja do odpowiedniego URL
+  };
   
-  console.log(albums)
+
   return (
     <div style={{backgroundColor: theme.palette.primary.lighter, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
       <Typography style={{color: theme.palette.secondary.main, fontSize: '50px', marginBottom: '10px'}}>{`Hello, ${currentUser.result[0].firstName}`}</Typography>
@@ -91,11 +101,11 @@ const UserProfile = ({ currentUser, setCurrentPage }) => {
               </p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 'auto' }}>
-              <button onClick={() => setCurrentPage('editor')} style={{ marginBottom: '5px', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none' }}>
+              <button onClick={() => {navigateToEditor(album.album_id)}} style={{ marginBottom: '5px', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none' }}>
                 Customize
               </button>
-              <button style={{ marginBottom: '5px', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#28a745', color: '#fff', border: 'none' }}>
-                Download
+              <button onClick={() => {viewClick(album.album_id)}} style={{ marginBottom: '5px', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#28a745', color: '#fff', border: 'none' }}>
+                View
               </button>
               <button style={{ padding: '5px 10px', borderRadius: '5px', backgroundColor: '#17a2b8', color: '#fff', border: 'none' }}>
                 Share

@@ -12,12 +12,14 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 import FileDropzone from '../create-album/FileDropzone';
 
-const Editor = ({ user }) => {
+const Editor = ({ user, album_id }) => {
 
   useEffect(() => {
-    fetchAlbumPhotos("28_newalbum")
-
+    fetchAlbumPhotos(album_id)
+    getSharedData(album_id)
   }, [])
+
+  console.log(album_id)
 
   const leftColor = "#845ec2"; // koralowy
   const middleColor = "#d65db1"; // brzoskwiniowy
@@ -174,7 +176,7 @@ const Editor = ({ user }) => {
     setPageWidth(pageWidth - stepW)
     setZoom(zoom - 10)
 
-    printTables()
+    //printTables()
   }
 
   const zoomIn = () => {
@@ -517,8 +519,93 @@ const Editor = ({ user }) => {
 
   }
 
+  const getPhotoName = (photoUrl) => {
+    const tablica = photoUrl.split("/")
+    let name = tablica[5]
+
+    if(name.length>9){
+      const ex = name.slice(-4)
+      let val = name.substring(0, 9) + ".." + ex
+
+      return val
+    } else {
+      return name
+    }
+  }
+
+  const shareAlbumData = () => {
+    console.log(lessMoreTable)
+      const jsonData = {
+        album_id: album_id,
+        leftPanel: leftPanel,
+        pageSize: pageSize,
+        originalPageWidth: originalPageWidth,
+        originalPageHeight: originalPageHeight,
+        pageHeight: pageHeight,
+        pageWidth: pageWidth,
+        changeBackground: changeBackground,
+        colorPickerColor: colorPickerColor,
+        allPageNumber: allPageNumber,
+        layerTable: layerTable,
+        widthTable: widthTable,
+        textColor: textColor,
+        xTable: xTable,
+        yTable: yTable,
+        lessMoreTable: lessMoreTable,
+        zoom: zoom
+    };
+    const jsonString = JSON.stringify(jsonData, null, 2); // `null, 2` dodaje wcięcia dla czytelności
+    console.log(jsonString);
+
+    fetch('http://localhost:3001/getSharedData', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
+  const getSharedData = async (albumId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/getSharedData/${albumId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+
+      setPageSize(data.pageSize)
+      setLeftPanel(data.leftPanel)
+      setOriginalPageWidth(data.originalPageWidth)
+      setOriginalPageHeight(data.originalPageHeight)
+      setPageHeight(data.pageHeight)
+      setPageWidth(data.pageWidth)
+      setChangeBackground(data.changeBackground)
+      setColorPickerColor(data.colorPickerColor)
+      fetchAlbumPhotos(data.album_id)
+      setAllPageNumber(data.allPageNumber)
+      setlayerTable(data.layerTable)
+      setWidthTable(data.widthTable)
+      setTextColor(data.textColor)
+      setXTable(data.xTable)
+      setYTable(data.yTable)
+      setLessMoreTable(data.lessMoreTable)
+      setZoom(data.zoom)
+      
+    } catch (error) {
+      console.error('Error fetching shared data:', error);
+    }
+  };
+
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
       <div style={{display: 'flex', flexDirection: 'column', width: '250px', height: '100%', background: `linear-gradient(180deg, #023e8a, #0077b6)`, borderRight: `2px solid #023e8a`, boxShadow: '10px 0 15px 0 rgba(0, 0, 0, 0.2)', zIndex: 2 }}>
         <Button onClick={() => {clickWithPhotoImport()}} style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'info' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <ImportContactsIcon style={{ fontSize: '20px', marginRight: '5px' }} />Book info
@@ -537,7 +624,7 @@ const Editor = ({ user }) => {
       <div style={{ width: 'calc(100% - 300px)', height: '100%', maxWidth: '400px', background: `linear-gradient(120deg, #48cae4, #ade8f4)`, boxShadow: '10px 0 15px 0 rgba(0, 0, 0, 0.2)', borderRight: `2px solid ${borderColor}`, zIndex: 1}}>
         {leftPanel === 'info' ? (
           <div style={{ display: 'flex', flexDirection: 'column', padding: '20px', fontFamily: 'Roboto' }}>
-            <Typography style={{ fontSize: '18px', marginBottom: '10px' }}>Book information</Typography>
+            <Typography style={{ fontSize: '18px', marginBottom: '10px' }}>{album_id}</Typography>
             <TextField
               disabled
               id="outlined-disabled"
@@ -605,11 +692,11 @@ const Editor = ({ user }) => {
             <Typography>Photos</Typography>
             
             {photosOfPanel.length > 0 ? (
-              photosOfPanel.map((photoUrl, index) => (
+              photosOfPanel.filter(photoUrl => !photoUrl.includes('data.json')).map((photoUrl, index) => (
                 
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                  <img key={photoUrl} src={photoUrl} alt={`Photo ${index + 1}`} style={{ width: '100px', height: 'auto', margin: '5px' }} />
-                  <Typography>{photoUrl.substring(41, 50)}</Typography>
+                  <img key={photoUrl} src={photoUrl} alt={`Photo ${index + 1}`} style={{ width: '100px', height: 'auto', maxHeight: '65px', margin: '5px' }} />
+                  <Typography>{getPhotoName(photoUrl)}</Typography>
                   <div onClick={() => deletePhoto(photoUrl)} style={{marginRight: '10px', marginLeft: 'auto', cursor: 'pointer'}}>delete</div>
                 </div>
               ))
@@ -628,7 +715,7 @@ const Editor = ({ user }) => {
                 
                 <div style={{ display: 'flex', marginTop: '10px' }}>
                   {photosOfPanel.length > 0 ? (
-                    photosOfPanel.map((photoUrl, index) => (
+                    photosOfPanel.filter(photoUrl => !photoUrl.includes('data.json')).map((photoUrl, index) => (
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
                         <img
                           onClick={() => { photoChooseClick(photoUrl); }}
@@ -637,7 +724,7 @@ const Editor = ({ user }) => {
                           alt={`Photo ${index + 1}`}
                           style={{ borderRadius: '10px', border: '1px solid white', maxHeight: '60px', boxShadow: '0 5px 30px rgba(0, 0, 0, 0.3), 0 -5px 30px rgba(0, 0, 0, 0.3), 5px 0 30px rgba(0, 0, 0, 0.3), -5px 0 30px rgba(0, 0, 0, 0.3)', width: '100px', height: 'auto', margin: '5px' }}
                         />
-                        <Typography style={{ marginTop: '5px' }}>{photoUrl.substring(41, 51)}</Typography>
+                        <Typography style={{ marginTop: '5px' }}>{getPhotoName(photoUrl)}</Typography>
                       </div>
                     ))
                   ) : (
@@ -663,8 +750,8 @@ const Editor = ({ user }) => {
                           <div style={{display: 'flex'}}>
                             <Typography >{`Photo ${index+1}`}</Typography>
                             <div onClick={() => lessMoreClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '45px', height: '20px', border: '2px solid black', marginLeft: 'auto'}}>{`${lessMoreTable[pageNumber][index]}`}</div>
-                            <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black', marginLeft: '5px'}}>↑</div>
-                            <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black',  marginRight: '5px', marginLeft: '5px'}}>↓</div>
+                            <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black', marginLeft: '5px'}}>u</div>
+                            <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black',  marginRight: '5px', marginLeft: '5px'}}>d</div>
                             <div onClick={() => rmPhotoClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black'}}>×</div>
                           </div>
                           <div style={{display: 'flex'}}> 
@@ -803,7 +890,14 @@ const Editor = ({ user }) => {
             </div>
           </div>
         ) : (
-          <div>Share</div>
+          <div>
+            <Button
+              onClick={() => shareAlbumData()}
+            >Share</Button>
+            <Button
+              onClick={() => getSharedData(album_id)}
+            >get shared data</Button>
+          </div>
         )}
       </div>
 

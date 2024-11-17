@@ -10,42 +10,37 @@ import Editor from './components/editor/editor';
 import Albums from './components/Albums';
 import { createTheme } from '@mui/material/styles';
 
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Viewer from './components/viewer/Viewer';
+import Tester from './components/viewer/Tester';
+
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
   const [user, setUser] = useState({});
+  const [choosenAlbum, setChoosenAlbum] = useState("asd")
 
-  
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'home':
-        return <Home currentUser={user} setCurrentPage={setCurrentPage}/>;
-      case 'albums':
-        return <Albums/>
-      case 'login':
-        return <SignIn setCurrentPage={setCurrentPage} setUser={setUser} />;
-      case 'signup':
-        return <SignUp setCurrentPage={setCurrentPage}/>;
-      case 'profile':
-        return <UserProfile currentUser={user} setCurrentPage={setCurrentPage}/>
-      case 'creator':
-        return <Creator user={user} setCurrentPage={setCurrentPage}/>
-      case 'editor':
-        return <Editor user={user} />
-      default:
-        return <div>Home Page Content</div>;
-    }
-  };
-
-  
+  //<Route path="/viewer:album_id" element={<Viewer user={user} album_id={choosenAlbum}/>} />
 
   return (
-    <div className="App">
-      {(currentPage !== 'creator' && currentPage !== 'editor') && <Navbar setCurrentPage={setCurrentPage} currentUser={user} />}
+    <Router>
+      <div className="App">
+        <Navbar currentUser={user} />
 
-      {renderPage()}
-    </div>
+        <Routes>
+          <Route path="/" element={<Home currentUser={user} />} />
+          <Route path="/albums" element={<Albums />} />
+          <Route path="/login" element={<SignIn setUser={setUser} />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/profile" element={<UserProfile currentUser={user} setChoosenAlbum={setChoosenAlbum} />} />
+          <Route path="/creator" element={<Creator user={user} />} />
+          <Route path="/create-album" element={<Creator user={user}/>} />
+          <Route path="/editor" element={<Editor user={user} album_id={choosenAlbum}/>} />
+          <Route path="/viewer/:album_id" element={<Viewer user={user}/>} />
+          <Route path="*" element={<div>404 - Page Not Found</div>} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
+
 
 export default App;
