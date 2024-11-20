@@ -11,6 +11,7 @@ import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 import FileDropzone from '../create-album/FileDropzone';
+import LayoutPanel from './editor-comp/LayoutPanel';
 
 const Editor = ({ user, album_id }) => {
 
@@ -63,6 +64,16 @@ const Editor = ({ user, album_id }) => {
         Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
     );
   });
+
+  const [onlyPhotosTable, setOnlyPhotosTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+  
 
   const [widthTable, setWidthTable] = useState(() => {
     const rows = 50;
@@ -176,7 +187,7 @@ const Editor = ({ user, album_id }) => {
     setPageWidth(pageWidth - stepW)
     setZoom(zoom - 10)
 
-    //printTables()
+    printTables()
   }
 
   const zoomIn = () => {
@@ -211,6 +222,12 @@ const Editor = ({ user, album_id }) => {
     const lessMoreTableCpy = [...lessMoreTable]
     lessMoreTable[pageNumber].push('More')
     setLessMoreTable(lessMoreTableCpy)
+
+    const cpyOnlyPhotosTable = [...onlyPhotosTable]
+    cpyOnlyPhotosTable[pageNumber].push(url)
+    setOnlyPhotosTable(cpyOnlyPhotosTable)
+
+    
 
   }
 
@@ -249,6 +266,19 @@ const Editor = ({ user, album_id }) => {
   }
 
   const rmPhotoClick = (index) => {
+
+    const itemAtIndex = layerTable[pageNumber][index]
+    
+
+
+    if(itemAtIndex.startsWith('http')){
+      let onlyPhotosTableCpy = [...onlyPhotosTable]
+      let num = onlyPhotosTableCpy[pageNumber].indexOf(itemAtIndex)
+      onlyPhotosTableCpy[pageNumber].splice(num, 1)
+      
+      setOnlyPhotosTable(onlyPhotosTableCpy)
+    }
+
     const copyOfItemsPhoto = [...layerTable];
     copyOfItemsPhoto[pageNumber].splice(index, 1)
     setlayerTable(copyOfItemsPhoto)
@@ -272,6 +302,9 @@ const Editor = ({ user, album_id }) => {
     let lessMoreTableCpy = [...lessMoreTable]
     lessMoreTableCpy[pageNumber].splice(index, 1)
     setLessMoreTable(lessMoreTableCpy)
+
+    
+    
   }
 
   const handleWidthSliderChange = (pageNumber, index, value) => {
@@ -393,6 +426,8 @@ const Editor = ({ user, album_id }) => {
       lessMoreTableCpy[pageNumber][index+1] = movedLM
       lessMoreTableCpy[pageNumber][index] = downLM
       setLessMoreTable(lessMoreTableCpy)
+
+      
     }
   }
 
@@ -438,6 +473,8 @@ const Editor = ({ user, album_id }) => {
 
     console.log(`lessMoreTable table: ${lessMoreTable[pageNumber].length}`)
     console.log(lessMoreTable[pageNumber])
+
+    console.log(`onlyPhotosTable: ${onlyPhotosTable}`)
   }
 
   const clickWithPhotoImport = () => {
@@ -499,7 +536,6 @@ const Editor = ({ user, album_id }) => {
       let asd = divided[5].substring(0, 20)
       show = asd + '...'
     }
-
     return show
   }
 
@@ -582,7 +618,6 @@ const Editor = ({ user, album_id }) => {
       const data = await response.json();
 
       setPageSize(data.pageSize)
-      setLeftPanel(data.leftPanel)
       setOriginalPageWidth(data.originalPageWidth)
       setOriginalPageHeight(data.originalPageHeight)
       setPageHeight(data.pageHeight)
@@ -604,6 +639,20 @@ const Editor = ({ user, album_id }) => {
     }
   };
 
+  const layoutChoosen = (pageNumber) => {
+    const img = new Image()
+    img.src = layerTable[pageNumber][0]
+    
+
+    img.onload = () => {
+      
+    };
+
+    
+  }
+
+  
+
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
       <div style={{display: 'flex', flexDirection: 'column', width: '250px', height: '100%', background: `linear-gradient(180deg, #023e8a, #0077b6)`, borderRight: `2px solid #023e8a`, boxShadow: '10px 0 15px 0 rgba(0, 0, 0, 0.2)', zIndex: 2 }}>
@@ -617,9 +666,15 @@ const Editor = ({ user, album_id }) => {
           <InsertPhotoIcon style={{ fontSize: '20px', marginRight: '5px' }} />Photos
         </Button>
         <Button onClick={() => setLeftPanel('settings')} style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'settings' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}><SettingsIcon/> Page settings</Button>
+        
+        <Button onClick={() => setLeftPanel('layouts')  } style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'layouts' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
+          <InsertPhotoIcon style={{ fontSize: '20px', marginRight: '5px' }} />Layouts
+        </Button>
+        
         <Button onClick={() => setLeftPanel('share')} style={{marginTop: 'auto', justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'share' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <ShareIcon style={{ fontSize: '20px', marginRight: '5px' }} />Share
         </Button>
+        
       </div>
       <div style={{ width: 'calc(100% - 300px)', height: '100%', maxWidth: '400px', background: `linear-gradient(120deg, #48cae4, #ade8f4)`, boxShadow: '10px 0 15px 0 rgba(0, 0, 0, 0.2)', borderRight: `2px solid ${borderColor}`, zIndex: 1}}>
         {leftPanel === 'info' ? (
@@ -703,6 +758,11 @@ const Editor = ({ user, album_id }) => {
             ) : (
               <p>No photos available.</p>
             )}
+          </div>
+
+        ) : leftPanel === 'layouts' ? (
+          <div>
+            asd
           </div>
         ) : leftPanel === 'settings' ? (
           <div>
@@ -901,7 +961,7 @@ const Editor = ({ user, album_id }) => {
         )}
       </div>
 
-      <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, padding: '10px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflowX: 'auto', overflowY: 'auto' }}>
+      <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, padding: '10px', width: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflowX: 'auto', overflowY: 'auto' }}>
           <Card style={{
               backgroundColor: colorPickerColor,
               width: pageWidth,
@@ -919,6 +979,8 @@ const Editor = ({ user, album_id }) => {
               )))}
           </Card>
 
+          
+
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'gray', position: 'absolute', left: '60%', bottom: '0', height: '60px', width: '400px'}}>
             <Button onClick={() => { zoomOut() }}><ZoomOutIcon/></Button>
             <Typography style={{marginLeft: '10px', marginRight: '10px'}}>{`${zoom}%`}</Typography>
@@ -928,6 +990,8 @@ const Editor = ({ user, album_id }) => {
             <Button style={{width: '10px'}} onClick={() => {setRealPageNumber(pageNumber, 1)}}>▶</Button>
           </div>
       </div>
+      <LayoutPanel layerTable={layerTable} pageNumber={pageNumber} originalPageWidth={originalPageWidth} originalPageHeight={originalPageHeight} onlyPhotosTable={onlyPhotosTable} setWidthTable={setWidthTable} widthTable={widthTable}/>
+      
     </div>
   );
 };

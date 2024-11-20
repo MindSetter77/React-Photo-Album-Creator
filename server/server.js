@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const cors = require('cors'); // Import cors
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const path = require('path');
 const fs = require('fs');
 
@@ -84,18 +84,15 @@ app.get('/albums/:album_id/photos', (req, res) => {
   });
 });
 
-// Połączenie z bazą danych
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
-  database: 'photo_project'
+  password: 'Sonia484pl!',
+  database: 'photo_project',
 });
 
 db.connect((err) => {
-  if (err) {
-    throw err;
-  }
+  if (err) throw err;
   console.log('MySQL connected...');
 });
 
