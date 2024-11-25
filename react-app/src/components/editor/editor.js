@@ -12,6 +12,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 import FileDropzone from '../create-album/FileDropzone';
 import LayoutPanel from './editor-comp/LayoutPanel';
+import ZoomInOutpanel from './editor-comp/ZoomInOutpanel';
 
 const Editor = ({ user, album_id }) => {
 
@@ -226,9 +227,6 @@ const Editor = ({ user, album_id }) => {
     const cpyOnlyPhotosTable = [...onlyPhotosTable]
     cpyOnlyPhotosTable[pageNumber].push(url)
     setOnlyPhotosTable(cpyOnlyPhotosTable)
-
-    
-
   }
 
   const typographyChooseClick = () => {
@@ -981,14 +979,7 @@ const Editor = ({ user, album_id }) => {
 
           
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'gray', position: 'absolute', left: '60%', bottom: '0', height: '60px', width: '400px'}}>
-            <Button onClick={() => { zoomOut() }}><ZoomOutIcon/></Button>
-            <Typography style={{marginLeft: '10px', marginRight: '10px'}}>{`${zoom}%`}</Typography>
-            <Button onClick={() => { zoomIn() }}><ZoomInIcon/></Button>
-            <Button style={{width: '10px'}} onClick={() => {setRealPageNumber(pageNumber, -1)}}>◀</Button>
-            <Typography>{`Page: ${pageNumber}/${allPageNumber}`}</Typography>
-            <Button style={{width: '10px'}} onClick={() => {setRealPageNumber(pageNumber, 1)}}>▶</Button>
-          </div>
+          <ZoomInOutpanel zoomOut={zoomOut} zoom={zoom} zoomIn={zoomIn} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} allPageNumber={allPageNumber} />
       </div>
       <LayoutPanel layerTable={layerTable} pageNumber={pageNumber} originalPageWidth={originalPageWidth} originalPageHeight={originalPageHeight} onlyPhotosTable={onlyPhotosTable} setWidthTable={setWidthTable} widthTable={widthTable}/>
       
