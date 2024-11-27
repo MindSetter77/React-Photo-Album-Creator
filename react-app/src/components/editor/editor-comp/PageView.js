@@ -13,7 +13,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 
 
-const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, pageHeight, layerTable, pageNumber, xTable, zoom, yTable, widthTable, textColor}) => {
+const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, pageHeight, layerTable, pageNumber, xTable, zoom, yTable, widthTable, textColor, onlyPhotosTable}) => {
 
     
 
@@ -28,7 +28,7 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
             position: 'relative',
             boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)' // Dodanie cienia
           }}>
-            <img src={layerTable[pageNumber][0]} style={{height: '100%', position: 'absolute', left: `-${xTable[pageNumber][0] >= pageWidth ? pageWidth : xTable[pageNumber][0]}px`}} />
+            <img src={onlyPhotosTable[pageNumber][0]} style={{height: '100%', position: 'absolute', left: `-${xTable[pageNumber][0] >= pageWidth ? pageWidth : xTable[pageNumber][0]}px`}} />
         </Card>
     ) : layoutOnPage[pageNumber] === '12' ? (
 
@@ -41,8 +41,124 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
             boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
           }}>
             <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            <img src={layerTable[pageNumber][0]} style={{width: '90%'}} />
+                <img src={onlyPhotosTable[pageNumber][0]} style={{width: '90%'}} />
             </div>
+            
+        </Card>
+    ) : layoutOnPage[pageNumber] === '21' ? (
+
+        <Card style={{
+            backgroundColor: colorPickerColor,
+            width: pageWidth,
+            height: pageHeight,
+            objectFit: 'contain',
+            position: 'relative',
+            boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
+          }}>
+            <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                <div style={{height: '50%', width: '100%', alignContent: 'center'}}>
+                    <img src={onlyPhotosTable[pageNumber][0]} style={{width: '90%'}} />
+                </div>
+                <div style={{height: '50%', width: '100%', alignContent: 'center'}}>
+                    <img src={onlyPhotosTable[pageNumber][1]} style={{width: '90%'}} />
+                </div>
+            </div>
+            
+        </Card>
+    ) : layoutOnPage[pageNumber] === '31' ? (
+
+        <Card style={{
+            backgroundColor: colorPickerColor,
+            width: pageWidth,
+            height: pageHeight,
+            objectFit: 'contain',
+            position: 'relative',
+            boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
+          }}>
+            <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+                <div style={{height: '32%', width: '100%', alignContent: 'center'}}>
+                    <img src={onlyPhotosTable[pageNumber][0]} style={{height: '100%'}} />
+                </div>
+                <div style={{height: '32%', width: '100%', alignContent: 'center', marginTop: '3px', marginBottom: '3px'}}>
+                    <img src={onlyPhotosTable[pageNumber][1]} style={{height: '100%'}} />
+                </div>
+                <div style={{height: '32%', width: '100%', alignContent: 'center'}}>
+                    <img src={onlyPhotosTable[pageNumber][2]} style={{height: '100%'}} />
+                </div>
+            </div>
+            
+        </Card>
+
+    ) : layoutOnPage[pageNumber] === '32' ? (
+
+        <Card style={{
+            backgroundColor: colorPickerColor,
+            width: pageWidth,
+            height: pageHeight,
+            objectFit: 'contain',
+            position: 'relative',
+            boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
+        }}>
+            <div style={{height: '100%', alignContent: 'center'}}>
+                      <div style={{width: '100%', height: '32%', display: 'flex', justifyContent: 'center'}}>
+                        <img src={onlyPhotosTable[pageNumber][0]} style={{width: '93%', height: '95%', objectFit: 'cover'}}/>
+                      </div>
+                      <div style={{width: '100%', height: '32%', display: 'flex', justifyContent: 'center'}}>
+                        <img src={onlyPhotosTable[pageNumber][1]} style={{width: '93%', height: '95%', objectFit: 'cover'}}/>
+                      </div>
+                      <div style={{width: '100%', height: '32%', display: 'flex', justifyContent: 'center'}}>
+                        <img src={onlyPhotosTable[pageNumber][2]} style={{width: '93%', height: '98%', objectFit: 'cover'}}/>
+                      </div>
+                    </div>
+            
+        </Card>
+
+    ) : layoutOnPage[pageNumber] === '33' ? (
+
+        <Card style={{
+            backgroundColor: colorPickerColor,
+            width: pageWidth,
+            height: pageHeight,
+            objectFit: 'contain',
+            position: 'relative',
+            boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
+        }}>
+            <div style={{display: 'flex', width: '100%', height: '30%'}}>
+                      <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
+                        <img src={onlyPhotosTable[pageNumber][1]} style={{width: '90%', objectFit: 'contain'}}/>
+                      </div>
+                      <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
+                        <img src={onlyPhotosTable[pageNumber][2]} style={{width: '90%', objectFit: 'contain'}}/>
+                      </div>
+                    </div>
+                    <div style={{width: '100%', height: '70%', display: 'flex', justifyContent: 'center'}}>
+                      <img src={onlyPhotosTable[pageNumber][0]} style={{width: '90%', objectFit: 'contain'}}/>
+                    </div>
+            
+        </Card>
+
+    ) : layoutOnPage[pageNumber] === '34' ? (
+
+        <Card style={{
+            backgroundColor: colorPickerColor,
+            width: pageWidth,
+            height: pageHeight,
+            objectFit: 'contain',
+            position: 'relative',
+            boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
+        }}>
+            <div style={{width: '100%', height: '70%', display: 'flex', justifyContent: 'center'}}>
+                      <img src={onlyPhotosTable[pageNumber][0]} style={{width: '90%', objectFit: 'contain'}}/>
+                    </div>
+                    
+                    <div style={{display: 'flex', width: '100%', height: '30%'}}>
+                      <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
+                        <img src={onlyPhotosTable[pageNumber][1]} style={{width: '90%', objectFit: 'contain'}}/>
+                      </div>
+                      <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
+                        <img src={onlyPhotosTable[pageNumber][2]} style={{width: '90%', objectFit: 'contain'}}/>
+                      </div>
+                    </div>
             
         </Card>
 

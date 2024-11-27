@@ -232,6 +232,8 @@ const Editor = ({ user, album_id }) => {
     const cpyOnlyPhotosTable = [...onlyPhotosTable]
     cpyOnlyPhotosTable[pageNumber].push(url)
     setOnlyPhotosTable(cpyOnlyPhotosTable)
+
+    setLayoutOnPage("None")
   }
 
   const typographyChooseClick = () => {
@@ -272,7 +274,7 @@ const Editor = ({ user, album_id }) => {
 
     const itemAtIndex = layerTable[pageNumber][index]
     
-
+    setLayoutOnPage("None")
 
     if(itemAtIndex.startsWith('http')){
       let onlyPhotosTableCpy = [...onlyPhotosTable]
@@ -957,7 +959,7 @@ const Editor = ({ user, album_id }) => {
       </div>
 
       <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, padding: '10px', width: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflowX: 'auto', overflowY: 'auto' }}>
-          <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor}/>
+          <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable}/>
 
           
 
