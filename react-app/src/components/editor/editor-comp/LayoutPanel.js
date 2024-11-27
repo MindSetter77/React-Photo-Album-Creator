@@ -5,59 +5,14 @@ import { Button, Typography, TextField, Card, CardMedia, Slider, Select, MenuIte
 
 
 
-const LayoutPanel = ({layerTable, pageNumber, originalPageWidth, originalPageHeight, onlyPhotosTable, setWidthTable, widthTable}) => {
+const LayoutPanel = ({layoutOnPage, setLayoutOnPage, layerTable, pageNumber, originalPageWidth, originalPageHeight, onlyPhotosTable, setWidthTable, widthTable}) => {
     
     
 
     const layoutChoosen = (pageNumber, photoAmount, layoutNumber) => {
-        
-        if(photoAmount === 1){
-            
-            if(layoutNumber === 1){
-                const img = new Image()
-                img.src = onlyPhotosTable[pageNumber][0]
-                console.log(onlyPhotosTable[pageNumber][0])
-                
-            
-                img.onload = () => {
-
-                    
-                    
-                    console.log(`img height: ${img.height}`)
-                    console.log(`img width: ${img.width}`)
-
-                    console.log(`original page heiggt: ${originalPageHeight}`)
-
-
-
-                    
-                };
-            } else if(layoutNumber === 2){
-
-            }
-            
-            
-            
-            
-            
-            
-            console.log('1')
-        } else if (photoAmount === 2){
-            console.log("2")
-        } else {
-            console.log('else')
-        }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    
+      let tabCpy = [...layoutOnPage]
+      tabCpy[pageNumber] = `${photoAmount}${layoutNumber}`
+      setLayoutOnPage(tabCpy)
         
     }
 

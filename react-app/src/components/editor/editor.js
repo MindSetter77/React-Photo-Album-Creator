@@ -13,6 +13,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import FileDropzone from '../create-album/FileDropzone';
 import LayoutPanel from './editor-comp/LayoutPanel';
 import ZoomInOutpanel from './editor-comp/ZoomInOutpanel';
+import PageView from './editor-comp/PageView';
 
 const Editor = ({ user, album_id }) => {
 
@@ -129,6 +130,10 @@ const Editor = ({ user, album_id }) => {
         Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
     );
   });
+
+  const [layoutOnPage, setLayoutOnPage] = useState([])
+
+  
 
   const fetchAlbumPhotos = async (albumId) => {
     try {
@@ -586,7 +591,8 @@ const Editor = ({ user, album_id }) => {
         xTable: xTable,
         yTable: yTable,
         lessMoreTable: lessMoreTable,
-        zoom: zoom
+        zoom: zoom,
+        onlyPhotos: onlyPhotosTable,
     };
     const jsonString = JSON.stringify(jsonData, null, 2); // `null, 2` dodaje wcięcia dla czytelności
     console.log(jsonString);
@@ -631,23 +637,13 @@ const Editor = ({ user, album_id }) => {
       setYTable(data.yTable)
       setLessMoreTable(data.lessMoreTable)
       setZoom(data.zoom)
+      setOnlyPhotosTable(data.onlyPhotos)
       
     } catch (error) {
       console.error('Error fetching shared data:', error);
     }
   };
 
-  const layoutChoosen = (pageNumber) => {
-    const img = new Image()
-    img.src = layerTable[pageNumber][0]
-    
-
-    img.onload = () => {
-      
-    };
-
-    
-  }
 
   
 
@@ -765,6 +761,7 @@ const Editor = ({ user, album_id }) => {
         ) : leftPanel === 'settings' ? (
           <div>
             <Typography style={{padding: '5px', fontSize: '20px'}}>{`Settings of page: ${pageNumber}`}</Typography>
+            <Typography style={{padding: '5px', fontSize: '15px'}}>{`Layout: ${layoutOnPage[pageNumber]}`}</Typography>
             <div style={{ width: '95%', borderRadius: '15px', border: '2px solid white', overflow: 'hidden',  marginLeft: 'auto', marginRight: 'auto' }}>
               <div style={{ height: '25px', width: '100%', backgroundColor: 'white', zIndex: 10, display: 'flex' }}>
                 <Typography style={{ marginLeft: '5px', width: '100%' }}>Choose photos</Typography>
@@ -960,28 +957,13 @@ const Editor = ({ user, album_id }) => {
       </div>
 
       <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, padding: '10px', width: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflowX: 'auto', overflowY: 'auto' }}>
-          <Card style={{
-              backgroundColor: colorPickerColor,
-              width: pageWidth,
-              height: pageHeight,
-              objectFit: 'contain',
-              position: 'relative',
-              boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)' // Dodanie cienia
-            }}>
-              {layerTable[pageNumber].map((item, index) => (
-                item.slice(0, 10) !== 'TYPOGRAPHY' ? (
-                <img key={index} src={item} style={{position: 'absolute', left: `${xTable[pageNumber][index]*(zoom/100)}px`, top: `${yTable[pageNumber][index]*(zoom/100)}px`, width: `${widthTable[pageNumber][index]}%`}} />
-              ):(
-                <div style={{color: `${textColor[pageNumber][index]}` , position: 'absolute', left: `${xTable[pageNumber][index]*(zoom/100)}px`, top: `${yTable[pageNumber][index]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
-                
-              )))}
-          </Card>
+          <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor}/>
 
           
 
           <ZoomInOutpanel zoomOut={zoomOut} zoom={zoom} zoomIn={zoomIn} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} allPageNumber={allPageNumber} />
       </div>
-      <LayoutPanel layerTable={layerTable} pageNumber={pageNumber} originalPageWidth={originalPageWidth} originalPageHeight={originalPageHeight} onlyPhotosTable={onlyPhotosTable} setWidthTable={setWidthTable} widthTable={widthTable}/>
+      <LayoutPanel layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} layerTable={layerTable} pageNumber={pageNumber} originalPageWidth={originalPageWidth} originalPageHeight={originalPageHeight} onlyPhotosTable={onlyPhotosTable} setWidthTable={setWidthTable} widthTable={widthTable}/>
       
     </div>
   );
