@@ -14,6 +14,7 @@ import FileDropzone from '../create-album/FileDropzone';
 import LayoutPanel from './editor-comp/LayoutPanel';
 import ZoomInOutpanel from './editor-comp/ZoomInOutpanel';
 import PageView from './editor-comp/PageView';
+import Layers from './editor-comp/Layers';
 
 const Editor = ({ user, album_id }) => {
 
@@ -66,6 +67,7 @@ const Editor = ({ user, album_id }) => {
         Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
     );
   });
+
 
   const [onlyPhotosTable, setOnlyPhotosTable] = useState(() => {
     const rows = 50;
@@ -131,7 +133,44 @@ const Editor = ({ user, album_id }) => {
     );
   });
 
+  const [rotateTable, setRotateTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [borderTable, setBorderTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
   const [layoutOnPage, setLayoutOnPage] = useState([])
+
+  const [onlyTextTable, setOnlyTextTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [shadowTable, setShadowTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
 
   
 
@@ -209,78 +248,121 @@ const Editor = ({ user, album_id }) => {
   }
 
   const photoChooseClick = (url) => {
-    const copyOfItems = [...layerTable];
-    copyOfItems[pageNumber].push(url)
-    setlayerTable(copyOfItems)
 
-    const cpyW = [...widthTable]
-    cpyW[pageNumber].push(100)
-    setWidthTable(cpyW)
+    if(!layerTable[pageNumber].includes(url)){
+      const copyOfItems = [...layerTable];
+      copyOfItems[pageNumber].unshift(url)
+      setlayerTable(copyOfItems)
 
-    const cpyX = [...xTable]
-    cpyX[pageNumber].push(0)
-    setXTable(cpyX)
+      const cpyW = [...widthTable]
+      cpyW[pageNumber].unshift(100)
+      setWidthTable(cpyW)
 
-    const cpyY = [...yTable]
-    cpyY[pageNumber].push(0)
-    setYTable(cpyY)
+      const cpyX = [...xTable]
+      cpyX[pageNumber].unshift(0)
+      setXTable(cpyX)
 
-    const lessMoreTableCpy = [...lessMoreTable]
-    lessMoreTable[pageNumber].push('More')
-    setLessMoreTable(lessMoreTableCpy)
+      const cpyY = [...yTable]
+      cpyY[pageNumber].unshift(0)
+      setYTable(cpyY)
 
-    const cpyOnlyPhotosTable = [...onlyPhotosTable]
-    cpyOnlyPhotosTable[pageNumber].push(url)
-    setOnlyPhotosTable(cpyOnlyPhotosTable)
+      const lessMoreTableCpy = [...lessMoreTable]
+      lessMoreTable[pageNumber].unshift('More')
+      setLessMoreTable(lessMoreTableCpy)
 
-    setLayoutOnPage("None")
+      const cpyOnlyPhotosTable = [...onlyPhotosTable]
+      cpyOnlyPhotosTable[pageNumber].unshift(url)
+      setOnlyPhotosTable(cpyOnlyPhotosTable)
+
+      const cpyRotateTable = [...rotateTable]
+      cpyRotateTable[pageNumber].unshift(0)
+      setRotateTable(cpyRotateTable)
+      
+      const borderTableCpy = [...borderTable]
+      borderTableCpy[pageNumber].unshift("None")
+      setBorderTable(borderTableCpy)
+
+      let shadowTableCpy = [...shadowTable]
+      shadowTableCpy[pageNumber].unshift(5)
+      setShadowTable(shadowTableCpy)
+
+      setLayoutOnPage("None")
+    }
   }
 
   const typographyChooseClick = () => {
+
+
     let obj = "TYPOGRAPHY.false.false.false.40.napis.Roboto, sans-serif"
 
     const copyOfItems = [...layerTable];
     let index = copyOfItems[pageNumber].length
-    copyOfItems[pageNumber].push(obj)
+    copyOfItems[pageNumber].unshift(obj)
     setlayerTable(copyOfItems)
 
     const cpyW = [...widthTable]
-    cpyW[pageNumber].push(100)
+    cpyW[pageNumber].unshift(100)
     setWidthTable(cpyW)
 
     const cpyX = [...xTable]
-    cpyX[pageNumber].push(0)
+    cpyX[pageNumber].unshift(0)
     setXTable(cpyX)
 
     const cpyY = [...yTable]
-    cpyY[pageNumber].push(0)
+    cpyY[pageNumber].unshift(0)
     setYTable(cpyY)
 
 
-    let cpySLP = [...showLayerPicker]
-    cpySLP[pageNumber][index] = false
-    setShowLayerPicker(cpySLP)
+    let cpySLP = [...showLayerPicker]; // Kopia tablicy
+    cpySLP[pageNumber].unshift(false); // Przykładowa wartość `false`
+    setShowLayerPicker(cpySLP); // Aktualizacja stanu
 
-    let asd = [...textColor]
-    asd[pageNumber][index] = "#000000"
-    setTextColor(asd)
+    let textColorCpy = [...textColor]
+    textColorCpy[pageNumber].unshift("#000000")
+    setTextColor(textColorCpy)
 
     let lessMoreTableCpy = [...lessMoreTable]
-    lessMoreTableCpy[pageNumber][index] = 'More'
+    lessMoreTableCpy[pageNumber].unshift('More')
     setLessMoreTable(lessMoreTableCpy)
+
+    let onlyTextTableCpy = [...onlyTextTable]
+    onlyTextTableCpy[pageNumber].unshift(obj)
+    setOnlyTextTable(onlyTextTableCpy)
+
+    const cpyRotateTable = [...rotateTable]
+    cpyRotateTable[pageNumber].unshift(0)
+    setRotateTable(cpyRotateTable)
+      
+    const borderTableCpy = [...borderTable]
+    borderTableCpy[pageNumber].unshift("None")
+    setBorderTable(borderTableCpy)
+
+    let shadowTableCpy = [...shadowTable]
+    shadowTableCpy[pageNumber].unshift(5)
+    setShadowTable(shadowTableCpy)
+    
+
   }
 
   const rmPhotoClick = (index) => {
+    
+    
 
     const itemAtIndex = layerTable[pageNumber][index]
-    
-    setLayoutOnPage("None")
+
+
+    if(itemAtIndex.startsWith("TYPOGRAPHY")){
+      const indexInOTT = onlyTextTable[pageNumber].indexOf(itemAtIndex)
+      let onlyTextTableCpy = [...onlyTextTable]
+      onlyTextTableCpy[pageNumber].splice(indexInOTT, 1)
+      setOnlyTextTable(onlyTextTableCpy)
+    }
 
     if(itemAtIndex.startsWith('http')){
       let onlyPhotosTableCpy = [...onlyPhotosTable]
       let num = onlyPhotosTableCpy[pageNumber].indexOf(itemAtIndex)
       onlyPhotosTableCpy[pageNumber].splice(num, 1)
-      
+      setLayoutOnPage("None")
       setOnlyPhotosTable(onlyPhotosTableCpy)
     }
 
@@ -307,6 +389,19 @@ const Editor = ({ user, album_id }) => {
     let lessMoreTableCpy = [...lessMoreTable]
     lessMoreTableCpy[pageNumber].splice(index, 1)
     setLessMoreTable(lessMoreTableCpy)
+
+    let rotateCpy = [...rotateTable]
+    rotateCpy[pageNumber].splice(index, 1)
+    setRotateTable(rotateCpy)
+      
+    const borderTableCpy = [...borderTable]
+    borderTableCpy[pageNumber].splice(index, 1)
+    setBorderTable(borderTableCpy)
+
+    let shadowTableCpy = [...shadowTable]
+    shadowTableCpy[pageNumber].splice(index, 1)
+    setShadowTable(shadowTableCpy)
+
 
     
     
@@ -383,6 +478,51 @@ const Editor = ({ user, album_id }) => {
       lessMoreTableCpy[pageNumber][index-1] = movedLM
       lessMoreTableCpy[pageNumber][index] = downLM
       setLessMoreTable(lessMoreTableCpy)
+
+      let rotCpy = [...rotateTable]
+      let movedR = rotCpy[pageNumber][index]
+      let movedD = rotCpy[pageNumber][index-1]
+      rotCpy[pageNumber][index-1] = movedR
+      rotCpy[pageNumber][index] = movedD
+      setRotateTable(rotCpy)
+
+      let borderTableCpy = [...borderTable]
+      let movedB = borderTableCpy[pageNumber][index]
+      let downB = borderTableCpy[pageNumber][index-1]
+      borderTableCpy[pageNumber][index-1] = movedB
+      borderTableCpy[pageNumber][index] = downB
+      setBorderTable(borderTableCpy)
+
+
+
+
+      let shadowTableCpy = [...shadowTable]
+      let movedS = shadowTableCpy[pageNumber][index]
+      let downS = shadowTableCpy[pageNumber][index-1]
+      shadowTableCpy[pageNumber][index-1] = movedS
+      shadowTableCpy[pageNumber][index] = downS
+      setShadowTable(shadowTableCpy)
+
+      //Sprawdzenie czy oba badane elementy to zdjęcia 
+      if(movedLayer.startsWith('http') && downLayer.startsWith('http')){
+        //Inicjalizacja tablicy
+        let onlyPhotosTableCpy = [...onlyPhotosTable] 
+
+        //pobranie indexu w tablicy
+
+        const idxFirst = onlyPhotosTableCpy[pageNumber].indexOf(movedLayer) 
+        const idxLast = onlyPhotosTableCpy[pageNumber].indexOf(downLayer)
+        console.log(idxFirst)
+        console.log(idxLast)
+
+        //zamiana miejsc
+        onlyPhotosTableCpy[pageNumber][idxFirst] = downLayer
+        onlyPhotosTableCpy[pageNumber][idxLast] = movedLayer
+
+        //zapis zmian
+        setOnlyPhotosTable(onlyPhotosTableCpy)
+      }
+      
     }
   }
 
@@ -432,7 +572,49 @@ const Editor = ({ user, album_id }) => {
       lessMoreTableCpy[pageNumber][index] = downLM
       setLessMoreTable(lessMoreTableCpy)
 
+      let rotCpy = [...rotateTable]
+      let movedR = rotCpy[pageNumber][index]
+      let movedD = rotCpy[pageNumber][index+1]
+      rotCpy[pageNumber][index+1] = movedR
+      rotCpy[pageNumber][index] = movedD
+      setRotateTable(rotCpy)
+
+      let borderTableCpy = [...borderTable]
+      let movedB = borderTableCpy[pageNumber][index]
+      let downB = borderTableCpy[pageNumber][index+1]
+      borderTableCpy[pageNumber][index+1] = movedB
+      borderTableCpy[pageNumber][index] = downB
+      setBorderTable(borderTableCpy)
+
+
+
+
+      let shadowTableCpy = [...shadowTable]
+      let movedS = shadowTableCpy[pageNumber][index]
+      let downS = shadowTableCpy[pageNumber][index+1]
+      shadowTableCpy[pageNumber][index+1] = movedS
+      shadowTableCpy[pageNumber][index] = downS
+      setShadowTable(shadowTableCpy)
       
+      //Sprawdzenie czy oba badane elementy to zdjęcia 
+      if(movedLayer.startsWith('http') && downLayer.startsWith('http')){
+        //Inicjalizacja tablicy
+        let onlyPhotosTableCpy = [...onlyPhotosTable] 
+
+        //pobranie indexu w tablicy
+
+        const idxFirst = onlyPhotosTableCpy[pageNumber].indexOf(movedLayer) 
+        const idxLast = onlyPhotosTableCpy[pageNumber].indexOf(downLayer)
+        console.log(idxFirst)
+        console.log(idxLast)
+
+        //zamiana miejsc
+        onlyPhotosTableCpy[pageNumber][idxFirst] = downLayer
+        onlyPhotosTableCpy[pageNumber][idxLast] = movedLayer
+
+        //zapis zmian
+        setOnlyPhotosTable(onlyPhotosTableCpy)
+      }
     }
   }
 
@@ -442,7 +624,6 @@ const Editor = ({ user, album_id }) => {
 
 
     let num = layerTable[pageNumber].indexOf(photoUrl)
-    
     
     if(num !== -1){
       let copyL = [...layerTable]
@@ -460,6 +641,16 @@ const Editor = ({ user, album_id }) => {
       let copyY = [...yTable]
       copyY[pageNumber].splice(num, 1)
       setYTable(copyY)
+    }
+
+    let indexInOnlyPhotos = onlyPhotosTable[pageNumber].indexOf(photoUrl)
+    console.log(indexInOnlyPhotos)
+    console.log(onlyPhotosTable[pageNumber].length)
+
+    if(indexInOnlyPhotos !== -1){
+      let onlyPhotosTableCpy = [...onlyPhotosTable]
+      onlyPhotosTableCpy[pageNumber].splice(indexInOnlyPhotos, 1)
+      setOnlyPhotosTable(onlyPhotosTableCpy)
     }
   };
 
@@ -480,6 +671,18 @@ const Editor = ({ user, album_id }) => {
     console.log(lessMoreTable[pageNumber])
 
     console.log(`onlyPhotosTable: ${onlyPhotosTable}`)
+
+
+    console.log("rotate table:")
+    console.log(rotateTable)
+
+    console.log(`border table:`)
+    console.log(borderTable)
+
+
+    
+    console.log("Shadow Table")
+    console.log(shadowTable)
   }
 
   const clickWithPhotoImport = () => {
@@ -501,10 +704,14 @@ const Editor = ({ user, album_id }) => {
     }
   }
 
+
+
   const setSingleColorText = (color, index) => {
     let tablecpy = [...textColor]
     tablecpy[pageNumber][index] = color
     setTextColor(tablecpy)
+
+    
   }
 
   const handleColorPickerVisibility = (index) => {
@@ -595,6 +802,7 @@ const Editor = ({ user, album_id }) => {
         lessMoreTable: lessMoreTable,
         zoom: zoom,
         onlyPhotos: onlyPhotosTable,
+        onlyText: onlyTextTable
     };
     const jsonString = JSON.stringify(jsonData, null, 2); // `null, 2` dodaje wcięcia dla czytelności
     console.log(jsonString);
@@ -640,14 +848,20 @@ const Editor = ({ user, album_id }) => {
       setLessMoreTable(data.lessMoreTable)
       setZoom(data.zoom)
       setOnlyPhotosTable(data.onlyPhotos)
+      console.log(data.onlyText)
+      setOnlyTextTable(data.onlyText)
+
       
     } catch (error) {
       console.error('Error fetching shared data:', error);
     }
   };
 
+  const setBackgroundColor = (color) => {
+    console.log(color)
+    setColorPickerColor(color)
+  }
 
-  
 
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
@@ -725,16 +939,14 @@ const Editor = ({ user, album_id }) => {
               label="Custom background color"
             />
             {changeBackground && (
-              <div>
-                <div style={{ display: 'flex' }}>
-                  <Typography>Background Color: </Typography>
-                  <div style={{ width: '21px', height: '21px', marginLeft: '5px', backgroundColor: colorPickerColor }}></div>
-                </div>
+              <div style={{marginLeft: '20%'}}>
+              <div style={{width: '70%', border: '1px solid black', borderTopLeftRadius: '13px', borderTopRightRadius: '13px', overflow: 'hidden'}}><div onClick={() => setChangeBackground(false)} style={{height: '100%', width: '100%', cursor: 'pointer'}}>close</div>
                 <ChromePicker
                   color={colorPickerColor}
-                  onChangeComplete={(color) => setSingleColorText(color.hex)}
+                  onChangeComplete={(color) => setBackgroundColor(color.hex)}
                 />
-              </div>
+              </div> 
+            </div>
             )}
           </div>
         ) : leftPanel === 'photos' ? (
@@ -766,9 +978,9 @@ const Editor = ({ user, album_id }) => {
             <Typography style={{padding: '5px', fontSize: '15px'}}>{`Layout: ${layoutOnPage[pageNumber]}`}</Typography>
             <div style={{ width: '95%', borderRadius: '15px', border: '2px solid white', overflow: 'hidden',  marginLeft: 'auto', marginRight: 'auto' }}>
               <div style={{ height: '25px', width: '100%', backgroundColor: 'white', zIndex: 10, display: 'flex' }}>
-                <Typography style={{ marginLeft: '5px', width: '100%' }}>Choose photos</Typography>
+                <Typography style={{ marginLeft: '5px', width: '100%' }}>Choose photo</Typography>
               </div>
-              <div style={{ flexDirection: 'column', display: 'flex', overflowX: 'auto', overflowY: 'hidden', backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: '15px' }}>
+              <div style={{ flexDirection: 'column', display: 'flex', overflowX: 'auto', overflowY: 'hidden', backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
                 
                 <div style={{ display: 'flex', marginTop: '10px' }}>
                   {photosOfPanel.length > 0 ? (
@@ -791,160 +1003,12 @@ const Editor = ({ user, album_id }) => {
               </div>
             </div>
             <Button onClick={() => typographyChooseClick()} style={{border: '2px solid white', backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: '15px', width: '95%', margin: '10px', marginBottom: '5px'}}><Typography style={{fontSize: '16px'}}>Add text</Typography></Button>
-            <Typography style={{padding: '5px'}}>Layers</Typography>
+            <Typography style={{padding: '5px'}}>{layoutOnPage[pageNumber]==="o" ? 'Layers' : `Layers (layout: ${layoutOnPage[pageNumber]})`}</Typography>
             
-            <div>
-              <div style={{flex: '1', minHeight: '500px', maxHeight: '500px', width: '95%', overflowY: 'scroll', marginLeft: 'auto', marginRight: 'auto', backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: '15px', border: '2px solid white'}}>
-              {layerTable[pageNumber].reverse().map((item, index) => (
-                item.startsWith("http")?(
-                
-                <div style={{marginTop: '5px', marginBottom: '5px', marginLeft: '5px', display: 'flex', flexDirection: 'column', width: '96%', border: '2px solid white', borderRadius: '15px', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
-                  {lessMoreTable[pageNumber][index] === 'Less' ? (
-                    <div>
-                      <div style={{display: 'flex'}}>
-                        <img onClick={() => rmPhotoClick(index)}  key={index} src={item} alt={`Photo ${index + 1}`} style={{ width: '100px', height: 'auto', margin: '5px' }} />
-                        <div style={{ width: '100%', padding: '5px'}}>
-                          <div style={{display: 'flex'}}>
-                            <Typography >{`Photo ${index+1}`}</Typography>
-                            <div onClick={() => lessMoreClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '45px', height: '20px', border: '2px solid black', marginLeft: 'auto'}}>{`${lessMoreTable[pageNumber][index]}`}</div>
-                            <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black', marginLeft: '5px'}}>u</div>
-                            <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black',  marginRight: '5px', marginLeft: '5px'}}>d</div>
-                            <div onClick={() => rmPhotoClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black'}}>×</div>
-                          </div>
-                          <div style={{display: 'flex'}}> 
-                            <Typography>Width: </Typography>
-                            <Slider defaultValue={100} aria-label="Default" valueLabelDisplay="auto" min={1} max={200} onChange={(event, value) => handleWidthSliderChange(pageNumber, index, value)}/>
-                          </div>
-                        </div>
-                      </div>
-                      <div style={{display: 'flex'}}>
-                        <div style={{width: '90%'}}>
-                          <Typography>Position:</Typography>
-                          <div style={{display: 'flex', margin: '5px'}}>
-                            <Typography style={{margin: '5px', marginRight: '10px'}}>X</Typography>
-                            <Slider value={xTable[pageNumber][index] || 0} onChange={(event, value) => handleXSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageWidth}/>
-                          </div>
-                          <div style={{display: 'flex', margin: '5px'}}>
-                            <Typography style={{margin: '5px', marginRight: '10px'}}>Y</Typography>
-                            <Slider value={yTable[pageNumber][index] || 0} onChange={(event, value) => handleYSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageHeight}/>
-                          </div>
-                        </div >
-                        <div >
-                          <div onClick={() => alignWidth(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '10px', width: '30px', height: '30px', border: '2px solid black', marginLeft: '6px', marginRight: '6px', marginTop: '5px'}}> w </div>
-                        </div>
-                    </div>
-                    </div>
-                  ):(
-                    <div>
-                      <div style={{display: 'flex', alignItems: 'center'}}>
-                        <img onClick={() => rmPhotoClick(index)}  key={index} src={item} alt={`Photo ${index + 1}`} style={{ width: '50px', height: 'auto', margin: '5px' }} />
-                        <div style={{ width: '100%', padding: '5px'}}>
-                          <div style={{display: 'flex'}}>
-                            <Typography >{`Photo ${index+1}`}</Typography>
-                            <div onClick={() => lessMoreClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '45px', height: '20px', border: '2px solid black', marginLeft: 'auto'}}>{`${lessMoreTable[pageNumber][index]}`}</div>
-                            <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black', marginLeft: '5px'}}>↑</div>
-                            <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black',  marginRight: '5px', marginLeft: '5px'}}>↓</div>
-                            <div onClick={() => rmPhotoClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black'}}>×</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  
-                </div>): item.startsWith("TYPOGRAPHY")?(
-                  <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-                    <div style={{marginTop: '5px', marginBottom: '5px', display: 'flex', flexDirection: 'column', width: '96%', border: '2px solid white', borderRadius: '15px', backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>
-                      <div style={{display: 'flex', marginTop: '10px', marginBottom: '10px'}}>
-
-                        <Typography style={{marginLeft: '10px'}}>{getLayerTitle(layerTable[pageNumber][index])}</Typography>
-                        <div onClick={() => lessMoreClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '45px', height: '20px', border: '2px solid black', marginLeft: 'auto'}}>{`${lessMoreTable[pageNumber][index]}`}</div>
-                        <div onClick={() => makeLayerUP(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black', marginLeft: '5px'}}>↑</div>
-                        <div onClick={() => makeLayerDown(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black',  marginRight: '5px', marginLeft: '5px'}}>↓</div>
-                        <div onClick={() => rmPhotoClick(index)} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '7px', width: '20px', height: '20px', border: '2px solid black',  marginRight: '5px'}}>×</div>
-                      
-                      </div>
-                      {lessMoreTable[pageNumber][index] !== 'Less' ? null : (
-                        <div>
-                        <div style={{display: 'flex'}}>
-                          <TextField
-                            id="outlined-required"
-                            label="text"
-                            defaultValue={item.split(".")[5]}
-                            multiline
-                            minRows={3}
-                            maxRows={3}
-                            style={{margin: '5px', marginRight: '10px', width: '90%'}}
-                            onChange={(event) => editText(event.target.value, item, pageNumber, index, 5)}
-                          />
-                          <div style={{marginTop: '5px', marginRight: '5px'}}>
-                            <div onClick={() => {item.split(".")[1] === "false" ? editText('true', item, pageNumber, index, 1) : editText('false', item, pageNumber, index, 1)}}  style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '9px', width: '25px', height: '25px', border: '2px solid black', fontWeight: 'bold', userSelect: 'none'}}>B</div>
-                            <div onClick={() => {item.split(".")[2] === "false" ? editText('true', item, pageNumber, index, 2) : editText('false', item, pageNumber, index, 2)}} style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '9px', width: '25px', height: '25px', border: '2px solid black', marginTop: '5px', fontStyle: 'italic', userSelect: 'none'}}>I</div>
-                            <div onClick={() => {item.split(".")[3] === "false" ? editText('true', item, pageNumber, index, 3) : editText('false', item, pageNumber, index, 3)} } style={{cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: '9px', width: '25px', height: '25px', border: '2px solid black', marginTop: '5px', textDecoration: 'underline', userSelect: 'none'}}>U</div>
-                          </div>
-                        </div>
-                        <div style={{display: 'flex', alignItems: 'center', width: '100%',margin: '5px'}}>
-                          <Typography>Font:</Typography>
-                          <FormControl style={{width: '40%'}}>
-                          <Select
-                            labelId="font-select-label"
-                            value={`${item.split(".")[6]}`}
-                            onChange={(event) => {editText(event.target.value, item, pageNumber, index, 6)}}
-                            style={{height: '30px', width: '150px'}}
-                          >
-                            {fonts.map((font) => (
-                              <MenuItem key={font.name} value={font.value}>
-                                {font.name}
-                              </MenuItem>
-                            ))}
-                            </Select>
-                          </FormControl>
-                          <div style={{display: 'flex', alignItems: 'center', marginLeft: '25px'}}>
-                            <Typography style={{marginLeft: '10px'}}>size:</Typography>
-                            <div style={{display: 'flex',alignItems: 'center', width: '95px'}}>
-                              <div onClick={() => {editText(parseInt(item.split(".")[4])-1, item, pageNumber, index, 4)}} style={{marginLeft: 'auto', cursor: 'pointer', userSelect: 'none', width: '25px', height: '25px', border: '2px solid black', borderRadius: '10px'}} >←</div>
-                              <Typography style={{fontSize: '18px', marginTop: '3px', marginRight: '5px', marginLeft: '5px'}}>{`${item.split(".")[4]}`}</Typography>
-                              <div onClick={() => {editText(parseInt(item.split(".")[4])+1, item, pageNumber, index, 4)}} style={{cursor: 'pointer', userSelect: 'none', width: '25px', height: '25px', border: '2px solid black', borderRadius: '10px'}} >→</div>
-                            </div>
-                          </div>
-                        
-                        </div>
-                        <div>
-                          <div style={{display: 'flex'}}>
-                            <Typography style={{marginRight: '5px', marginLeft: '5px', marginTop: '3px'}}>X</Typography>
-                            <Slider style={{width: '200px', marginLeft: '10px'}} value={xTable[pageNumber][index] || 0} onChange={(event, value) => handleXSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageWidth}/>
-                            <Typography style={{marginTop: '3px'}} >{`${xTable[pageNumber][index]}`}</Typography>
-                          </div>
-                          <div style={{display: 'flex', marginLeft: '5px'}}>
-                            <Typography style={{marginRight: '5px'}}>Y</Typography>
-                            <Slider style={{width: '200px', marginLeft: '10px'}} value={yTable[pageNumber][index] || 0} onChange={(event, value) => handleYSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageHeight}/>
-                            <Typography style={{marginTop: '3px'}}>{`${yTable[pageNumber][index]}`}</Typography>
-                          </div>
-                        <div style={{display: 'flex'}}>
-                          <Typography style={{marginLeft: '5px', marginBottom: '5px'}}>Color: </Typography>
-                          <div onClick={() => handleColorPickerVisibility(index)} style={{width: '15px', height: '15px', backgroundColor: `${textColor[pageNumber][index]}`, marginTop: '5px', marginLeft: '5px'}}></div>
-                          {showLayerPicker[pageNumber][index] === true ? (
-                            <ChromePicker
-                            color={textColor[pageNumber][index]}
-                            onChangeComplete={(color) => setSingleColorText(color.hex, index)}
-                          />
-                          ) : (<div></div>)}
-                          </div>
-                        </div>
-                        
-                      </div>
-                      )}
-                      
-                      
-                  </div>
-                    
-                </div>
-                  
-                ) : (<div></div>)
-                
-              ))}
-              </div>
-            </div>
+            
+            <Layers layerTable = {layerTable} pageNumber = {pageNumber} lessMoreTable = {lessMoreTable} rmPhotoClick = {rmPhotoClick} lessMoreClick = {lessMoreClick} makeLayerUP = {makeLayerUP} makeLayerDown = {makeLayerDown} handleWidthSliderChange = {handleWidthSliderChange} xTable = {xTable} originalPageWidth = {originalPageWidth} handleXSliderChange = {handleXSliderChange} yTable = {yTable} originalPageHeight = {originalPageHeight} handleYSliderChange = {handleYSliderChange} alignWidth = {alignWidth} getLayerTitle = {getLayerTitle} editText = {editText} fonts = {fonts} handleColorPickerVisibility = {handleColorPickerVisibility} textColor = {textColor} showLayerPicker = {showLayerPicker} ChromePicker = {ChromePicker} setSingleColorText = {setSingleColorText} rotateTable={rotateTable} setRotateTable={setRotateTable} borderTable={borderTable} setBorderTable={setBorderTable} shadowTable={shadowTable} setShadowTable={setShadowTable}/>
+            
+            
           </div>
         ) : (
           <div>
@@ -959,7 +1023,7 @@ const Editor = ({ user, album_id }) => {
       </div>
 
       <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, padding: '10px', width: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflowX: 'auto', overflowY: 'auto' }}>
-          <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable}/>
+          <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable}/>
 
           
 

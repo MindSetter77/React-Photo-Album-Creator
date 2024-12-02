@@ -13,9 +13,9 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 
 
-const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, pageHeight, layerTable, pageNumber, xTable, zoom, yTable, widthTable, textColor, onlyPhotosTable}) => {
+const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, pageHeight, layerTable, pageNumber, xTable, zoom, yTable, widthTable, textColor, onlyPhotosTable, onlyTextTable, rotateTable, borderTable, shadowTable}) => {
 
-    
+  
 
   return (
     <>
@@ -28,7 +28,18 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
             position: 'relative',
             boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)' // Dodanie cienia
           }}>
-            <img src={onlyPhotosTable[pageNumber][0]} style={{height: '100%', position: 'absolute', left: `-${xTable[pageNumber][0] >= pageWidth ? pageWidth : xTable[pageNumber][0]}px`}} />
+            {layerTable[pageNumber].slice().reverse().map((item, index) => {
+              const reversedIndex = layerTable[pageNumber].length - 1 - index;
+
+              return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
+                <img key={index} src={item} style={{position: 'absolute', left: `${-(xTable[pageNumber][reversedIndex]*(zoom/100))}px`, top: `0px`, height: '100%'}} />
+            ):(
+              <div style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
+              
+            )})}
+
+            
+            
         </Card>
     ) : layoutOnPage[pageNumber] === '12' ? (
 
@@ -40,9 +51,19 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
             position: 'relative',
             boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
           }}>
-            <div style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <img src={onlyPhotosTable[pageNumber][0]} style={{width: '90%'}} />
-            </div>
+
+            {layerTable[pageNumber].slice().reverse().map((item, index) => {
+              const reversedIndex = layerTable[pageNumber].length - 1 - index;
+
+              return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
+                <div key={index} style={{display: 'flex', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                  <img src={item} style={{position: 'absolute', width: '90%'}} />
+                </div>
+            ):(
+              <div key={index} style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
+              
+            )})}
+            
             
         </Card>
     ) : layoutOnPage[pageNumber] === '21' ? (
@@ -55,14 +76,19 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
             position: 'relative',
             boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
           }}>
-            <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                <div style={{height: '50%', width: '100%', alignContent: 'center'}}>
-                    <img src={onlyPhotosTable[pageNumber][0]} style={{width: '90%'}} />
+
+            {layerTable[pageNumber].slice().reverse().map((item, index) => {
+              const reversedIndex = layerTable[pageNumber].length - 1 - index;
+
+              return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
+                <div key={index} style={{display: 'flex', width: '100%', height: '50%', justifyContent: 'center', alignItems: 'center'}}>
+                  <img src={item} style={{position: 'absolute', width: '90%'}} />
                 </div>
-                <div style={{height: '50%', width: '100%', alignContent: 'center'}}>
-                    <img src={onlyPhotosTable[pageNumber][1]} style={{width: '90%'}} />
-                </div>
-            </div>
+            ):(
+              <div key={index} style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
+              
+            )})}
+
             
         </Card>
     ) : layoutOnPage[pageNumber] === '31' ? (
@@ -75,17 +101,17 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
             position: 'relative',
             boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
           }}>
-            <div style={{width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                <div style={{height: '32%', width: '100%', alignContent: 'center'}}>
-                    <img src={onlyPhotosTable[pageNumber][0]} style={{height: '100%'}} />
+            {layerTable[pageNumber].slice().reverse().map((item, index) => {
+              const reversedIndex = layerTable[pageNumber].length - 1 - index;
+
+              return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
+                <div key={index} style={{position: 'relative',display: 'flex', width: '100%', height: '34%', justifyContent: 'center', alignItems: 'center'}}>
+                  <img src={item} style={{position: 'absolute',objectFit: 'contain', height: '100%'}} />
                 </div>
-                <div style={{height: '32%', width: '100%', alignContent: 'center', marginTop: '3px', marginBottom: '3px'}}>
-                    <img src={onlyPhotosTable[pageNumber][1]} style={{height: '100%'}} />
-                </div>
-                <div style={{height: '32%', width: '100%', alignContent: 'center'}}>
-                    <img src={onlyPhotosTable[pageNumber][2]} style={{height: '100%'}} />
-                </div>
-            </div>
+            ):(
+              <div key={index} style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
+              
+            )})}
             
         </Card>
 
@@ -99,17 +125,26 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
             position: 'relative',
             boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
         }}>
-            <div style={{height: '100%', alignContent: 'center'}}>
-                      <div style={{width: '100%', height: '32%', display: 'flex', justifyContent: 'center'}}>
-                        <img src={onlyPhotosTable[pageNumber][0]} style={{width: '93%', height: '95%', objectFit: 'cover'}}/>
-                      </div>
-                      <div style={{width: '100%', height: '32%', display: 'flex', justifyContent: 'center'}}>
-                        <img src={onlyPhotosTable[pageNumber][1]} style={{width: '93%', height: '95%', objectFit: 'cover'}}/>
-                      </div>
-                      <div style={{width: '100%', height: '32%', display: 'flex', justifyContent: 'center'}}>
-                        <img src={onlyPhotosTable[pageNumber][2]} style={{width: '93%', height: '98%', objectFit: 'cover'}}/>
-                      </div>
-                    </div>
+          
+            {layerTable[pageNumber].slice().reverse().map((item, index) => {
+              const reversedIndex = layerTable[pageNumber].length - 1 - index;
+
+              const isFirstImage = layerTable[pageNumber]
+              .slice()
+              .reverse()
+              .findIndex(element => element.slice(0, 10) !== 'TYPOGRAPHY') === index;
+
+
+              return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
+                <div key={index} style={{position: 'relative',display: 'flex', width: '100%', height: '30%', justifyContent: 'center', alignItems: 'center', marginBottom: '3%', marginTop: isFirstImage === true ? '4%' : '0px'}}>
+                  <img src={item} style={{position: 'absolute', width: '90%', height: '100%'}} />
+                </div>
+            ):(
+              <div key={index} style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
+              
+            )})}
+            
+            
             
         </Card>
 
@@ -121,19 +156,30 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
             height: pageHeight,
             objectFit: 'contain',
             position: 'relative',
-            boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
+            boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia   
+            display: 'flex'         
         }}>
-            <div style={{display: 'flex', width: '100%', height: '30%'}}>
-                      <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
-                        <img src={onlyPhotosTable[pageNumber][1]} style={{width: '90%', objectFit: 'contain'}}/>
-                      </div>
-                      <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
-                        <img src={onlyPhotosTable[pageNumber][2]} style={{width: '90%', objectFit: 'contain'}}/>
-                      </div>
-                    </div>
-                    <div style={{width: '100%', height: '70%', display: 'flex', justifyContent: 'center'}}>
-                      <img src={onlyPhotosTable[pageNumber][0]} style={{width: '90%', objectFit: 'contain'}}/>
-                    </div>
+            <div style={{width: '100%', height: '100%'}}>
+              <div style={{display: 'flex',width: '100%', height: '50%' }}>
+                <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
+                  <img src={onlyPhotosTable[pageNumber][0]} style={{width: '95%', objectFit: 'contain'}} />
+                </div>
+                <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
+                  <img src={onlyPhotosTable[pageNumber][1]} style={{width: '95%', objectFit: 'contain'}} />
+                </div>
+              </div>
+              <div style={{width: '100%', height: '50%', display: 'flex', justifyContent: 'center'}}>
+                <img src={onlyPhotosTable[pageNumber][2]} style={{width: '95%', objectFit: 'contain', marginBottom: '20px'}} />
+              </div>
+              {layerTable[pageNumber].filter(item => item.startsWith("TYPOGRAPHY")).map((itemm, index) => {
+                let idx = layerTable[pageNumber].findIndex(item =>  item === itemm)
+                
+                return (
+                <div style={{position: 'absolute', left: `${xTable[pageNumber][idx]*(zoom / 100)}px`, top: `${yTable[pageNumber][idx]*(zoom / 100)}px`, fontWeight: itemm.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: itemm.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: itemm.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${itemm.split(".")[4] * (zoom / 100)}px`, fontFamily: `${itemm.split(".")[6]}`
+              
+              }}>{`${itemm.split(".")[5]}`}</div>
+              )})}
+            </div>
             
         </Card>
 
@@ -147,25 +193,36 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
             position: 'relative',
             boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
         }}>
-            <div style={{width: '100%', height: '70%', display: 'flex', justifyContent: 'center'}}>
-                      <img src={onlyPhotosTable[pageNumber][0]} style={{width: '90%', objectFit: 'contain'}}/>
-                    </div>
-                    
-                    <div style={{display: 'flex', width: '100%', height: '30%'}}>
-                      <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
-                        <img src={onlyPhotosTable[pageNumber][1]} style={{width: '90%', objectFit: 'contain'}}/>
-                      </div>
-                      <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
-                        <img src={onlyPhotosTable[pageNumber][2]} style={{width: '90%', objectFit: 'contain'}}/>
-                      </div>
-                    </div>
+            <div style={{width: '100%', height: '100%'}}>
+              
+              <div style={{width: '100%', height: '50%', display: 'flex', justifyContent: 'center'}}>
+                <img src={onlyPhotosTable[pageNumber][2]} style={{width: '95%', objectFit: 'contain'}} />
+              </div>
+
+              <div style={{display: 'flex',width: '100%', height: '50%' }}>
+                <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
+                  <img src={onlyPhotosTable[pageNumber][0]} style={{width: '95%', objectFit: 'contain'}} />
+                </div>
+                <div style={{width: '50%', height: '100%', display: 'flex', justifyContent: 'center'}}>
+                  <img src={onlyPhotosTable[pageNumber][1]} style={{width: '95%', objectFit: 'contain'}} />
+                </div>
+              </div>
+              {layerTable[pageNumber].filter(item => item.startsWith("TYPOGRAPHY")).map((itemm, index) => {
+                let idx = layerTable[pageNumber].findIndex(item =>  item === itemm)
+                
+                return (
+                <div style={{position: 'absolute', left: `${xTable[pageNumber][idx]*(zoom / 100)}px`, top: `${yTable[pageNumber][idx]*(zoom / 100)}px`, fontWeight: itemm.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: itemm.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: itemm.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${itemm.split(".")[4] * (zoom / 100)}px`, fontFamily: `${itemm.split(".")[6]}`
+              
+              }}>{`${itemm.split(".")[5]}`}</div>
+              )})}
+            </div>
             
         </Card>
 
 
     ) : (
         
-    <Card style={{
+      <Card style={{
         backgroundColor: colorPickerColor,
         width: pageWidth,
         height: pageHeight,
@@ -173,14 +230,44 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
         position: 'relative',
         boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)' // Dodanie cienia
       }}>
-        {layerTable[pageNumber].map((item, index) => (
-          item.slice(0, 10) !== 'TYPOGRAPHY' ? (
-          <img key={index} src={item} style={{position: 'absolute', left: `${xTable[pageNumber][index]*(zoom/100)}px`, top: `${yTable[pageNumber][index]*(zoom/100)}px`, width: `${widthTable[pageNumber][index]}%`}} />
-        ):(
-          <div style={{color: `${textColor[pageNumber][index]}` , position: 'absolute', left: `${xTable[pageNumber][index]*(zoom/100)}px`, top: `${yTable[pageNumber][index]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
-          
-        )))}
+        {layerTable[pageNumber].slice().reverse().map((item, index) => {
+          const reversedIndex = layerTable[pageNumber].length - 1 - index; // Obliczenie odwróconego indeksu
+
+          return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
+            <img 
+              key={index} 
+              src={item} 
+              style={{
+                position: 'absolute', 
+                left: `${xTable[pageNumber][reversedIndex] * (zoom / 100)}px`, 
+                top: `${yTable[pageNumber][reversedIndex] * (zoom / 100)}px`, 
+                transform: `rotate(${rotateTable[pageNumber][reversedIndex]}deg)`,
+                width: `${widthTable[pageNumber][reversedIndex]}%`,
+                border: `${borderTable[pageNumber][reversedIndex]}`,
+                boxShadow: `${shadowTable[pageNumber][index] * 1.2}px ${shadowTable[pageNumber][index] * 1.2}px ${shadowTable[pageNumber][index] * 2}px ${shadowTable[pageNumber][index] * 0.5}px rgba(0, 0, 0, 0.5)`
+              }} 
+            />
+          ) : (
+            <div 
+              key={index}
+              style={{
+                color: `${textColor[pageNumber][reversedIndex]}`, 
+                position: 'absolute', 
+                left: `${xTable[pageNumber][reversedIndex] * (zoom / 100)}px`, 
+                top: `${yTable[pageNumber][reversedIndex] * (zoom / 100)}px`,
+                fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', 
+                fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', 
+                textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', 
+                fontSize: `${item.split(".")[4] * (zoom / 100)}px`, 
+                fontFamily: `${item.split(".")[6]}`
+              }}
+            >
+              {`${item.split(".")[5]}`}
+            </div>
+          );
+        })}
     </Card>
+
     )}
     </>
     )
