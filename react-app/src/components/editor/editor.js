@@ -283,7 +283,7 @@ const Editor = ({ user, album_id }) => {
       setBorderTable(borderTableCpy)
 
       let shadowTableCpy = [...shadowTable]
-      shadowTableCpy[pageNumber].unshift(5)
+      shadowTableCpy[pageNumber].unshift(0)
       setShadowTable(shadowTableCpy)
 
       setLayoutOnPage("None")
@@ -291,7 +291,6 @@ const Editor = ({ user, album_id }) => {
   }
 
   const typographyChooseClick = () => {
-
 
     let obj = "TYPOGRAPHY.false.false.false.40.napis.Roboto, sans-serif"
 
@@ -340,16 +339,11 @@ const Editor = ({ user, album_id }) => {
     let shadowTableCpy = [...shadowTable]
     shadowTableCpy[pageNumber].unshift(5)
     setShadowTable(shadowTableCpy)
-    
-
   }
 
   const rmPhotoClick = (index) => {
-    
-    
 
     const itemAtIndex = layerTable[pageNumber][index]
-
 
     if(itemAtIndex.startsWith("TYPOGRAPHY")){
       const indexInOTT = onlyTextTable[pageNumber].indexOf(itemAtIndex)
@@ -401,10 +395,6 @@ const Editor = ({ user, album_id }) => {
     let shadowTableCpy = [...shadowTable]
     shadowTableCpy[pageNumber].splice(index, 1)
     setShadowTable(shadowTableCpy)
-
-
-    
-    
   }
 
   const handleWidthSliderChange = (pageNumber, index, value) => {
@@ -875,11 +865,12 @@ const Editor = ({ user, album_id }) => {
         <Button onClick={() => setPhotosPanel()  } style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'photos' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <InsertPhotoIcon style={{ fontSize: '20px', marginRight: '5px' }} />Photos
         </Button>
+
+      
+
+
         <Button onClick={() => setLeftPanel('settings')} style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'settings' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}><SettingsIcon/> Page settings</Button>
         
-        <Button onClick={() => setLeftPanel('layouts')  } style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'layouts' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
-          <InsertPhotoIcon style={{ fontSize: '20px', marginRight: '5px' }} />Layouts
-        </Button>
         
         <Button onClick={() => setLeftPanel('share')} style={{marginTop: 'auto', justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'share' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
           <ShareIcon style={{ fontSize: '20px', marginRight: '5px' }} />Share
@@ -968,10 +959,6 @@ const Editor = ({ user, album_id }) => {
             )}
           </div>
 
-        ) : leftPanel === 'layouts' ? (
-          <div>
-            asd
-          </div>
         ) : leftPanel === 'settings' ? (
           <div>
             <Typography style={{padding: '5px', fontSize: '20px'}}>{`Settings of page: ${pageNumber}`}</Typography>

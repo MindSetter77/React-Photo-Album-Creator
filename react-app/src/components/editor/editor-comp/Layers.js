@@ -186,7 +186,7 @@ const Layers = ({layerTable, pageNumber, lessMoreTable, rmPhotoClick, lessMoreCl
                             </div>
                                 ) : null}
                           <div style={{display: 'flex', margin: '5px'}}>
-                            <Typography style={{margin: '5px', marginRight: '10px'}}>{`${shadowTable[pageNumber][index]}`}</Typography>
+                            <Typography style={{margin: '5px', marginRight: '10px'}}>Shadow</Typography>
                             <Slider value={shadowTable[pageNumber][index] || 0} onChange={(event, value) => handleShadowSliderChange(index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={15} style={{width: '230px'}}/>
                           </div>
                         </div >
