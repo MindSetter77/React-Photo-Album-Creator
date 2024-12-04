@@ -4,8 +4,10 @@ import TuneIcon from '@mui/icons-material/Tune';
 import ShareIcon from '@mui/icons-material/Share';
 import SettingsIcon from '@mui/icons-material/Settings';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 import { ChromePicker } from 'react-color';
-import { Button, Typography, TextField, Card, CardMedia, Slider, Select, MenuItem, FormControl, InputLabel, FormControlLabel, Checkbox } from '@mui/material';
+import { Button, Typography, TextField,Box,  Card, CardMedia, Slider, Select, MenuItem, FormControl, InputLabel, FormControlLabel, Checkbox, backdropClasses } from '@mui/material';
 
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
@@ -15,6 +17,10 @@ import LayoutPanel from './editor-comp/LayoutPanel';
 import ZoomInOutpanel from './editor-comp/ZoomInOutpanel';
 import PageView from './editor-comp/PageView';
 import Layers from './editor-comp/Layers';
+import InfoPanel from './editor-comp/InfoPanel';
+import CustomizePanel from './editor-comp/CustomizePanel';
+import PhotosPanel from './editor-comp/PhotosPanel';
+import LayersPanel from './editor-comp/LayersPanel';
 
 const Editor = ({ user, album_id }) => {
 
@@ -22,16 +28,6 @@ const Editor = ({ user, album_id }) => {
     fetchAlbumPhotos(album_id)
     getSharedData(album_id)
   }, [])
-
-  console.log(album_id)
-
-  const leftColor = "#845ec2"; // koralowy
-  const middleColor = "#d65db1"; // brzoskwiniowy
-  const rightBackgroundColor = "#ffe5d9"; // delikatny różowy
-  const borderColor = '#48cae4'; // ciemna malina
-  const buttonColor = "white"; // bordowy
-
-
 
   const fonts = [
     { name: 'Roboto', value: 'Roboto, sans-serif' },
@@ -162,6 +158,8 @@ const Editor = ({ user, album_id }) => {
     );
   });
 
+  const [panelShown, setPanelShown] = useState(true)
+
   const [shadowTable, setShadowTable] = useState(() => {
     const rows = 50;
     const cols = 0;
@@ -243,9 +241,7 @@ const Editor = ({ user, album_id }) => {
     setZoom(zoom + 10)
   }
 
-  const setPhotosPanel = () => {
-    setLeftPanel('photos')
-  }
+  
 
   const photoChooseClick = (url) => {
 
@@ -290,9 +286,13 @@ const Editor = ({ user, album_id }) => {
     }
   }
 
-  const typographyChooseClick = () => {
+  const typographyChooseClick = ( str) => {
 
-    let obj = "TYPOGRAPHY.false.false.false.40.napis.Roboto, sans-serif"
+    if(str===""){
+      str="asd"
+    }
+
+    let obj = `TYPOGRAPHY.false.false.false.40.${str}.Roboto, sans-serif`
 
     const copyOfItems = [...layerTable];
     let index = copyOfItems[pageNumber].length
@@ -855,148 +855,56 @@ const Editor = ({ user, album_id }) => {
 
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
-      <div style={{display: 'flex', flexDirection: 'column', width: '250px', height: '100%', background: `linear-gradient(180deg, #023e8a, #0077b6)`, borderRight: `2px solid #023e8a`, boxShadow: '10px 0 15px 0 rgba(0, 0, 0, 0.2)', zIndex: 2 }}>
-        <Button onClick={() => {clickWithPhotoImport()}} style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'info' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
-          <ImportContactsIcon style={{ fontSize: '20px', marginRight: '5px' }} />Book info
-        </Button>
-        <Button onClick={() => setLeftPanel('customize')} style={{justifyContent: 'flex-start', color: `${buttonColor}`,  backgroundColor: leftPanel === 'customize' ? '#62b6cb' : 'transparent'}} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
-          <TuneIcon style={{ fontSize: '20px', marginRight: '5px' }} />Customize
-        </Button>
-        <Button onClick={() => setPhotosPanel()  } style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'photos' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
-          <InsertPhotoIcon style={{ fontSize: '20px', marginRight: '5px' }} />Photos
-        </Button>
+      <div style={{display: 'flex', flexDirection: 'column', minWidth: '100px', maxWidth: '100px', height: '100%', backgroundColor: '#0d1520', boxShadow: '10px 0 15px 0 rgba(0, 0, 0, 0.2)', zIndex: 2 }}>
 
-      
+        <Box onClick={() => { setPanelShown(true); setLeftPanel('info'); }} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '55px', height: '55px', backgroundColor: leftPanel === 'info' ? '#2c3745' : 'transparent', borderRadius: '10px', cursor: 'pointer', margin: '10px auto', ':hover': {   backgroundColor: '#506278', }, }}>
+          <ImportContactsIcon sx={{ fontSize: '40px', color: 'white' }} />
+        </Box>
 
+        <Box onClick={() => {setPanelShown(true); setLeftPanel('customize')}} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '55px', height: '55px', backgroundColor: leftPanel === 'customize' ? '#2c3745' : 'transparent', borderRadius: '10px', cursor: 'pointer', margin: '10px auto', ':hover': {   backgroundColor: '#506278', }, }}>
+          <TuneIcon sx={{ fontSize: '40px', color: 'white' }} />
+        </Box>
 
-        <Button onClick={() => setLeftPanel('settings')} style={{justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'settings' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}><SettingsIcon/> Page settings</Button>
-        
-        
-        <Button onClick={() => setLeftPanel('share')} style={{marginTop: 'auto', justifyContent: 'flex-start', color: `${buttonColor}`, backgroundColor: leftPanel === 'share' ? '#62b6cb' : 'transparent' }} sx={{ ':hover': { backgroundColor: '#62b6cb' } }}>
-          <ShareIcon style={{ fontSize: '20px', marginRight: '5px' }} />Share
-        </Button>
+        <Box onClick={() => {setPanelShown(true); setLeftPanel('photos')}} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '55px', height: '55px', backgroundColor: leftPanel === 'photos' ? '#2c3745' : 'transparent', borderRadius: '10px', cursor: 'pointer', margin: '10px auto', ':hover': {   backgroundColor: '#506278', }, }}>
+          <InsertPhotoIcon sx={{ fontSize: '40px', color: 'white' }} />
+        </Box>
+
+        <Box onClick={() =>{setPanelShown(true); setLeftPanel('share')}} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '55px', height: '55px', backgroundColor: leftPanel === 'share' ? '#2c3745' : 'transparent', borderRadius: '10px', cursor: 'pointer', margin: '10px auto', ':hover': {   backgroundColor: '#506278', }, }}>
+          <ShareIcon sx={{ fontSize: '40px', color: 'white' }} />
+        </Box>
+
+        <Box onClick={() => {setPanelShown(true);setLeftPanel('settings')}} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '55px', height: '55px', backgroundColor: leftPanel === 'settings' ? '#2c3745' : 'transparent', borderRadius: '10px', cursor: 'pointer', margin: '10px auto', marginTop: 'auto', ':hover': {   backgroundColor: '#506278', }, }}>
+          <SettingsIcon sx={{ fontSize: '40px', color: 'white' }} />
+        </Box>
         
       </div>
-      <div style={{ width: 'calc(100% - 300px)', height: '100%', maxWidth: '400px', background: `linear-gradient(120deg, #48cae4, #ade8f4)`, boxShadow: '10px 0 15px 0 rgba(0, 0, 0, 0.2)', borderRight: `2px solid ${borderColor}`, zIndex: 1}}>
-        {leftPanel === 'info' ? (
-          <div style={{ display: 'flex', flexDirection: 'column', padding: '20px', fontFamily: 'Roboto' }}>
-            <Typography style={{ fontSize: '18px', marginBottom: '10px' }}>{album_id}</Typography>
-            <TextField
-              disabled
-              id="outlined-disabled"
-              label="Title"
-              defaultValue="Album title"
-              style={{ marginBottom: '20px' }}
-            />
-            <TextField
-              id="outlined-required"
-              label="Description"
-              defaultValue="Album description"
-              multiline
-              minRows={4}
-              maxRows={4}
-              style={{ width: '100%' }}
-            />
-          </div>
-        ) : leftPanel === 'customize' ? (
+      {panelShown === true ? (
+        <div style={{ width: 'calc(100% - 300px)', height: '100%', maxWidth: '400px',  borderRight: '2px solid black', boxShadow: '10px 0px 15px rgba(0, 0, 0, 0.3)'}}>
+        <div style={{display: 'flex', height: '80px', width: '100%', borderBottom: '2px solid gray', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: 'white', zIndex: 7, position: 'relative'}}>
           <div>
-            <div>
-                <Typography style={{padding: '10px'}}>Customize</Typography>
-                <FormControl fullWidth style={{marginBottom: '10px'}}>
-                  <InputLabel id="photo-limit-label">Page width and height</InputLabel>
-                  <Select
-                    labelId="photo-limit-label"
-                    value={pageSize}
-                    label="Page Size"
-                    onChange={changePageSize}
-                  >
-                    <MenuItem value="43">4:3 - 1600px x 1200px</MenuItem>
-                    <MenuItem value="A4">A4 - 1754px x 1240px</MenuItem>
-                    <MenuItem value="A5">A5 - 1240px x 874px</MenuItem>
-                    
-                  </Select>
-                </FormControl>
-              </div>
-            <div style={{display: 'flex'}}>
-              <Typography style={{fontSize: '20px'}}>{`Page number: ${allPageNumber}`}</Typography>
-              <div style={{display: 'flex', flexDirection: 'column', width: '100px'}}>
-                <Button style={{height: '5px', width: '0px'}} onClick={() => {setAllPageNumber(allPageNumber+1)}}>▲</Button>
-                <Button style={{height: '5px', width: '0px'}} onClick={() => {setAllPageNumber(allPageNumber-1)}}>▼</Button>
-              </div>
-            </div>
-            
-            <FormControlLabel
-              control={<Checkbox checked={changeBackground} onChange={handleChangeBackground} />}
-              label="Custom background color"
-            />
-            {changeBackground && (
-              <div style={{marginLeft: '20%'}}>
-              <div style={{width: '70%', border: '1px solid black', borderTopLeftRadius: '13px', borderTopRightRadius: '13px', overflow: 'hidden'}}><div onClick={() => setChangeBackground(false)} style={{height: '100%', width: '100%', cursor: 'pointer'}}>close</div>
-                <ChromePicker
-                  color={colorPickerColor}
-                  onChangeComplete={(color) => setBackgroundColor(color.hex)}
-                />
-              </div> 
-            </div>
-            )}
+            <Box onClick={() => {setPanelShown(false); setLeftPanel('None')}} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '55px', height: '55px', backgroundColor: '#f5f5f5' , borderRadius: '10px', cursor: 'pointer', margin: '10px 10px', ':hover': {   backgroundColor: '#d5d2d2', }, }}>
+              <ArrowBackIcon sx={{ fontSize: '40px' }} />
+            </Box>
           </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'left', flexDirection: 'column', marginLeft: '5px', marginTop: '10px' }}>
+              <Typography style={{ fontWeight: 'bold', fontSize: '18px', textAlign: 'left'}}>{leftPanel === 'info' ? ('Information') : leftPanel === 'customize' ? ('Customisation') : leftPanel === 'photos' ? ('Photos') : ('asd')}</Typography>
+              <Typography style={{ fontSize: '18px', color: 'gray' }}>{album_id}</Typography>
+            </div>
+          </div>
+          
+        </div>
+
+        
+        {leftPanel === 'info' ? (
+          <InfoPanel/>
+        ) : leftPanel === 'customize' ? (
+          <CustomizePanel pageSize={pageSize} changePageSize={changePageSize} allPageNumber={allPageNumber} setAllPageNumber={setAllPageNumber} changeBackground={changeBackground} handleChangeBackground={handleChangeBackground} setChangeBackground={setChangeBackground} setBackgroundColor={setBackgroundColor} colorPickerColor={colorPickerColor}/>
         ) : leftPanel === 'photos' ? (
-          <div style={{display: 'flex', flexDirection: 'column', overflowY: 'auto', height: "100%"}}>
-            <FileDropzone/>
-            <Typography>Photos</Typography>
-            
-            {photosOfPanel.length > 0 ? (
-              photosOfPanel.filter(photoUrl => !photoUrl.includes('data.json')).map((photoUrl, index) => (
-                
-                <div style={{display: 'flex', alignItems: 'center'}}>
-                  <img key={photoUrl} src={photoUrl} alt={`Photo ${index + 1}`} style={{ width: '100px', height: 'auto', maxHeight: '65px', margin: '5px' }} />
-                  <Typography>{getPhotoName(photoUrl)}</Typography>
-                  <div onClick={() => deletePhoto(photoUrl)} style={{marginRight: '10px', marginLeft: 'auto', cursor: 'pointer'}}>delete</div>
-                </div>
-              ))
-            ) : (
-              <p>No photos available.</p>
-            )}
-          </div>
+          <PhotosPanel photosOfPanel={photosOfPanel} getPhotoName={getPhotoName} deletePhoto={deletePhoto}/>
 
         ) : leftPanel === 'settings' ? (
-          <div>
-            <Typography style={{padding: '5px', fontSize: '20px'}}>{`Settings of page: ${pageNumber}`}</Typography>
-            <Typography style={{padding: '5px', fontSize: '15px'}}>{`Layout: ${layoutOnPage[pageNumber]}`}</Typography>
-            <div style={{ width: '95%', borderRadius: '15px', border: '2px solid white', overflow: 'hidden',  marginLeft: 'auto', marginRight: 'auto' }}>
-              <div style={{ height: '25px', width: '100%', backgroundColor: 'white', zIndex: 10, display: 'flex' }}>
-                <Typography style={{ marginLeft: '5px', width: '100%' }}>Choose photo</Typography>
-              </div>
-              <div style={{ flexDirection: 'column', display: 'flex', overflowX: 'auto', overflowY: 'hidden', backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
-                
-                <div style={{ display: 'flex', marginTop: '10px' }}>
-                  {photosOfPanel.length > 0 ? (
-                    photosOfPanel.filter(photoUrl => !photoUrl.includes('data.json')).map((photoUrl, index) => (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
-                        <img
-                          onClick={() => { photoChooseClick(photoUrl); }}
-                          key={index}
-                          src={photoUrl}
-                          alt={`Photo ${index + 1}`}
-                          style={{ borderRadius: '10px', border: '1px solid white', maxHeight: '60px', boxShadow: '0 5px 30px rgba(0, 0, 0, 0.3), 0 -5px 30px rgba(0, 0, 0, 0.3), 5px 0 30px rgba(0, 0, 0, 0.3), -5px 0 30px rgba(0, 0, 0, 0.3)', width: '100px', height: 'auto', margin: '5px' }}
-                        />
-                        <Typography style={{ marginTop: '5px' }}>{getPhotoName(photoUrl)}</Typography>
-                      </div>
-                    ))
-                  ) : (
-                    <p>No photos available.</p>
-                  )}
-                </div>
-              </div>
-            </div>
-            <Button onClick={() => typographyChooseClick()} style={{border: '2px solid white', backgroundColor: 'rgba(255, 255, 255, 0.5)', borderRadius: '15px', width: '95%', margin: '10px', marginBottom: '5px'}}><Typography style={{fontSize: '16px'}}>Add text</Typography></Button>
-            <Typography style={{padding: '5px'}}>{layoutOnPage[pageNumber]==="o" ? 'Layers' : `Layers (layout: ${layoutOnPage[pageNumber]})`}</Typography>
-            
-            
-            <Layers layerTable = {layerTable} pageNumber = {pageNumber} lessMoreTable = {lessMoreTable} rmPhotoClick = {rmPhotoClick} lessMoreClick = {lessMoreClick} makeLayerUP = {makeLayerUP} makeLayerDown = {makeLayerDown} handleWidthSliderChange = {handleWidthSliderChange} xTable = {xTable} originalPageWidth = {originalPageWidth} handleXSliderChange = {handleXSliderChange} yTable = {yTable} originalPageHeight = {originalPageHeight} handleYSliderChange = {handleYSliderChange} alignWidth = {alignWidth} getLayerTitle = {getLayerTitle} editText = {editText} fonts = {fonts} handleColorPickerVisibility = {handleColorPickerVisibility} textColor = {textColor} showLayerPicker = {showLayerPicker} ChromePicker = {ChromePicker} setSingleColorText = {setSingleColorText} rotateTable={rotateTable} setRotateTable={setRotateTable} borderTable={borderTable} setBorderTable={setBorderTable} shadowTable={shadowTable} setShadowTable={setShadowTable}/>
-            
-            
-          </div>
+          <LayersPanel pageNumber={pageNumber} layoutOnPage={layoutOnPage} photosOfPanel={photosOfPanel} photoChooseClick={photoChooseClick} getPhotoName={getPhotoName} typographyChooseClick={typographyChooseClick} layerTable={layerTable} lessMoreTable={lessMoreTable} lessMoreClick={lessMoreClick} makeLayerUP={makeLayerUP} makeLayerDown={makeLayerDown} handleWidthSliderChange={handleWidthSliderChange} rmPhotoClick={rmPhotoClick} xTable={xTable} originalPageWidth={originalPageWidth} handleXSliderChange={handleXSliderChange} yTable={yTable} originalPageHeight={originalPageHeight} handleYSliderChange={handleYSliderChange} alignWidth={alignWidth} getLayerTitle={getLayerTitle} editText={editText} fonts={fonts} handleColorPickerVisibility={handleColorPickerVisibility} textColor={textColor} showLayerPicker={showLayerPicker} setSingleColorText={setSingleColorText} rotateTable={rotateTable} setRotateTable={setRotateTable} borderTable={borderTable} setBorderTable={setBorderTable} shadowTable={shadowTable} setShadowTable/>
         ) : (
           <div>
             <Button
@@ -1008,15 +916,18 @@ const Editor = ({ user, album_id }) => {
           </div>
         )}
       </div>
+      ): null}
+      
 
-      <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, padding: '10px', width: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflowX: 'auto', overflowY: 'auto' }}>
+      <div style={{ background: `linear-gradient(90deg, #FFFFFF, #eae5e5)`, padding: '10px', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflowX: 'auto', overflowY: 'auto' }}>
           <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable}/>
 
           
 
           <ZoomInOutpanel zoomOut={zoomOut} zoom={zoom} zoomIn={zoomIn} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} allPageNumber={allPageNumber} />
       </div>
-      <LayoutPanel layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} layerTable={layerTable} pageNumber={pageNumber} originalPageWidth={originalPageWidth} originalPageHeight={originalPageHeight} onlyPhotosTable={onlyPhotosTable} setWidthTable={setWidthTable} widthTable={widthTable}/>
+      {layerTable[pageNumber].filter(item => typeof item === 'string' && item.startsWith('http')).length >= 1 ? (<LayoutPanel layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} layerTable={layerTable} pageNumber={pageNumber} originalPageWidth={originalPageWidth} originalPageHeight={originalPageHeight} onlyPhotosTable={onlyPhotosTable} setWidthTable={setWidthTable} widthTable={widthTable}/>) : (<div></div>) }
+      
       
     </div>
   );
