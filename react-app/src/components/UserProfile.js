@@ -1,20 +1,18 @@
-import React, {useState, useEffect} from 'react';
-import { Avatar, Box, Button, Container, CssBaseline, Grid, Typography, useTheme } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import React, { useState, useEffect } from 'react';
+import { Avatar, Box, Button, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-
-function getFirstName(currentUser) {
+function getFullName(currentUser) {
   if (currentUser && currentUser.result && currentUser.result.length > 0) {
-    return currentUser.result[0].firstName;
+    const { firstName, lastName } = currentUser.result[0]; // Destructure the object
+    return `${firstName} ${lastName}`; // Concatenate first and last name
   }
-  return ''; // Lub możesz zwrócić null lub undefined, jeśli chcesz obsługiwać te przypadki w inny sposób
+  return ''; // Default value if data is missing
 }
 
 const UserProfile = ({ currentUser, setChoosenAlbum }) => {
-  const navigate = useNavigate()
-  const theme = useTheme()
+  const navigate = useNavigate();
+  const theme = useTheme();
   const [albums, setAlbums] = useState([]);
 
   useEffect(() => {
@@ -47,74 +45,129 @@ const UserProfile = ({ currentUser, setChoosenAlbum }) => {
   }, [currentUser]);
 
   const navigateToEditor = (album_id) => {
-    setChoosenAlbum(album_id)
-    navigate("/editor")
-  }
+    setChoosenAlbum(album_id);
+    navigate('/editor');
+  };
 
   const viewClick = (album_id) => {
-    setChoosenAlbum(album_id); // Ustawienie wybranego albumu
-    let url = `/viewer/${album_id}`; // Stworzenie URL
-    navigate(url); // Nawigacja do odpowiedniego URL
+    setChoosenAlbum(album_id); // Set selected album
+    let url = `/viewer/${album_id}`; // Create the URL
+    navigate(url); // Navigate to the URL
   };
-  
 
   return (
-    <div style={{backgroundColor: theme.palette.primary.lighter, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-      <Typography style={{color: theme.palette.secondary.main, fontSize: '50px', marginBottom: '10px'}}>{`Hello, ${currentUser.result[0].firstName}`}</Typography>
-      <div style={{borderTop: `2px solid ${theme.palette.third.main}`, width: '100vh', padding: '20px', paddingTop: '25px'}}>
-        {albums.map((album) => (
-          <div
-            style={{padding: '4px', background: 'linear-gradient(to right, #544483, #44648B)', marginBottom: '15px', borderRadius: '25px',}}
-          >
-          <div
+    <div style={{ background: 'linear-gradient(135deg, #2c3e50, #34495e)', height: 'calc(100vh - 64px)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 10px' }}>
+      {/* Header */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
+        <Avatar sx={{ width: 80, height: 80, bgcolor: theme.palette.primary.main }}>
+          {getFullName(currentUser).charAt(0)}
+        </Avatar>
+        <Typography variant="h4" style={{ color: theme.palette.secondary.main }}>
+          {getFullName(currentUser)}
+        </Typography>
+      </Box>
+
+      {/* Albums container */}
+      <Box sx={{ width: '100%', maxWidth: '900px', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '15px', padding: '20px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)', backdropFilter: 'blur(10px)' }}>
+        <Typography variant="h5" sx={{ marginBottom: '20px', color: 'white', fontWeight: 'bold', fontSize: '2rem', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}>
+          Albums
+        </Typography>
+
+        <Box sx={{ height: '300px', overflowY: 'scroll', padding: '10px 0' }}>
+          {albums.map((album) => (
+            <Box
             key={album.album_id}
-            style={{
+            sx={{
               display: 'flex',
               alignItems: 'center',
-              
-              
               padding: '10px',
-              
-              backgroundColor: '#3A7690',
+              background: 'linear-gradient(120deg, #8e44ad, #2c3e50)', // Darker gradient for album card
+              width: '90%',
+              marginLeft: 'auto',
+              marginRight: 'auto',
               borderRadius: '20px',
-              boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'
+              boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+              marginBottom: '15px',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              overflow: 'visible',  // Ensure overflow is visible during hover
+              '&:hover': {
+                transform: 'scale(1.05)',
+                boxShadow: '0 10px 15px rgba(0, 0, 0, 0.3)', // Shadow effect on hover
+              },
             }}
           >
-            <div
-              style={{
-                width: '70px',
-                height: '70px',
-                backgroundColor: 'blue',
-                borderRadius: '5px',
-                marginRight: '15px'
-              }}
-            ></div>
-            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginRight: '20px'}}>
-              <h3 style={{ margin: '0', marginBottom: '5px', fontSize: '18px', color: '#333' }}>
-                {album.title}
-              </h3>
-              <p style={{ margin: '0', fontSize: '14px', color: theme.palette.secondary.main }}>
-                Created at: {new Date(album.created_at).toLocaleString()}
-              </p>
-              <p style={{ margin: '0', fontSize: '14px', color: theme.palette.secondary.main }}>
-                Privacy: {album.privacy || 'N/A'}
-              </p>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 'auto' }}>
-              <button onClick={() => {navigateToEditor(album.album_id)}} style={{ marginBottom: '5px', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#007bff', color: '#fff', border: 'none' }}>
-                Customize
-              </button>
-              <button onClick={() => {viewClick(album.album_id)}} style={{ marginBottom: '5px', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#28a745', color: '#fff', border: 'none' }}>
-                View
-              </button>
-              <button style={{ padding: '5px 10px', borderRadius: '5px', backgroundColor: '#17a2b8', color: '#fff', border: 'none' }}>
-                Share
-              </button>
-          </div>
-          </div>
-          </div>
-        ))}
-      </div>
+              {/* Album thumbnail */}
+              <Box
+                sx={{
+                  width: 70,
+                  height: 70,
+                  borderRadius: 2,
+                  mr: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundImage: `linear-gradient(to right, #ff7e5f, #feb47b)`,
+                  color: 'white',
+                  fontWeight: 'bold',
+                  fontSize: '20px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                }}
+              >
+                <span>{album.title.slice(0, 2)}</span>
+              </Box>
+
+              {/* Album information */}
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6" sx={{ color: 'white', mb: 0.5 }}>
+                  {album.title}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#B0C4DE' }}>
+                  Created at: {new Date(album.created_at).toLocaleString()}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#B0C4DE' }}>
+                  Privacy: {album.privacy || 'N/A'}
+                </Typography>
+              </Box>
+
+              {/* Action buttons */}
+              <Box>
+                <Button
+                  onClick={() => navigateToEditor(album.album_id)}
+                  size="small"
+                  sx={{
+                    color: 'white',
+                    backgroundColor: '#1abc9c',
+                    mb: 1,
+                    borderRadius: 2,
+                    '&:hover': {
+                      backgroundColor: '#16a085',
+                    },
+                  }}
+                >
+                  Customize
+                </Button>
+                <Button
+                  onClick={() => viewClick(album.album_id)}
+                  size="small"
+                  sx={{
+                    color: 'white',
+                    backgroundColor: '#3498db',
+                    mb: 1,
+                    borderRadius: 2,
+                    '&:hover': {
+                      backgroundColor: '#2980b9',
+                    },
+                  }}
+                >
+                  View
+                </Button>
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      </Box>
     </div>
   );
 };

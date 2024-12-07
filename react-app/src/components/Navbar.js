@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation here
 import { gapi } from "gapi-script";
 import theme from "../theme";
 
@@ -30,8 +30,10 @@ function getFirstName(currentUser) {
 function Navbar({ currentUser, dataOnline, setDataOnline }) {
   const [visiblePage, setVisiblePage] = React.useState(null);
   const navigate = useNavigate();
+  const location = useLocation();  // Now inside the Navbar component
 
-  
+  // Check if we are on the "editor" page
+  const isEditorPage = location.pathname === '/editor';
 
   useEffect(() => {
     function start() {
@@ -72,25 +74,33 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
           variant="h6"
           component="div"
           sx={{
-            fontSize: "23px",
+            fontSize: "20px",
+            width: '220px',
             color: theme.palette.secondary.main,
             display: { xs: "none", md: "flex" },
           }}
         >
           Album generator
-          
         </Typography>
-        <Typography style={{marginLeft: '10px', marginRight: '5px', marginTop: '2px', color: theme.palette.secondary.main, marginRight: 'auto'}}>{ dataOnline === true ? ('Changes in album: Saved.') : ('Changes in album: Unsaved.')}</Typography>
+        {isEditorPage === true ? (
+          <Typography style={{width: '300px', marginRight: '5px', marginTop: '2px', color: theme.palette.secondary.main}}>
+          { dataOnline ? 'Changes in album: Saved.' : 'Changes in album: Unsaved.' }
+        </Typography>
+        ):(
+          null
+        )}
         
         
-        <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
-          {
-            isEmptyObject(currentUser) ? null : (
-              <Button
-                color="inherit"
-                sx={{ fontSize: "23px", color: theme.palette.secondary.main, textTransform: "none" }}
-                onClick={() => handleNavigation("/create-album")}
-              >Create album!</Button>
+        <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", width: '100%' }}>
+  {
+    isEmptyObject(currentUser) ? null : (
+      <Button
+        color="inherit"
+        sx={{ fontSize: "23px", color: theme.palette.secondary.main, textTransform: "none", marginLeft: 'auto' }}
+        onClick={() => handleNavigation("/create-album")}
+      >
+        Create album!
+      </Button>
             )
           }
           {["/", "/albums"].map((path, index) => (
@@ -133,6 +143,7 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
             </Button>
           )}
         </Box>
+
         {/* Menu mobilne */}
         <Box sx={{ display: { xs: "flex", md: "none" } }}>
           <IconButton size="large" edge="start" color="inherit" onClick={openMenu}>
@@ -165,6 +176,7 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
           Album Generator
         </Typography>
       </Toolbar>
+
       {/* Gradient pod navbar */}
       <Box
         sx={{
