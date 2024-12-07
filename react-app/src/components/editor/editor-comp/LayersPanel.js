@@ -5,13 +5,14 @@ import { Button, Typography, TextField, Card, CardMedia, Slider, Select, MenuIte
 import { ChromePicker } from 'react-color';
 import Layers from './Layers';
 
-const LayersPanel = ({pageNumber, layoutOnPage, photosOfPanel, photoChooseClick, getPhotoName, typographyChooseClick, layerTable, lessMoreTable, lessMoreClick, makeLayerUP, makeLayerDown, handleWidthSliderChange, rmPhotoClick, xTable, originalPageWidth, handleXSliderChange, yTable, originalPageHeight, handleYSliderChange, alignWidth, getLayerTitle, editText, fonts, handleColorPickerVisibility, textColor, showLayerPicker, setSingleColorText, rotateTable, setRotateTable, borderTable, setBorderTable, shadowTable, setShadowTable }) => {
+const LayersPanel = ({setDataOnline, pageNumber, layoutOnPage, photosOfPanel, photoChooseClick, getPhotoName, typographyChooseClick, layerTable, lessMoreTable, lessMoreClick, makeLayerUP, makeLayerDown, handleWidthSliderChange, rmPhotoClick, xTable, originalPageWidth, handleXSliderChange, yTable, originalPageHeight, handleYSliderChange, alignWidth, getLayerTitle, editText, fonts, handleColorPickerVisibility, textColor, showLayerPicker, setSingleColorText, rotateTable, setRotateTable, borderTable, setBorderTable, shadowTable, setShadowTable }) => {
 
   const [textFieldVal, setTextFieldVal] = useState("")
 
   const addTextButtonHandle = (str) => {
     typographyChooseClick(str)
     setTextFieldVal("")
+    setDataOnline(false)
   }
 
   return (
@@ -104,7 +105,7 @@ const LayersPanel = ({pageNumber, layoutOnPage, photosOfPanel, photoChooseClick,
                     onChange={(event) => {setTextFieldVal(event.target.value)}}  
                 />
                 </div>
-              <Button onClick={() => addTextButtonHandle(textFieldVal)} style={{border: '2px solid black', backgroundColor: 'black', borderRadius: '15px', width: '95%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '10px'}}><Typography style={{fontSize: '18px', fontWeight:'bold', color: 'white'}}>Add text</Typography></Button>
+              <Button onClick={() => addTextButtonHandle(textFieldVal)} style={{border: '2px solid black', backgroundColor: 'black', borderRadius: '15px', width: '95%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '10px'}}><Typography style={{fontSize: '14px', fontWeight:'bold', color: 'white'}}>Add text</Typography></Button>
           </div>
             
             

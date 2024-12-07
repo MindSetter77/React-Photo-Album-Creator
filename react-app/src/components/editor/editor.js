@@ -21,8 +21,9 @@ import InfoPanel from './editor-comp/InfoPanel';
 import CustomizePanel from './editor-comp/CustomizePanel';
 import PhotosPanel from './editor-comp/PhotosPanel';
 import LayersPanel from './editor-comp/LayersPanel';
+import Share from './editor-comp/Share';
 
-const Editor = ({ user, album_id }) => {
+const Editor = ({ user, album_id, setDataOnline }) => {
 
   useEffect(() => {
     fetchAlbumPhotos(album_id)
@@ -43,9 +44,9 @@ const Editor = ({ user, album_id }) => {
   const [originalPageWidth, setOriginalPageWidth] = useState(1240)
   const [originalPageHeight, setOriginalPageHeight] = useState(1754)
 
-  const [pageHeight, setPageHeight] = useState(1754); // A4 height in pixels
-  const [pageWidth, setPageWidth] = useState(1240); // A4 width in pixels
-  const [zoom, setZoom] = useState(100);
+  const [pageHeight, setPageHeight] = useState((1754 / 10)*4); // A4 height in pixels
+  const [pageWidth, setPageWidth] = useState((1240 / 10)*4); // A4 width in pixels
+  const [zoom, setZoom] = useState(40);
 
   const [changeBackground, setChangeBackground] = useState(false);
   const [colorPickerColor, setColorPickerColor] = useState('#ffffff');
@@ -221,6 +222,8 @@ const Editor = ({ user, album_id }) => {
     if (changeBackground) {
       setColorPickerColor('#ffffff');
     }
+
+    setDataOnline(false)
   }; 
 
   const zoomOut = () => {
@@ -283,13 +286,15 @@ const Editor = ({ user, album_id }) => {
       setShadowTable(shadowTableCpy)
 
       setLayoutOnPage("None")
+
+      setDataOnline(false)
     }
   }
 
   const typographyChooseClick = ( str) => {
 
     if(str===""){
-      str="asd"
+      str="Text"
     }
 
     let obj = `TYPOGRAPHY.false.false.false.40.${str}.Roboto, sans-serif`
@@ -337,11 +342,15 @@ const Editor = ({ user, album_id }) => {
     setBorderTable(borderTableCpy)
 
     let shadowTableCpy = [...shadowTable]
-    shadowTableCpy[pageNumber].unshift(5)
+    shadowTableCpy[pageNumber].unshift(0)
     setShadowTable(shadowTableCpy)
+
+    setDataOnline(false)
   }
 
   const rmPhotoClick = (index) => {
+
+    setDataOnline(false)
 
     const itemAtIndex = layerTable[pageNumber][index]
 
@@ -356,7 +365,13 @@ const Editor = ({ user, album_id }) => {
       let onlyPhotosTableCpy = [...onlyPhotosTable]
       let num = onlyPhotosTableCpy[pageNumber].indexOf(itemAtIndex)
       onlyPhotosTableCpy[pageNumber].splice(num, 1)
-      setLayoutOnPage("None")
+      
+      
+      let layoutOnPageCpy = [...layoutOnPage]
+      layoutOnPageCpy[pageNumber] = 'None'
+      setLayoutOnPage(layoutOnPageCpy)
+
+
       setOnlyPhotosTable(onlyPhotosTableCpy)
     }
 
@@ -401,18 +416,24 @@ const Editor = ({ user, album_id }) => {
     const copyOfItems = [...widthTable];
     copyOfItems[pageNumber][index] = value
     setWidthTable(copyOfItems)
+
+    setDataOnline(false)
   }
 
   const handleXSliderChange = (pageNumber, index, value) => {
     const copyOfItems = [...xTable]
     copyOfItems[pageNumber][index] = value
     setXTable(copyOfItems)
+
+    setDataOnline(false)
   }
 
   const handleYSliderChange = (pageNumber, index, value) => {
     const copyOfItems = [...yTable]
     copyOfItems[pageNumber][index] = value
     setYTable(copyOfItems)
+
+    setDataOnline(false)
   }
 
   const editText = (value, item, pageNumber, index, textIdx) => {
@@ -423,6 +444,8 @@ const Editor = ({ user, album_id }) => {
     let valueToSave = `${text[0]}.${text[1]}.${text[2]}.${text[3]}.${text[4]}.${text[5]}.${text[6]}`
     copyOfItems[pageNumber][index] = valueToSave
     setlayerTable(copyOfItems)
+
+    setDataOnline(false)
   }
 
   const makeLayerDown = (index) => {
@@ -512,6 +535,7 @@ const Editor = ({ user, album_id }) => {
         //zapis zmian
         setOnlyPhotosTable(onlyPhotosTableCpy)
       }
+      setDataOnline(false)
       
     }
   }
@@ -605,6 +629,7 @@ const Editor = ({ user, album_id }) => {
         //zapis zmian
         setOnlyPhotosTable(onlyPhotosTableCpy)
       }
+      setDataOnline(false)
     }
   }
 
@@ -632,6 +657,7 @@ const Editor = ({ user, album_id }) => {
       copyY[pageNumber].splice(num, 1)
       setYTable(copyY)
     }
+    setDataOnline(false)
 
     let indexInOnlyPhotos = onlyPhotosTable[pageNumber].indexOf(photoUrl)
     console.log(indexInOnlyPhotos)
@@ -646,6 +672,7 @@ const Editor = ({ user, album_id }) => {
 
 
   const printTables = () => {
+    console.log('Print table start============================')
     console.log(`Layer table: ${layerTable[pageNumber].length}`)
     console.log(layerTable[pageNumber])
     console.log(`Width table: ${widthTable[pageNumber].length}`)
@@ -673,6 +700,8 @@ const Editor = ({ user, album_id }) => {
     
     console.log("Shadow Table")
     console.log(shadowTable)
+
+    console.log('============================Print table finish')
   }
 
   const clickWithPhotoImport = () => {
@@ -691,6 +720,8 @@ const Editor = ({ user, album_id }) => {
       let copyX = [...xTable]
       copyX[pageNumber][index] = roznica
       setXTable(copyX)
+
+      setDataOnline(false)
     }
   }
 
@@ -723,6 +754,8 @@ const Editor = ({ user, album_id }) => {
       lessMoreTableCpy[pageNumber][index] = 'More'
     }
     setLessMoreTable(lessMoreTableCpy)
+
+    setDataOnline(false)
   }
 
   const getLayerTitle = (layer) =>{
@@ -792,7 +825,12 @@ const Editor = ({ user, album_id }) => {
         lessMoreTable: lessMoreTable,
         zoom: zoom,
         onlyPhotos: onlyPhotosTable,
-        onlyText: onlyTextTable
+        onlyText: onlyTextTable,
+
+        layoutOnPage: layoutOnPage,
+        shadowTable: shadowTable,
+        borderTable: borderTable,
+        rotateTable: rotateTable
     };
     const jsonString = JSON.stringify(jsonData, null, 2); // `null, 2` dodaje wcięcia dla czytelności
     console.log(jsonString);
@@ -838,8 +876,13 @@ const Editor = ({ user, album_id }) => {
       setLessMoreTable(data.lessMoreTable)
       setZoom(data.zoom)
       setOnlyPhotosTable(data.onlyPhotos)
-      console.log(data.onlyText)
+      
       setOnlyTextTable(data.onlyText)
+
+      setLayoutOnPage(data.layoutOnPage)
+      setShadowTable(data.shadowTable)
+      setBorderTable(data.borderTable)
+      setRotateTable(rotateTable)
 
       
     } catch (error) {
@@ -869,12 +912,12 @@ const Editor = ({ user, album_id }) => {
           <InsertPhotoIcon sx={{ fontSize: '40px', color: 'white' }} />
         </Box>
 
-        <Box onClick={() =>{setPanelShown(true); setLeftPanel('share')}} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '55px', height: '55px', backgroundColor: leftPanel === 'share' ? '#2c3745' : 'transparent', borderRadius: '10px', cursor: 'pointer', margin: '10px auto', ':hover': {   backgroundColor: '#506278', }, }}>
-          <ShareIcon sx={{ fontSize: '40px', color: 'white' }} />
+        <Box onClick={() => {setPanelShown(true);setLeftPanel('settings')}} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '55px', height: '55px', backgroundColor: leftPanel === 'settings' ? '#2c3745' : 'transparent', borderRadius: '10px', cursor: 'pointer', margin: '10px auto', ':hover': {   backgroundColor: '#506278', }, }}>
+          <SettingsIcon sx={{ fontSize: '40px', color: 'white' }} />
         </Box>
 
-        <Box onClick={() => {setPanelShown(true);setLeftPanel('settings')}} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '55px', height: '55px', backgroundColor: leftPanel === 'settings' ? '#2c3745' : 'transparent', borderRadius: '10px', cursor: 'pointer', margin: '10px auto', marginTop: 'auto', ':hover': {   backgroundColor: '#506278', }, }}>
-          <SettingsIcon sx={{ fontSize: '40px', color: 'white' }} />
+        <Box onClick={() =>{setPanelShown(true); setLeftPanel('share')}} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '55px', height: '55px', backgroundColor: leftPanel === 'share' ? '#2c3745' : 'transparent', borderRadius: '10px', cursor: 'pointer', margin: '10px auto', ':hover': {   backgroundColor: '#506278', }, }}>
+          <ShareIcon sx={{ fontSize: '40px', color: 'white' }} />
         </Box>
         
       </div>
@@ -888,7 +931,7 @@ const Editor = ({ user, album_id }) => {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'left', flexDirection: 'column', marginLeft: '5px', marginTop: '10px' }}>
-              <Typography style={{ fontWeight: 'bold', fontSize: '18px', textAlign: 'left'}}>{leftPanel === 'info' ? ('Information') : leftPanel === 'customize' ? ('Customisation') : leftPanel === 'photos' ? ('Photos') : ('asd')}</Typography>
+              <Typography style={{ fontWeight: 'bold', fontSize: '18px', textAlign: 'left'}}>{leftPanel === 'info' ? ('Information') : leftPanel === 'customize' ? ('Customisation') : leftPanel === 'photos' ? ('Photos') : leftPanel === 'settings' ? ('Layers') : ('Share')}</Typography>
               <Typography style={{ fontSize: '18px', color: 'gray' }}>{album_id}</Typography>
             </div>
           </div>
@@ -904,15 +947,11 @@ const Editor = ({ user, album_id }) => {
           <PhotosPanel photosOfPanel={photosOfPanel} getPhotoName={getPhotoName} deletePhoto={deletePhoto}/>
 
         ) : leftPanel === 'settings' ? (
-          <LayersPanel pageNumber={pageNumber} layoutOnPage={layoutOnPage} photosOfPanel={photosOfPanel} photoChooseClick={photoChooseClick} getPhotoName={getPhotoName} typographyChooseClick={typographyChooseClick} layerTable={layerTable} lessMoreTable={lessMoreTable} lessMoreClick={lessMoreClick} makeLayerUP={makeLayerUP} makeLayerDown={makeLayerDown} handleWidthSliderChange={handleWidthSliderChange} rmPhotoClick={rmPhotoClick} xTable={xTable} originalPageWidth={originalPageWidth} handleXSliderChange={handleXSliderChange} yTable={yTable} originalPageHeight={originalPageHeight} handleYSliderChange={handleYSliderChange} alignWidth={alignWidth} getLayerTitle={getLayerTitle} editText={editText} fonts={fonts} handleColorPickerVisibility={handleColorPickerVisibility} textColor={textColor} showLayerPicker={showLayerPicker} setSingleColorText={setSingleColorText} rotateTable={rotateTable} setRotateTable={setRotateTable} borderTable={borderTable} setBorderTable={setBorderTable} shadowTable={shadowTable} setShadowTable/>
+          <LayersPanel setDataOnline={setDataOnline} pageNumber={pageNumber} layoutOnPage={layoutOnPage} photosOfPanel={photosOfPanel} photoChooseClick={photoChooseClick} getPhotoName={getPhotoName} typographyChooseClick={typographyChooseClick} layerTable={layerTable} lessMoreTable={lessMoreTable} lessMoreClick={lessMoreClick} makeLayerUP={makeLayerUP} makeLayerDown={makeLayerDown} handleWidthSliderChange={handleWidthSliderChange} rmPhotoClick={rmPhotoClick} xTable={xTable} originalPageWidth={originalPageWidth} handleXSliderChange={handleXSliderChange} yTable={yTable} originalPageHeight={originalPageHeight} handleYSliderChange={handleYSliderChange} alignWidth={alignWidth} getLayerTitle={getLayerTitle} editText={editText} fonts={fonts} handleColorPickerVisibility={handleColorPickerVisibility} textColor={textColor} showLayerPicker={showLayerPicker} setSingleColorText={setSingleColorText} rotateTable={rotateTable} setRotateTable={setRotateTable} borderTable={borderTable} setBorderTable={setBorderTable} shadowTable={shadowTable} setShadowTable/>
         ) : (
           <div>
-            <Button
-              onClick={() => shareAlbumData()}
-            >Share</Button>
-            <Button
-              onClick={() => getSharedData(album_id)}
-            >get shared data</Button>
+            <Share shareAlbumData={shareAlbumData} getSharedData={getSharedData} album_id={album_id}/>
+            
           </div>
         )}
       </div>
@@ -926,7 +965,7 @@ const Editor = ({ user, album_id }) => {
 
           <ZoomInOutpanel zoomOut={zoomOut} zoom={zoom} zoomIn={zoomIn} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} allPageNumber={allPageNumber} />
       </div>
-      {layerTable[pageNumber].filter(item => typeof item === 'string' && item.startsWith('http')).length >= 1 ? (<LayoutPanel layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} layerTable={layerTable} pageNumber={pageNumber} originalPageWidth={originalPageWidth} originalPageHeight={originalPageHeight} onlyPhotosTable={onlyPhotosTable} setWidthTable={setWidthTable} widthTable={widthTable}/>) : (<div></div>) }
+      {layerTable[pageNumber].filter(item => typeof item === 'string' && item.startsWith('http')).length >= 1 ? (<LayoutPanel setDataOnline={setDataOnline} layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} layerTable={layerTable} pageNumber={pageNumber} originalPageWidth={originalPageWidth} originalPageHeight={originalPageHeight} onlyPhotosTable={onlyPhotosTable} setWidthTable={setWidthTable} widthTable={widthTable}/>) : (<div></div>) }
       
       
     </div>

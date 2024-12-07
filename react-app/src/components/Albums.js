@@ -2,11 +2,13 @@ import React, {useState, useEffect} from 'react';
 import { Avatar, Box, Button, Container, CssBaseline, Grid, Typography, useTheme } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 
 const Albums = ({ currentUser, setCurrentPage }) => {
   
   const theme = useTheme()
   const [albums, setAlbums] = useState([]);
+  const navigate = useNavigate()
 
   useEffect(() => {
     
@@ -35,6 +37,12 @@ const Albums = ({ currentUser, setCurrentPage }) => {
       getAlbums();
     
   }, [currentUser]);
+
+  const viewClick = (album_id) => {
+    //setChoosenAlbum(album_id); // Ustawienie wybranego albumu
+    let url = `/viewer/${album_id}`; // Stworzenie URL
+    navigate(url); // Nawigacja do odpowiedniego URL
+  };
 
   
   console.log(albums)
@@ -84,8 +92,8 @@ const Albums = ({ currentUser, setCurrentPage }) => {
               <button style={{ marginBottom: '5px', padding: '5px 10px', borderRadius: '5px', backgroundColor: '#28a745', color: '#fff', border: 'none' }}>
                 Download
               </button>
-              <button style={{ padding: '5px 10px', borderRadius: '5px', backgroundColor: '#17a2b8', color: '#fff', border: 'none' }}>
-                Share
+              <button style={{ padding: '5px 10px', borderRadius: '5px', backgroundColor: '#17a2b8', color: '#fff', border: 'none' }} onClick={() => viewClick(album.album_id)}>
+                View
               </button>
           </div>
           </div>

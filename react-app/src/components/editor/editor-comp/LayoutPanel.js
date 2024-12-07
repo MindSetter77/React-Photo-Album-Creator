@@ -5,7 +5,7 @@ import { Button, Typography, TextField, Card, CardMedia, Slider, Select, MenuIte
 
 
 
-const LayoutPanel = ({layoutOnPage, setLayoutOnPage, layerTable, pageNumber, originalPageWidth, originalPageHeight, onlyPhotosTable, setWidthTable, widthTable}) => {
+const LayoutPanel = ({setDataOnline, layoutOnPage, setLayoutOnPage, layerTable, pageNumber, originalPageWidth, originalPageHeight, onlyPhotosTable, setWidthTable, widthTable}) => {
     
     const boxShadowStr = "0 4px 10px 2px rgba(0, 255, 0, 0.5)"
 
@@ -13,6 +13,8 @@ const LayoutPanel = ({layoutOnPage, setLayoutOnPage, layerTable, pageNumber, ori
       let tabCpy = [...layoutOnPage]
       tabCpy[pageNumber] = `${photoAmount}${layoutNumber}`
       setLayoutOnPage(tabCpy)
+
+      setDataOnline(false)
         
     }
 

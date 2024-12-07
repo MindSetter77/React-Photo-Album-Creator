@@ -27,9 +27,11 @@ function getFirstName(currentUser) {
   return "";
 }
 
-function Navbar({ currentUser }) {
+function Navbar({ currentUser, dataOnline, setDataOnline }) {
   const [visiblePage, setVisiblePage] = React.useState(null);
   const navigate = useNavigate();
+
+  
 
   useEffect(() => {
     function start() {
@@ -72,12 +74,15 @@ function Navbar({ currentUser }) {
           sx={{
             fontSize: "23px",
             color: theme.palette.secondary.main,
-            marginRight: "auto",
             display: { xs: "none", md: "flex" },
           }}
         >
-          Album Generator
+          Album generator
+          
         </Typography>
+        <Typography style={{marginLeft: '10px', marginRight: '5px', marginTop: '2px', color: theme.palette.secondary.main, marginRight: 'auto'}}>{ dataOnline === true ? ('Changes in album: Saved.') : ('Changes in album: Unsaved.')}</Typography>
+        
+        
         <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
           {
             isEmptyObject(currentUser) ? null : (
@@ -114,7 +119,7 @@ function Navbar({ currentUser }) {
               variant="contained"
               sx={{
                 fontSize: "23px",
-                borderRadius: "20px",
+                borderRadius: "15px",
                 height: "40px",
                 textTransform: "none",
                 color: theme.palette.primary.main,

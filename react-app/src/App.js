@@ -17,13 +17,15 @@ import Tester from './components/viewer/Tester';
 function App() {
   const [user, setUser] = useState({});
   const [choosenAlbum, setChoosenAlbum] = useState("asd")
+  const [dataOnline, setDataOnline] = useState(true)
 
   //<Route path="/viewer:album_id" element={<Viewer user={user} album_id={choosenAlbum}/>} />
+  
 
   return (
     <Router>
       <div className="App">
-        <Navbar currentUser={user} />
+        <Navbar currentUser={user} dataOnline={dataOnline} setDataOnline={setDataOnline}/>
 
         <Routes>
           <Route path="/" element={<Home currentUser={user} />} />
@@ -33,7 +35,7 @@ function App() {
           <Route path="/profile" element={<UserProfile currentUser={user} setChoosenAlbum={setChoosenAlbum} />} />
           <Route path="/creator" element={<Creator user={user} />} />
           <Route path="/create-album" element={<Creator user={user}/>} />
-          <Route path="/editor" element={<Editor user={user} album_id={choosenAlbum}/>} />
+          <Route path="/editor" element={<Editor user={user} album_id={choosenAlbum} setDataOnline={setDataOnline}/>} />
           <Route path="/viewer/:album_id" element={<Viewer user={user}/>} />
           <Route path="*" element={<div>404 - Page Not Found</div>} />
         </Routes>

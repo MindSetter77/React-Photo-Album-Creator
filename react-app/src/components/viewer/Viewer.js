@@ -12,21 +12,20 @@ import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 import FileDropzone from '../create-album/FileDropzone';
+import PageView from '../editor/editor-comp/PageView';
 
-const Viewer = ({ user}) => {
+const Viewer = ({user}) => {
 
-    const { album_id } = useParams();
+  const { album_id } = useParams();
+
+  const isEmptyObject = obj => obj && Object.keys(obj).length === 0 && obj.constructor === Object;
 
   useEffect(() => {
     fetchAlbumPhotos(album_id)
     getSharedData(album_id)
   }, [])
 
-  console.log(album_id)
-
-
-
-
+  console.log(`user: ${user}`)
 
   const fonts = [
     { name: 'Roboto', value: 'Roboto, sans-serif' },
@@ -90,6 +89,64 @@ const Viewer = ({ user}) => {
   });
 
   const [yTable, setYTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [lessMoreTable, setLessMoreTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [rotateTable, setRotateTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [borderTable, setBorderTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [layoutOnPage, setLayoutOnPage] = useState([])
+
+  const [onlyTextTable, setOnlyTextTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [panelShown, setPanelShown] = useState(true)
+
+  const [shadowTable, setShadowTable] = useState(() => {
+    const rows = 50;
+    const cols = 0;
+    // Tworzymy tablicę 2D
+    return Array.from({ length: rows }, (_, rowIndex) => 
+        Array.from({ length: cols }, (_, colIndex) => 0) // Wypełnienie wartościami domyślnymi
+    );
+  });
+
+  const [onlyPhotosTable, setOnlyPhotosTable] = useState(() => {
     const rows = 50;
     const cols = 0;
     // Tworzymy tablicę 2D
@@ -172,8 +229,17 @@ const Viewer = ({ user}) => {
       setTextColor(data.textColor)
       setXTable(data.xTable)
       setYTable(data.yTable)
-
+      setLessMoreTable(data.lessMoreTable)
       setZoom(data.zoom)
+      setOnlyPhotosTable(data.onlyPhotos)
+      
+      setOnlyTextTable(data.onlyText)
+
+      setLayoutOnPage(data.layoutOnPage)
+      setShadowTable(data.shadowTable)
+      setBorderTable(data.borderTable)
+      setRotateTable(rotateTable)
+
       
     } catch (error) {
       console.error('Error fetching shared data:', error);
@@ -183,22 +249,10 @@ const Viewer = ({ user}) => {
   return (
   
     <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, height: 'calc(100vh - 64px)', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Card style={{
-              backgroundColor: colorPickerColor,
-              width: pageWidth,
-              height: pageHeight,
-              objectFit: 'contain',
-              position: 'relative',
-              boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)' // Dodanie cienia
-            }}>
-              {layerTable[pageNumber].map((item, index) => (
-                item.slice(0, 10) !== 'TYPOGRAPHY' ? (
-                <img key={index} src={item} style={{position: 'absolute', left: `${xTable[pageNumber][index]*(zoom/100)}px`, top: `${yTable[pageNumber][index]*(zoom/100)}px`, width: `${widthTable[pageNumber][index]}%`}} />
-              ):(
-                <div style={{color: `${textColor[pageNumber][index]}` , position: 'absolute', left: `${xTable[pageNumber][index]*(zoom/100)}px`, top: `${yTable[pageNumber][index]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
-                
-              )))}
-          </Card>
+          {isEmptyObject(user) ? (
+            <div>no</div>
+          ): (<PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable}/>)}
+          
 
           <ZoomInOutpanel zoomOut={zoomOut} zoom={zoom} zoomIn={zoomIn} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} allPageNumber={allPageNumber} />
       </div>
