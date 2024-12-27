@@ -39,7 +39,7 @@ const Albums = ({ currentUser, setCurrentPage }) => {
   return (
     <div
       style={{
-        background: 'linear-gradient(135deg, #2c3e50, #34495e)', // Darker gradient background
+        background: 'linear-gradient(to bottom, #002d5b, #000f1e)',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',

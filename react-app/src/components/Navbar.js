@@ -61,15 +61,6 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
   return (
     <AppBar position="relative" color="primary">
       <Toolbar>
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="logo"
-          sx={{ display: { xs: "none", md: "flex" }, color: theme.palette.secondary.main }}
-        >
-          <CollectionsBookmarkIcon />
-        </IconButton>
         <Typography
           variant="h6"
           component="div"
@@ -93,7 +84,7 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
         
         <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", width: '100%' }}>
   {
-    isEmptyObject(currentUser) ? null : (
+    isEmptyObject(currentUser) ? (<div style={{marginLeft: 'auto'}}/>) : (
       <Button
         color="inherit"
         sx={{ fontSize: "23px", color: theme.palette.secondary.main, textTransform: "none", marginLeft: 'auto' }}

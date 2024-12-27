@@ -221,6 +221,20 @@ app.post('/albums', (req, res) => {
   });
 });
 
+app.put('/updateAllowedUsers', (req, res) => {
+  const {album_id, allowedUsers} = req.body
+  console.log(allowedUsers)
+
+  let sql = 'UPDATE album SET allowedUsers = ? WHERE album_id = ?'
+
+  db.query(sql, [allowedUsers, album_id], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json({ message: 'Allowed users updated successfully' });
+  });
+})
+
 //GetAlbums Endpoint
 app.get('/getAlbums/:user_id', (req, res) => {
   const user_id = req.params.user_id;
@@ -239,6 +253,35 @@ app.get('/getPublicAlbums', (req, res) => {
 
   const sql = 'SELECT * FROM Album WHERE privacy = "public"';
   db.query(sql, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(result);
+  });
+});
+
+
+app.get('/getPrivacyStatus/:album_id', (req, res) => {
+
+  const album_id = req.params.album_id
+
+  const sql = 'SELECT privacy FROM Album WHERE album_id = ?';
+
+  db.query(sql,[album_id] ,(err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(result);
+  });
+});
+
+app.get('/getAllowedUsers/:album_id', (req, res) => {
+
+  const album_id = req.params.album_id
+
+  const sql = 'SELECT allowedUsers FROM Album WHERE album_id = ?';
+
+  db.query(sql,[album_id] ,(err, result) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -281,6 +324,19 @@ app.get('/getSharedData/:album_id', (req, res) => {
     }
     res.status(200).json(JSON.parse(data));
   });
+});
+
+app.get('/getAllUsers', (req, res) => {
+
+  const sql = 'SELECT * FROM users';
+
+  db.query(sql,(err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(result);
+  });
+  
 });
 
 

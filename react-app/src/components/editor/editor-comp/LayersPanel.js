@@ -5,7 +5,7 @@ import { Button, Typography, TextField, Card, CardMedia, Slider, Select, MenuIte
 import { ChromePicker } from 'react-color';
 import Layers from './Layers';
 
-const LayersPanel = ({setDataOnline, pageNumber, layoutOnPage, photosOfPanel, photoChooseClick, getPhotoName, typographyChooseClick, layerTable, lessMoreTable, lessMoreClick, makeLayerUP, makeLayerDown, handleWidthSliderChange, rmPhotoClick, xTable, originalPageWidth, handleXSliderChange, yTable, originalPageHeight, handleYSliderChange, alignWidth, getLayerTitle, editText, fonts, handleColorPickerVisibility, textColor, showLayerPicker, setSingleColorText, rotateTable, setRotateTable, borderTable, setBorderTable, shadowTable, setShadowTable }) => {
+const LayersPanel = ({ setDataOnline, pageNumber, layoutOnPage, photosOfPanel, photoChooseClick, getPhotoName, typographyChooseClick, layerTable, lessMoreTable, lessMoreClick, makeLayerUP, makeLayerDown, handleWidthSliderChange, rmPhotoClick, xTable, originalPageWidth, handleXSliderChange, yTable, originalPageHeight, handleYSliderChange, alignWidth, getLayerTitle, editText, fonts, handleColorPickerVisibility, textColor, showLayerPicker, setSingleColorText, rotateTable, setRotateTable, borderTable, setBorderTable, shadowTable, setShadowTable }) => {
 
   const [textFieldVal, setTextFieldVal] = useState("")
 
@@ -114,7 +114,7 @@ const LayersPanel = ({setDataOnline, pageNumber, layoutOnPage, photosOfPanel, ph
         </div>
         
     </div>
-    <Layers layerTable = {layerTable} pageNumber = {pageNumber} lessMoreTable = {lessMoreTable} rmPhotoClick = {rmPhotoClick} lessMoreClick = {lessMoreClick} makeLayerUP = {makeLayerUP} makeLayerDown = {makeLayerDown} handleWidthSliderChange = {handleWidthSliderChange} xTable = {xTable} originalPageWidth = {originalPageWidth} handleXSliderChange = {handleXSliderChange} yTable = {yTable} originalPageHeight = {originalPageHeight} handleYSliderChange = {handleYSliderChange} alignWidth = {alignWidth} getLayerTitle = {getLayerTitle} editText = {editText} fonts = {fonts} handleColorPickerVisibility = {handleColorPickerVisibility} textColor = {textColor} showLayerPicker = {showLayerPicker} ChromePicker = {ChromePicker} setSingleColorText = {setSingleColorText} rotateTable={rotateTable} setRotateTable={setRotateTable} borderTable={borderTable} setBorderTable={setBorderTable} shadowTable={shadowTable} setShadowTable={setShadowTable}/>
+    <Layers layoutOnPage={layoutOnPage} layerTable = {layerTable} pageNumber = {pageNumber} lessMoreTable = {lessMoreTable} rmPhotoClick = {rmPhotoClick} lessMoreClick = {lessMoreClick} makeLayerUP = {makeLayerUP} makeLayerDown = {makeLayerDown} handleWidthSliderChange = {handleWidthSliderChange} xTable = {xTable} originalPageWidth = {originalPageWidth} handleXSliderChange = {handleXSliderChange} yTable = {yTable} originalPageHeight = {originalPageHeight} handleYSliderChange = {handleYSliderChange} alignWidth = {alignWidth} getLayerTitle = {getLayerTitle} editText = {editText} fonts = {fonts} handleColorPickerVisibility = {handleColorPickerVisibility} textColor = {textColor} showLayerPicker = {showLayerPicker} ChromePicker = {ChromePicker} setSingleColorText = {setSingleColorText} rotateTable={rotateTable} setRotateTable={setRotateTable} borderTable={borderTable} setBorderTable={setBorderTable} shadowTable={shadowTable} setShadowTable={setShadowTable}/>
     </div>
     )
 };

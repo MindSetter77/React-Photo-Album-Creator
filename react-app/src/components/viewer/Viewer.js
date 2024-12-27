@@ -13,6 +13,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 import FileDropzone from '../create-album/FileDropzone';
 import PageView from '../editor/editor-comp/PageView';
+import { use } from 'react';
 
 const Viewer = ({user}) => {
 
@@ -23,9 +24,11 @@ const Viewer = ({user}) => {
   useEffect(() => {
     fetchAlbumPhotos(album_id)
     getSharedData(album_id)
+    getAlbumPrivacyStatus(album_id)
+    getAllowedUsers(album_id)
   }, [])
 
-  console.log(`user: ${user}`)
+  
 
   const fonts = [
     { name: 'Roboto', value: 'Roboto, sans-serif' },
@@ -34,6 +37,9 @@ const Viewer = ({user}) => {
     { name: 'Montserrat', value: 'Montserrat, sans-serif' },
     { name: 'Arial', value: 'Arial, sans-serif' },
   ];
+
+  const [privacyStatus, setPrivacyStatus] = useState('')
+  const [allowedUsers, setAllowedUsers] = useState('')
 
   const [photosOfPanel, setPhotosOfPanel] = useState([]);
   const [pageSize, setPageSize] = useState('A4');
@@ -165,7 +171,6 @@ const Viewer = ({user}) => {
   
       const data = await response.json();
       setPhotosOfPanel(data.images);
-      console.log("fetched!")
     } catch (error) {
       console.error('Error fetching album photos:', error);
     }
@@ -191,7 +196,6 @@ const Viewer = ({user}) => {
   }
 
   const setRealPageNumber = (pageNumber, value) => {
-    console.log(pageNumber, value)
 
     if(value === 1){
       if(pageNumber<allPageNumber){
@@ -244,14 +248,65 @@ const Viewer = ({user}) => {
     } catch (error) {
       console.error('Error fetching shared data:', error);
     }
+
+    
+
   };
+
+  const getAlbumPrivacyStatus = async(album_id) => {
+    try{
+      const response = await fetch(`http://localhost:3001/getPrivacyStatus/${album_id}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      setPrivacyStatus(data[0].privacy)
+
+    } catch (error) {
+      console.error(`Error getting privacy: ${error}`)
+    }
+  }
+
+  const getAllowedUsers = async(album_id) => {
+    try{
+      const response = await fetch(`http://localhost:3001/getAllowedUsers/${album_id}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+
+      setAllowedUsers(data[0].allowedUsers)
+    } catch (error) {
+      console.error(`Error getting privacy: ${error}`)
+    }
+  }
+
+  const getAllowedUsersFromList = () => {
+    const user_id = user.result[0].id
+
+    let usersAllowed = allowedUsers.split(',')
+
+    if(usersAllowed.includes(user_id.toString())) {
+      return true
+    } else {
+      return false
+    }
+    
+  }
 
   return (
   
     <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, height: 'calc(100vh - 64px)', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          {isEmptyObject(user) ? (
-            <div>no</div>
-          ): (<PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable}/>)}
+          {privacyStatus === 'private' && isEmptyObject(user)? (
+            <div>Login pls</div>
+          
+          ) : privacyStatus === 'private' && !isEmptyObject(user) && !getAllowedUsersFromList() ? (<div>not on list</div>)
+
+          : (privacyStatus === 'public') || (privacyStatus === 'private' && !isEmptyObject(user) && getAllowedUsersFromList()) ?(
+            <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable}/>
+          ) : (<div>Something went wrong</div>)}
           
 
           <ZoomInOutpanel zoomOut={zoomOut} zoom={zoom} zoomIn={zoomIn} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} allPageNumber={allPageNumber} />

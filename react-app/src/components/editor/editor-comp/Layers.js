@@ -5,7 +5,7 @@ import { Button, Typography, TextField, Card, CardMedia, Slider, Select, MenuIte
 
 
 
-const Layers = ({layerTable, pageNumber, lessMoreTable, rmPhotoClick, lessMoreClick, makeLayerUP, makeLayerDown, handleWidthSliderChange, xTable, originalPageWidth, handleXSliderChange, yTable, originalPageHeight, handleYSliderChange, alignWidth, getLayerTitle, editText, fonts, handleColorPickerVisibility, textColor, showLayerPicker, ChromePicker, setSingleColorText, rotateTable, setRotateTable, borderTable, setBorderTable, shadowTable, setShadowTable}) => {
+const Layers = ({layoutOnPage, layerTable, pageNumber, lessMoreTable, rmPhotoClick, lessMoreClick, makeLayerUP, makeLayerDown, handleWidthSliderChange, xTable, originalPageWidth, handleXSliderChange, yTable, originalPageHeight, handleYSliderChange, alignWidth, getLayerTitle, editText, fonts, handleColorPickerVisibility, textColor, showLayerPicker, ChromePicker, setSingleColorText, rotateTable, setRotateTable, borderTable, setBorderTable, shadowTable, setShadowTable}) => {
 
   const [borderShowColorTable, setBorderShowColorTable] = useState(() => {
     const rows = 50;
@@ -113,9 +113,6 @@ const Layers = ({layerTable, pageNumber, lessMoreTable, rmPhotoClick, lessMoreCl
             <Typography style={{ marginTop: '3px', marginLeft: '5px' }}>Layers</Typography>
         </div>
       </div>
-
-
-
       
       <div style={{flex: '1', minHeight: 'calc(100vh - 600px)', maxHeight: '200px', width: '100%', overflowY: 'scroll', borderRadius: '15px'}}>
       {layerTable[pageNumber].map((item, index) => (
@@ -136,7 +133,7 @@ const Layers = ({layerTable, pageNumber, lessMoreTable, rmPhotoClick, lessMoreCl
                   </div>
                   <div style={{display: 'flex'}}> 
                     <Typography>Width: </Typography>
-                    <Slider defaultValue={100} aria-label="Default" valueLabelDisplay="auto" min={1} max={200} onChange={(event, value) => handleWidthSliderChange(pageNumber, index, value)}/>
+                    <Slider disabled={['11', '12', '21'].includes(layoutOnPage[pageNumber])} defaultValue={100} aria-label="Default" valueLabelDisplay="auto" min={1} max={200} onChange={(event, value) => handleWidthSliderChange(pageNumber, index, value)}/>
                   </div>
                 </div>
               </div>
@@ -144,15 +141,15 @@ const Layers = ({layerTable, pageNumber, lessMoreTable, rmPhotoClick, lessMoreCl
                 <div style={{width: '90%'}}>
                   <div style={{display: 'flex', margin: '5px'}}>
                     <Typography style={{margin: '5px', marginLeft: '25px'}}>X</Typography>
-                    <Slider value={xTable[pageNumber][index] || 0} onChange={(event, value) => handleXSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageWidth} style={{width: '230px', marginLeft: '38px'}}/>
+                    <Slider disabled={['12', '21', '31', '32', '33','34'].includes(layoutOnPage[pageNumber])} value={xTable[pageNumber][index] || 0} onChange={(event, value) => handleXSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageWidth} style={{width: '230px', marginLeft: '38px'}}/>
                   </div>
                   <div style={{display: 'flex', margin: '5px'}}>
                     <Typography style={{margin: '5px', marginLeft: '25px'}}>Y</Typography>
-                    <Slider value={yTable[pageNumber][index] || 0} onChange={(event, value) => handleYSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageHeight} style={{width: '230px', marginLeft: '38px'}}/>
+                    <Slider disabled={['11', '12', '21', '31', '32', '33','34'].includes(layoutOnPage[pageNumber])} value={yTable[pageNumber][index] || 0} onChange={(event, value) => handleYSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={originalPageHeight} style={{width: '230px', marginLeft: '38px'}}/>
                   </div>
                   <div style={{display: 'flex', margin: '5px'}}>
                     <Typography style={{margin: '5px', marginRight: '10px'}}>Rotate</Typography>
-                    <Slider value={rotateTable[pageNumber][index] || 0} onChange={(event, value) => handleRotateSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={360} style={{width: '230px', marginLeft: '10px'}}/>
+                    <Slider disabled={['11', '12', '21', '31', '32', '33','34'].includes(layoutOnPage[pageNumber])} value={rotateTable[pageNumber][index] || 0} onChange={(event, value) => handleRotateSliderChange(pageNumber, index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={360} style={{width: '230px', marginLeft: '10px'}}/>
                   </div>
                   <div style={{display: 'flex', margin: '5px'}}>
                     <Typography style={{margin: '5px', marginRight: '10px'}}>Border</Typography>
@@ -162,6 +159,7 @@ const Layers = ({layerTable, pageNumber, lessMoreTable, rmPhotoClick, lessMoreCl
                       onChange={(event) => changeBorder(pageNumber, index, event.target.value)}
                       label="Page Size"
                       style={{height: '34px', width: '100px'}}
+                      disabled={['11', '31'].includes(layoutOnPage[pageNumber])}
                     >
                       <MenuItem value="None">None</MenuItem>
                       <MenuItem value="Solid">Solid</MenuItem>
@@ -196,7 +194,7 @@ const Layers = ({layerTable, pageNumber, lessMoreTable, rmPhotoClick, lessMoreCl
                         ) : null}
                   <div style={{display: 'flex', margin: '5px'}}>
                     <Typography style={{margin: '5px', marginRight: '10px'}}>Shadow</Typography>
-                    <Slider value={shadowTable[pageNumber][index] || 0} onChange={(event, value) => handleShadowSliderChange(index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={15} style={{width: '230px'}}/>
+                    <Slider disabled={['11'].includes(layoutOnPage[pageNumber])} value={shadowTable[pageNumber][index] || 0} onChange={(event, value) => handleShadowSliderChange(index, value)} aria-label="Default" valueLabelDisplay="auto" min={0} max={15} style={{width: '230px'}}/>
                   </div>
                 </div >
                 <div>

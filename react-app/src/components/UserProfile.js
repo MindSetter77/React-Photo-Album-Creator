@@ -56,7 +56,7 @@ const UserProfile = ({ currentUser, setChoosenAlbum }) => {
   };
 
   return (
-    <div style={{ background: 'linear-gradient(135deg, #2c3e50, #34495e)', height: 'calc(100vh - 64px)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 10px' }}>
+    <div style={{ background: 'linear-gradient(to bottom, #002d5b, #000f1e)', height: 'calc(100vh - 64px)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 10px' }}>
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
         <Avatar sx={{ width: 80, height: 80, bgcolor: theme.palette.primary.main }}>

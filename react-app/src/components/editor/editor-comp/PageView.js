@@ -57,7 +57,7 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
 
               return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
                 <div key={index} style={{display: 'flex', width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                  <img src={item} style={{position: 'absolute', width: '90%'}} />
+                  <img src={item} style={{position: 'absolute', width: '90%', border: borderTable[pageNumber][reversedIndex], boxShadow: `${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 2}px ${shadowTable[pageNumber][reversedIndex] * 0.5}px rgba(0, 0, 0, 0.5)`}} />
                 </div>
             ):(
               <div key={index} style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
@@ -82,7 +82,7 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
 
               return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
                 <div key={index} style={{display: 'flex', width: '100%', height: '50%', justifyContent: 'center', alignItems: 'center'}}>
-                  <img src={item} style={{position: 'absolute', width: '90%'}} />
+                  <img src={item} style={{position: 'absolute', width: '90%', boxShadow: `${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 2}px ${shadowTable[pageNumber][reversedIndex] * 0.5}px rgba(0, 0, 0, 0.5)`, border: borderTable[pageNumber][reversedIndex]}} />
                 </div>
             ):(
               <div key={index} style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
@@ -91,6 +91,32 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
 
             
         </Card>
+
+    ) : layoutOnPage[pageNumber] === '22' ? (
+
+      <Card style={{
+          backgroundColor: colorPickerColor,
+          width: pageWidth,
+          height: pageHeight,
+          objectFit: 'contain',
+          position: 'relative',
+          boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
+        }}>
+
+          {layerTable[pageNumber].slice().reverse().map((item, index) => {
+            const reversedIndex = layerTable[pageNumber].length - 1 - index;
+
+            return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
+              <div key={index} style={{display: 'flex', width: '100%', height: '50%', justifyContent: 'center', alignItems: 'center'}}>
+                <img src={item} style={{position: 'absolute', width: '90%', boxShadow: `${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 2}px ${shadowTable[pageNumber][reversedIndex] * 0.5}px rgba(0, 0, 0, 0.5)`, border: borderTable[pageNumber][reversedIndex]}} />
+              </div>
+          ):(
+            <div key={index} style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
+            
+          )})}
+
+          
+      </Card>
     ) : layoutOnPage[pageNumber] === '31' ? (
 
         <Card style={{
@@ -137,7 +163,7 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
 
               return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
                 <div key={index} style={{position: 'relative',display: 'flex', width: '100%', height: '30%', justifyContent: 'center', alignItems: 'center', marginBottom: '3%', marginTop: isFirstImage === true ? '4%' : '0px'}}>
-                  <img src={item} style={{position: 'absolute', width: '90%', height: '100%'}} />
+                  <img src={item} style={{position: 'absolute', width: '90%', height: '100%', border: borderTable[pageNumber][reversedIndex], boxShadow: `${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 2}px ${shadowTable[pageNumber][reversedIndex] * 0.5}px rgba(0, 0, 0, 0.5)`}} />
                 </div>
             ):(
               <div key={index} style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
