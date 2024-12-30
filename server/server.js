@@ -187,8 +187,8 @@ app.post('/google-login', async (req, res) => {
 app.post('/albums', (req, res) => {
   const { title, user_id, album_id, privacy } = req.body;
 
-  const sql = 'INSERT INTO Album (title, user_id, album_id, privacy) VALUES (?, ?, ?, ?)';
-  db.query(sql, [title, user_id, album_id, privacy], (err, result) => {
+  const sql = 'INSERT INTO Album (title, user_id, album_id, privacy, allowedUsers) VALUES (?, ?, ?, ?, ?)';
+  db.query(sql, [title, user_id, album_id, privacy, user_id.toString()], (err, result) => {
     console.log(album_id)
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') {

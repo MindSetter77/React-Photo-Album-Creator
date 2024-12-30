@@ -14,6 +14,7 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import FileDropzone from '../create-album/FileDropzone';
 import PageView from '../editor/editor-comp/PageView';
 import { use } from 'react';
+import Comments from './Comments';
 
 const Viewer = ({user}) => {
 
@@ -296,6 +297,8 @@ const Viewer = ({user}) => {
     
   }
 
+  
+
   return (
   
     <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, height: 'calc(100vh - 64px)', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -305,7 +308,12 @@ const Viewer = ({user}) => {
           ) : privacyStatus === 'private' && !isEmptyObject(user) && !getAllowedUsersFromList() ? (<div>not on list</div>)
 
           : (privacyStatus === 'public') || (privacyStatus === 'private' && !isEmptyObject(user) && getAllowedUsersFromList()) ?(
-            <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable}/>
+            <div style={{display: 'flex'}}>
+              <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable}/>
+              <div style={{width: '300px', height: 'calc(100vh - 100px)', marginRight: '5px', marginLeft: '100px', position: 'absolute', right: 0}}>
+                <Comments user={user} album_id={album_id}/>
+              </div>
+            </div>
           ) : (<div>Something went wrong</div>)}
           
 
