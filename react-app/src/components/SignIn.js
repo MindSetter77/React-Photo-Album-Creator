@@ -14,16 +14,19 @@ import Container from '@mui/material/Container';
 import { useTheme, ThemeProvider } from '@mui/material/styles';
 import Login from './login';
 
+import { useNavigate } from 'react-router-dom';
 
 
-const SignIn = ({ setCurrentPage, setUser }) => {
+
+const SignIn = ({ setUser }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const userData = {
-      email: data.get('email'),
+      username: data.get('username'),
       password: data.get('password'),
     };
 
@@ -38,10 +41,9 @@ const SignIn = ({ setCurrentPage, setUser }) => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Login successful in signIn:', result);
         setUser(result); // Ustawienie imienia użytkownika
         console.log(result)
-        setCurrentPage('home');
+        navigate('/');
       } else {
         console.error('Login failed:', response.statusText);
       }
@@ -73,10 +75,10 @@ const SignIn = ({ setCurrentPage, setUser }) => {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            id="username"
+            label="username"
+            name="username"
+            autoComplete="username"
             autoFocus
             sx={{
               '& .MuiInputLabel-root': { 
@@ -165,7 +167,7 @@ const SignIn = ({ setCurrentPage, setUser }) => {
             >
               Sign In
             </Button>
-            <Login setUser={setUser} setCurrentPage={setCurrentPage}/><br/>
+            <Login setUser={setUser} /><br/>
             <div style={{width: '100%', display: 'flex'}}>
               <div style={{width: '50%'}}>
                 <Link href="#" variant="body2" color='secondary'>
@@ -173,7 +175,7 @@ const SignIn = ({ setCurrentPage, setUser }) => {
                 </Link>
               </div>
               <div style={{width: '50%'}}>
-                <Link href="#" variant="body2" color='secondary' onClick={() => setCurrentPage('signup')}>
+                <Link href="#" variant="body2" color='secondary' onClick={() => navigate('/signup')}>
                   {"Don't have an account? Sign Up"}
                 </Link>
               </div>

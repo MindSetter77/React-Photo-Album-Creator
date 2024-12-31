@@ -5,6 +5,8 @@ const cors = require('cors'); // Import cors
 const mysql = require('mysql2');
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config();
+
 
 const { OAuth2Client } = require('google-auth-library');
 
@@ -16,6 +18,117 @@ app.use(cors());
 app.use(express.static('public')); // Do serwowania plików z folderu 'public'
 
 app.use('/albums', express.static(path.join(__dirname, 'albums')));
+
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+
+db.connect((err) => {
+  if (err) throw err;
+  console.log('MySQL connected...');
+});
+
+
+//LOGOWANIE
+
+// Endpoint do rejestracji użytkownika
+app.post('/signup', (req, res) => {
+  const { firstName, lastName, nickname, email, password } = req.body;
+
+  selectSQL = `SELECT * FROM users WHERE email = ? OR nickname = ?`
+
+  db.query(selectSQL, [email, nickname], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    } else {
+      if(result.length > 0){
+        console.log(`Log: User already exists for user: ${result[0].id}`)
+        res.status(201).json({ id: "ERROR"});
+      }else{
+        
+        const sql = 'INSERT INTO users (firstName, lastName, nickname, email, password) VALUES (?, ?, ?, ?, ?)';
+        db.query(sql, [firstName, lastName, nickname, email, password], (err, result) => {
+          if (err) {
+            console.log(err)
+            return res.status(500).json({ error: err.message });
+            
+          } else {
+            console.log(`LOG: User created: ${nickname}`)
+          }
+          res.status(201).json({ id: result.insertId, firstName, lastName, email, password });
+        });
+      }
+    }
+  });
+});
+
+// Endpoint do logowania użytkownika
+app.post('/login', (req, res) => {
+
+  const { username, password } = req.body;
+
+  console.log(username)
+
+  const sql = 'SELECT * FROM users WHERE nickname = ? AND password = ?';
+  db.query(sql, [username, password], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (result.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    console.log('Log: Logged for: ', result[0].id);
+    res.status(200).json({result});
+  });
+});
+
+// Endpoint do logowania przez Google
+app.post('/google-login', async (req, res) => {
+  
+  const {givenName, familyName, email} = req.body
+  console.log(givenName)
+
+  let sql = 'SELECT * FROM users WHERE email = ?';
+  db.query(sql, [email], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (result.length === 0) {
+      const sql = 'INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)';
+      db.query(sql, [givenName, familyName, email, "googleLogin"], (err, result) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        } else {
+          console.log("New user created in database!")
+        }
+
+        let sql2 = 'SELECT * FROM users WHERE email = ?';
+        db.query(sql2, [email], (err, result) => {
+          if (err) {
+            return res.status(500).json({ error: err.message });
+          }else{
+            delete result[0].password;
+            console.log('Google-user logged after creating in database. :', result);
+            res.status(201).json({ result});
+          }
+        })
+        
+        
+      });
+    } else {
+      delete result[0].password;
+      console.log('Google-user already in database. :', result);
+      res.status(200).json({ result});
+    }
+    
+  });
+});
+
+
+
 
 // Konfiguracja Multer
 const storage = multer.diskStorage({
@@ -81,105 +194,6 @@ app.get('/albums/:album_id/photos', (req, res) => {
 
     const imageUrls = files.map(file => `http://localhost:${port}/albums/${album_id}/${file}`);
     res.status(200).json({ images: imageUrls }); // Zwracamy listę URL-i
-  });
-});
-
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'Sonia484pl!',
-  database: 'photo_project',
-});
-
-db.connect((err) => {
-  if (err) throw err;
-  console.log('MySQL connected...');
-});
-
-// Endpoint do rejestracji użytkownika
-app.post('/signup', (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
-
-  selectSQL = `select * from users where email = "${email}"`
-
-  db.query(selectSQL, [email], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    } else {
-      if(result.length > 0){
-        console.log(`User already exists`)
-        res.status(201).json({ id: "ERROR"});
-      }else{
-        const sql = 'INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)';
-        db.query(sql, [firstName, lastName, email, password], (err, result) => {
-          if (err) {
-            return res.status(500).json({ error: err.message });
-          } else {
-            console.log("User created")
-          }
-          res.status(201).json({ id: result.insertId, firstName, lastName, email, password });
-        });
-      }
-    }
-  });
-});
-
-// Endpoint do logowania użytkownika
-app.post('/login', (req, res) => {
-  console.log("in login")
-  const { email, password } = req.body;
-  const sql = 'SELECT * FROM users WHERE email = ? AND password = ?';
-  db.query(sql, [email, password], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (result.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    console.log('Logowanie uzytkownika:', result[0]);
-    res.status(200).json({result});
-  });
-});
-
-// Endpoint do logowania przez Google
-app.post('/google-login', async (req, res) => {
-  
-  const {givenName, familyName, email} = req.body
-  console.log(givenName)
-
-  let sql = 'SELECT * FROM users WHERE email = ?';
-  db.query(sql, [email], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    if (result.length === 0) {
-      const sql = 'INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)';
-      db.query(sql, [givenName, familyName, email, "googleLogin"], (err, result) => {
-        if (err) {
-          return res.status(500).json({ error: err.message });
-        } else {
-          console.log("New user created in database!")
-        }
-
-        let sql2 = 'SELECT * FROM users WHERE email = ?';
-        db.query(sql2, [email], (err, result) => {
-          if (err) {
-            return res.status(500).json({ error: err.message });
-          }else{
-            delete result[0].password;
-            console.log('Google-user logged after creating in database. :', result);
-            res.status(201).json({ result});
-          }
-        })
-        
-        
-      });
-    } else {
-      delete result[0].password;
-      console.log('Google-user already in database. :', result);
-      res.status(200).json({ result});
-    }
-    
   });
 });
 

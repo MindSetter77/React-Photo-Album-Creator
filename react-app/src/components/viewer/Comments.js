@@ -28,7 +28,6 @@ const Comments = ({user, album_id}) => {
   }
 
   const sendBtnClick = async() => {
-    console.log(user)
 
     
   }

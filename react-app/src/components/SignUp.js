@@ -14,21 +14,11 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Login from './login';
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+
 
 const validateEmail = (email) => {
   const re = /\S+@\S+\.\S+/;
@@ -55,8 +45,9 @@ const validatePassword = (password) => {
   return true;
 };
 
-const SignUp = ({ setCurrentPage }) => {
+const SignUp = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -64,9 +55,12 @@ const SignUp = ({ setCurrentPage }) => {
     const userData = {
       firstName: data.get('firstName'),
       lastName: data.get('lastName'),
+      nickname: data.get('Nickname'),
       email: data.get('email'),
       password: data.get('password'),
     };
+
+    console.log(userData.nickname)
 
     // Walidacja formularza
     if (!userData.firstName.trim() || !userData.lastName.trim()) {
@@ -90,10 +84,9 @@ const SignUp = ({ setCurrentPage }) => {
         if (response.ok) {
           const result = await response.json();
           if(result.id === "ERROR"){
-            console.log(`user already exists!`)
+            console.log(`User already exists!`)
           }else{
-            console.log('User created:', result);
-            setCurrentPage('login');
+            navigate('/login');
           }
         } else {
           console.error('Error creating user:', response.statusText);
@@ -157,6 +150,28 @@ const SignUp = ({ setCurrentPage }) => {
                     label="Last Name"
                     name="lastName"
                     autoComplete="family-name"
+                    sx={{
+                      '& .MuiInputLabel-root': { color: theme.palette.secondary.main },
+                      '& .MuiInputLabel-root.Mui-focused': { color: theme.palette.secondary.main },
+                      '& .MuiInputBase-input': { color: 'white' },
+                      '& .MuiOutlinedInput-root': {
+                        '& fieldset': { borderColor: theme.palette.secondary.main },
+                        '&:hover fieldset': { borderColor: theme.palette.secondary.main },
+                        '&.Mui-focused fieldset': { borderColor: theme.palette.secondary.main },
+                      },
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '8px',
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="Nickname"
+                    label="Nickname"
+                    name="Nickname"
+                    autoComplete="Nickname"
                     sx={{
                       '& .MuiInputLabel-root': { color: theme.palette.secondary.main },
                       '& .MuiInputLabel-root.Mui-focused': { color: theme.palette.secondary.main },
@@ -242,7 +257,7 @@ const SignUp = ({ setCurrentPage }) => {
           <Box mt={5}>
             <Typography variant="body2" color="secondary" align="center">
               Already have an account?{' '}
-              <Link href="#" variant="body2" color="secondary" onClick={() => setCurrentPage('login')}>
+              <Link href="#" variant="body2" color="secondary" onClick={() => navigate('/login')}>
                 Sign In
               </Link>
             </Typography>
