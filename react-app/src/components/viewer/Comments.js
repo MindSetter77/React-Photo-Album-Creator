@@ -109,10 +109,9 @@ const Comments = ({user, album_id}) => {
                     InputProps={{ style: { whiteSpace: 'nowrap', overflowX: 'auto' } }}
                     style={{width: '90%', marginTop: '15px'}}
                 />
-            <div onClick={() => sendBtnClick()} style={{width: '90%', height: '30px', marginLeft: 'auto', marginRight: 'auto', marginTop: '10px', backgroundColor: 'black', borderRadius: '10px', alignContent: 'center', cursor: 'pointer'}} ><Typography style={{color: 'white'}}>Send</Typography></div>
-            <div onClick={() => {console.log(comments)}}>asd</div>
+            <div onClick={() => sendBtnClick()} style={{width: '90%', height: '30px', marginLeft: 'auto', marginRight: 'auto', marginTop: '20px', backgroundColor: 'black', borderRadius: '10px', alignContent: 'center', cursor: 'pointer'}} ><Typography style={{color: 'white'}}>Send</Typography></div>
 
-            <div style={{ marginTop: '20px', padding: '10px' }}>
+            <div style={{ marginTop: '10px', padding: '10px', maxHeight: '600px', overflowY: 'auto' }}>
               {comments.length > 0 ? (
                 comments.slice().reverse().map((comment, index) => (
                   <div key={index} style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '5px' }}>
