@@ -21,16 +21,77 @@ const Comments = ({user, album_id}) => {
 
   const [comment, setComment] = useState('')
 
+  const [comments, setComments] = useState([]);
+
+  // Pobieranie komentarzy po załadowaniu komponentu
+  useEffect(() => {
+    if (album_id) {
+      fetchComments();
+    }
+  }, [album_id]);
+
   const handleCommentChange = (inputText) => {
     if(inputText.length < 201){
       setComment(inputText)
     }
   }
 
-  const sendBtnClick = async() => {
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(`http://localhost:3001/getComments?album_id=${album_id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setComments(data.comments);  // Ustawienie komentarzy w stanie
+      } else {
+        const errorMessage = await response.text();
+        console.error('Błąd pobierania komentarzy:', errorMessage);
+      }
+    } catch (error) {
+      console.error('Błąd podczas pobierania komentarzy:', error);
+    }
+  };
 
+  const sendBtnClick = async () => {
     
-  }
+    // Sprawdzenie, czy comment nie jest pusty
+    if (comment.length > 0) {
+      // Sprawdzenie, czy album_id i user_id są zdefiniowane
+      if (!album_id || !user.result || !user.result[0]?.id) {
+        console.error("Brak wymaganych danych: album_id lub user_id");
+        return;
+      }
+  
+      const user_id = user.result[0].id;  // Pobranie user_id z odpowiedzi
+      const nickname = user.result[0].nickname
+      
+      try {
+        // Wysyłanie żądania do backendu
+        const response = await fetch('http://localhost:3001/addComment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user_id, album_id, comment, nickname }),  // Wysłanie danych w ciele żądania
+        });
+  
+        if (response.ok) {
+          console.log("Komentarz został dodany!");
+          setComment('')
+          fetchComments()
+          
+        } else {
+          // Jeśli odpowiedź jest błędna, wypisz błąd
+          const errorMessage = await response.text();  // Odczytanie komunikatu błędu
+          console.error('Błąd dodawania komentarza:', errorMessage);
+        }
+      } catch (error) {
+        // Obsługa błędów w przypadku problemów z zapytaniem
+        console.error('Błąd podczas dodawania komentarza:', error);
+      }
+    } else {
+      console.error("Komentarz jest pusty.");
+    }
+  };
 
   return (
   
@@ -49,6 +110,21 @@ const Comments = ({user, album_id}) => {
                     style={{width: '90%', marginTop: '15px'}}
                 />
             <div onClick={() => sendBtnClick()} style={{width: '90%', height: '30px', marginLeft: 'auto', marginRight: 'auto', marginTop: '10px', backgroundColor: 'black', borderRadius: '10px', alignContent: 'center', cursor: 'pointer'}} ><Typography style={{color: 'white'}}>Send</Typography></div>
+            <div onClick={() => {console.log(comments)}}>asd</div>
+
+            <div style={{ marginTop: '20px', padding: '10px' }}>
+              {comments.length > 0 ? (
+                comments.slice().reverse().map((comment, index) => (
+                  <div key={index} style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '5px' }}>
+                    <Typography><strong>{comment.nickname}:</strong></Typography>
+                    <Typography>{comment.comment}</Typography>
+                    <Typography style={{ fontSize: '12px', color: 'gray' }}>{comment.comment_date.slice(0, 10)}</Typography>
+                  </div>
+                ))
+              ) : (
+                <Typography>Brak komentarzy do wyświetlenia.</Typography>
+              )}
+            </div>
         </div>
     </div>
     )

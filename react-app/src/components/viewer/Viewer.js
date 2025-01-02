@@ -310,7 +310,7 @@ const Viewer = ({user}) => {
           : (privacyStatus === 'public') || (privacyStatus === 'private' && !isEmptyObject(user) && getAllowedUsersFromList()) ?(
             <div style={{display: 'flex'}}>
               <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable}/>
-              <div style={{width: '300px', height: 'calc(100vh - 100px)', marginRight: '5px', marginLeft: '100px', position: 'absolute', right: 0}}>
+              <div style={{width: '300px', height: 'calc(100vh - 100px)', marginRight: '5px', marginLeft: '100px', position: 'absolute', right: 0, top: 70}}>
                 <Comments user={user} album_id={album_id}/>
               </div>
             </div>

@@ -28,7 +28,7 @@ function App() {
         <Navbar currentUser={user} dataOnline={dataOnline} setDataOnline={setDataOnline}/>
 
         <Routes>
-          <Route path="/" element={<Home currentUser={user} />} />
+          <Route path="/" element={<Home currentUser={user} setUser={setUser} />} />
           <Route path="/albums" element={<Albums />} />
           <Route path="/login" element={<SignIn setUser={setUser} />} />
           <Route path="/signup" element={<SignUp />} />

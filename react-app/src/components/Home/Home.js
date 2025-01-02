@@ -1,11 +1,41 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import '@fontsource/dm-sans';
 import '@fontsource/roboto';
 import { Button, useTheme } from '@mui/material';
 
-function Home({ currentUser, setCurrentPage }) {
+function Home({ currentUser, setCurrentPage, setUser }) {
   const isEmptyObject = (obj) => obj && Object.keys(obj).length === 0 && obj.constructor === Object;
   const theme = useTheme();
+
+  useEffect(() => {
+    // Funkcja, która pobiera todos oraz wszystkich użytkowników
+    const fetchData = async () => {
+      try {
+        // Pobranie todos
+        const todosResponse = await fetch('http://localhost:3001/todos', {
+          method: 'GET',
+          credentials: 'include', // Ważne, aby wysłać ciasteczka
+        });
+        
+        if (!todosResponse.ok) {
+          console.log("NOT OK")
+          throw new Error('Failed to fetch todos');
+        }
+        const todosData = await todosResponse.json();
+        setUser(todosData)
+        
+  
+      } catch (err) {
+        console.log('gownatus')
+        console.error(err);
+      }
+    };
+
+    fetchData(); // Wywołanie funkcji fetchData
+  }, []); // Pusty array zapewnia, że ten efekt wykona się tylko raz po załadowaniu komponentu
+
+
+    
 
   return (
     <div

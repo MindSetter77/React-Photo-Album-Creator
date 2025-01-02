@@ -5,6 +5,9 @@ const cors = require('cors'); // Import cors
 const mysql = require('mysql2');
 const path = require('path');
 const fs = require('fs');
+const session = require('express-session')
+const uuidv4 = require('uuid').v4;
+
 require('dotenv').config();
 
 
@@ -14,8 +17,21 @@ const app = express();
 const port = 3001;
 
 app.use(bodyParser.json());
-app.use(cors()); 
+const corsOptions = {
+  origin: 'http://localhost:3000',  // Tutaj wstaw adres swojego frontendu
+  methods: 'GET, POST, PUT, DELETE', // Dozwolone metody
+  credentials: true,  // Ważne: zezwala na przesyłanie ciasteczek
+};
+
+app.use(cors(corsOptions));
 app.use(express.static('public')); // Do serwowania plików z folderu 'public'
+
+app.use(session({
+  secret: 'someSecret',
+  cookie: { maxAge: 3000 },
+  resave: false,
+  saveUninitialized: false
+}))
 
 app.use('/albums', express.static(path.join(__dirname, 'albums')));
 
@@ -65,6 +81,8 @@ app.post('/signup', (req, res) => {
   });
 });
 
+const session_memory = {}
+
 // Endpoint do logowania użytkownika
 app.post('/login', (req, res) => {
 
@@ -80,52 +98,167 @@ app.post('/login', (req, res) => {
     if (result.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    console.log('Log: Logged for: ', result[0].id);
+
+    const id = result[0].id
+
+    console.log('Log: Logged for: ', id);
+
+    const session_id = uuidv4();
+    session_memory[session_id] = {id, username}
+    
+    // Ustawienie ciasteczka
+    res.cookie('WebPhotoSession', session_id, {
+      httpOnly: false, // zabezpieczenie przed dostępem z JavaScript
+      secure: process.env.NODE_ENV === 'production', // tylko przez HTTPS w produkcji
+      sameSite: 'Strict', // zapewnia, że ciasteczko nie jest wysyłane w zapytaniach międzydomenowych
+      maxAge: 3600000, // Czas życia ciasteczka (np. 1 godzina)
+      path: '/', // Ciasteczko dostępne w całej aplikacji
+    });
+
     res.status(200).json({result});
   });
 });
+
+app.get('/todos', (req, res) => {
+  console.log('todos reached');
+  
+  const cookies = req.headers.cookie; // Odczytaj wszystkie ciasteczka z nagłówka
+
+  if (!cookies) {
+    console.log('err1')
+    return res.status(401).send('No cookies found');
+  }
+  // Znajdź ciasteczko WebPhotoSession
+  const match = cookies.split('; ').find(cookie => cookie.startsWith('WebPhotoSession='));
+  if (!match) {
+    console.log('err2')
+    return res.status(401).send('Session cookie not found');
+  }
+  const session_id = match.split('=')[1]; // Wyciągnij wartość ciasteczka
+  const userSession = session_memory[session_id]
+
+  if(!userSession){
+    console.log('err3')
+    console.log(session_memory[session_id])
+    return res.status(401).send('Invalid session')
+ }
+
+ const userId = userSession.id
+ const sql = 'SELECT * FROM users WHERE id = ?';
+
+ db.query(sql, [userId], (err, result) => {
+  if (err) {
+    return res.status(500).json({ error: err.message });
+  }
+  if (result.length === 0) {
+    return res.status(401).json({ error: 'User not found!' });
+  }
+  console.log(result)
+
+  res.status(200).json({result});
+});
+})
+
+
+
 
 // Endpoint do logowania przez Google
 app.post('/google-login', async (req, res) => {
   
   const {givenName, familyName, email} = req.body
-  console.log(givenName)
+  const nickname = givenName+familyName
 
-  let sql = 'SELECT * FROM users WHERE email = ?';
-  db.query(sql, [email], (err, result) => {
+  let sql = 'SELECT * FROM users WHERE email = ? or nickname = ?';
+
+  db.query(sql, [email, nickname], (err, result) => {
     if (err) {
+      console.log("err1")
       return res.status(500).json({ error: err.message });
     }
     if (result.length === 0) {
-      const sql = 'INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)';
-      db.query(sql, [givenName, familyName, email, "googleLogin"], (err, result) => {
+      const sql = 'INSERT INTO users (firstName, lastName, nickname, email, password) VALUES (?, ?, ?, ?, ?)';
+      db.query(sql, [givenName, familyName, nickname, email, "googleLogin"], (err, result) => {
         if (err) {
+          console.log("err2")
           return res.status(500).json({ error: err.message });
         } else {
           console.log("New user created in database!")
         }
-
-        let sql2 = 'SELECT * FROM users WHERE email = ?';
-        db.query(sql2, [email], (err, result) => {
-          if (err) {
-            return res.status(500).json({ error: err.message });
-          }else{
-            delete result[0].password;
-            console.log('Google-user logged after creating in database. :', result);
-            res.status(201).json({ result});
-          }
-        })
-        
-        
       });
     } else {
       delete result[0].password;
-      console.log('Google-user already in database. :', result);
+      console.log(`LOG: Logged with google: ${result[0].id}`);
+
+      const session_id = uuidv4();
+      const id = result[0].id
+      const userName = result[0].givenName + result[0].familyName
+
+      session_memory[session_id] = {id, userName}
+
+      console.log(`Session ID created for user: ${session_id}`)
+      
+      // Ustawienie ciasteczka
+      res.cookie('WebPhotoSession', session_id, {
+        httpOnly: false, // zabezpieczenie przed dostępem z JavaScript
+        secure: process.env.NODE_ENV === 'production', // tylko przez HTTPS w produkcji
+        sameSite: 'Strict', // zapewnia, że ciasteczko nie jest wysyłane w zapytaniach międzydomenowych
+        maxAge: 3600000, // Czas życia ciasteczka (np. 1 godzina)
+        path: '/', // Ciasteczko dostępne w całej aplikacji
+      });
+
+
       res.status(200).json({ result});
     }
     
   });
 });
+
+app.post('/addComment', (req, res) => {
+  const { user_id, album_id, comment, nickname } = req.body;
+
+  // Sprawdzamy, czy wszystko jest poprawnie przekazane
+  if (!user_id || !album_id || !comment) {
+    return res.status(400).json({ error: 'Brak wymaganych danych: user_id, album_id lub comment' });
+  }
+
+  // Dodajemy bieżącą datę (current date) do zapytania
+  const comment_date = new Date().toISOString().split('T')[0]; // Formatowanie daty w formacie YYYY-MM-DD
+
+  const sql = 'INSERT INTO comments(user_id, album_id, comment, comment_date, nickname) values (?, ?, ?, ?, ?)';
+  
+  db.query(sql, [user_id, album_id, comment, comment_date, nickname], (err, result) => {
+    if (err) {
+      console.error('SQL Error:', err);
+      return res.status(500).json({ error: 'Error inserting comment into database', details: err.message });
+    }
+    res.status(200).json({ result });
+  });
+});
+
+app.get('/getComments', (req, res) => {
+  const { album_id } = req.query;
+
+  if (!album_id) {
+    return res.status(400).json({ error: 'Brak album_id w zapytaniu' });
+  }
+
+  const sql = 'SELECT * FROM comments WHERE album_id = ?';
+  
+  db.query(sql, [album_id], (err, result) => {
+    if (err) {
+      console.error('SQL Error:', err);
+      return res.status(500).json({ error: 'Error fetching comments from database', details: err.message });
+    }
+
+    res.status(200).json({ comments: result });
+  });
+});
+
+
+
+
+
+
 
 
 
