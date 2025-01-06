@@ -16,7 +16,7 @@ import PageView from '../editor/editor-comp/PageView';
 import { use } from 'react';
 import Comments from './Comments';
 
-const Viewer = ({user}) => {
+const Viewer = ({user, setUser, choosenLanguage}) => {
 
   const { album_id } = useParams();
 
@@ -27,7 +27,28 @@ const Viewer = ({user}) => {
     getSharedData(album_id)
     getAlbumPrivacyStatus(album_id)
     getAllowedUsers(album_id)
+    getUserFromCookie()
   }, [])
+
+  const getUserFromCookie = async () => {
+    try {
+      // Pobranie todos
+      const todosResponse = await fetch('http://localhost:3001/todos', {
+        method: 'GET',
+        credentials: 'include', // Ważne, aby wysłać ciasteczka
+      });
+      
+      if (!todosResponse.ok) {
+        console.log("NOT OK")
+        throw new Error('Failed to fetch todos');
+      }
+      const todosData = await todosResponse.json();
+      setUser(todosData)
+      
+
+    } catch (err) {
+    }
+  };
 
   
 
@@ -188,6 +209,15 @@ const Viewer = ({user}) => {
     //printTables()
   }
 
+  const zoom100 = () => {
+
+    setPageHeight(originalPageHeight)
+    setPageWidth(originalPageWidth)
+    setZoom(100)
+
+    //printTables()
+  }
+
   const zoomIn = () => {
     const stepH = originalPageHeight / 10
     const stepW = originalPageWidth / 10
@@ -301,23 +331,27 @@ const Viewer = ({user}) => {
 
   return (
   
-    <div style={{ background: `linear-gradient(120deg, #caf0f8, #caf0f8)`, height: 'calc(100vh - 64px)', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ background: `linear-gradient(180deg,rgb(136, 196, 255),rgb(118, 186, 255))`, height: 'calc(100vh - 64px)', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {privacyStatus === 'private' && isEmptyObject(user)? (
-            <div>Login pls</div>
+            <div><Typography style={{fontSize: '20px'}}>You need to login to view the private album!</Typography></div>
           
-          ) : privacyStatus === 'private' && !isEmptyObject(user) && !getAllowedUsersFromList() ? (<div>not on list</div>)
+          ) : privacyStatus === 'private' && !isEmptyObject(user) && !getAllowedUsersFromList() ? (<div><Typography style={{fontSize: '20px'}}>You are not allowed to view the album by the creator!</Typography></div>)
 
           : (privacyStatus === 'public') || (privacyStatus === 'private' && !isEmptyObject(user) && getAllowedUsersFromList()) ?(
             <div style={{display: 'flex'}}>
-              <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable}/>
+              <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable} setRealPageNumber={setRealPageNumber} allPageNumber={allPageNumber} setPageNumber={setPageNumber} zoom100={zoom100}/>
               <div style={{width: '300px', height: 'calc(100vh - 100px)', marginRight: '5px', marginLeft: '100px', position: 'absolute', right: 0, top: 70}}>
-                <Comments user={user} album_id={album_id}/>
+                <Comments user={user} album_id={album_id} layoutOnPage={layoutOnPage} setPageNumber={setPageNumber} allPageNumber={allPageNumber} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} layerTable={layerTable} choosenLanguage={choosenLanguage} />
+                
               </div>
+              
             </div>
           ) : (<div>Something went wrong</div>)}
           
-
-          <ZoomInOutpanel zoomOut={zoomOut} zoom={zoom} zoomIn={zoomIn} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} allPageNumber={allPageNumber} />
+          {(privacyStatus === 'public') || (privacyStatus === 'private' && !isEmptyObject(user) && getAllowedUsersFromList()) ?
+            (<ZoomInOutpanel zoomOut={zoomOut} zoom={zoom} zoomIn={zoomIn} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} allPageNumber={allPageNumber} choosenLanguage={choosenLanguage} />):(null)
+          }
+          
       </div>
     )
 };

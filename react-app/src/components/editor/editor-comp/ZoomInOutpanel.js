@@ -5,7 +5,7 @@ import { Button, Typography, TextField, Card, CardMedia, Slider, Select, MenuIte
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
-const ZoomInOutpanel = ({zoomOut, zoom, zoomIn, setRealPageNumber, pageNumber, allPageNumber  }) => {
+const ZoomInOutpanel = ({zoomOut, zoom, zoomIn, setRealPageNumber, pageNumber, allPageNumber, choosenLanguage  }) => {
   return (
   
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',borderRadius: '15px', border: '2px dotted black', backgroundColor: 'rgba(255, 255, 255, 0.5)', position: 'absolute', marginLeft: 'auto', marginRight: 'auto', bottom: '10px', height: '60px', width: '400px'}}>
@@ -13,7 +13,8 @@ const ZoomInOutpanel = ({zoomOut, zoom, zoomIn, setRealPageNumber, pageNumber, a
         <Typography style={{marginLeft: '10px', marginRight: '10px'}}>{`${zoom}%`}</Typography>
         <Button onClick={() => { zoomIn() }}><ZoomInIcon/></Button>
         <Button style={{width: '10px'}} onClick={() => {setRealPageNumber(pageNumber, -1)}}>◀</Button>
-        <Typography>{`Page: ${pageNumber}/${allPageNumber}`}</Typography>
+        {choosenLanguage == 'EN' ? (`Page: ${pageNumber}/${allPageNumber}`) : (`Strona: ${pageNumber}/${allPageNumber}`)}
+        <Typography>{}</Typography>
         <Button style={{width: '10px'}} onClick={() => {setRealPageNumber(pageNumber, 1)}}>▶</Button>
     </div>
     )

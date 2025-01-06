@@ -5,7 +5,7 @@ import { Button, Typography, TextField, Card, CardMedia, Slider, Select, MenuIte
 import { ChromePicker } from 'react-color';
 
 
-const CustomizePanel = ({pageSize, changePageSize, allPageNumber, setAllPageNumber, changeBackground, handleChangeBackground, setChangeBackground, setBackgroundColor, colorPickerColor}) => {
+const CustomizePanel = ({pageSize, changePageSize, allPageNumber, setAllPageNumber, changeBackground, handleChangeBackground, setChangeBackground, setBackgroundColor, colorPickerColor, choosenLanguage}) => {
 
   return (
     
@@ -33,7 +33,7 @@ const CustomizePanel = ({pageSize, changePageSize, allPageNumber, setAllPageNumb
           borderTopRightRadius: '10px'
         }}>
           <div style={{ display: 'flex', color: 'white' }}>
-            <Typography style={{ marginTop: '3px', marginLeft: '5px' }}>Album customization</Typography>
+            <Typography style={{ marginTop: '3px', marginLeft: '5px' }}>{choosenLanguage === 'EN' ? (`Album customization`) : (`Personalizacja albumu`)}</Typography>
           </div>
         </div>
       
@@ -46,9 +46,9 @@ const CustomizePanel = ({pageSize, changePageSize, allPageNumber, setAllPageNumb
           overflow: 'auto' // Pozwoli na przewijanie w razie potrzeby
         }}>
           <div>
-            <Typography style={{ padding: '10px' }}>Customize</Typography>
+            <Typography style={{ padding: '10px' }}>{choosenLanguage === 'EN' ? (`Customize`) : (`Personalizacja`)}</Typography>
             <FormControl fullWidth style={{ marginBottom: '10px' }}>
-              <InputLabel id="photo-limit-label">Page width and height</InputLabel>
+              <InputLabel id="photo-limit-label">{choosenLanguage === 'EN' ? (`Page width and height`) : (`Rozmiar strony`)}</InputLabel>
               <Select
                 labelId="photo-limit-label"
                 value={pageSize}
@@ -63,18 +63,16 @@ const CustomizePanel = ({pageSize, changePageSize, allPageNumber, setAllPageNumb
           </div>
       
           <div style={{ display: 'flex' }}>
-            <Typography style={{ fontSize: '20px' }}>{`Page number: ${allPageNumber}`}</Typography>
+            <Typography style={{ fontSize: '20px' }}>{choosenLanguage === 'EN' ? (`Amount of pages: ${allPageNumber}`) : (`Liczba stron: ${allPageNumber}`)}</Typography>
             <div style={{ display: 'flex', flexDirection: 'column', width: '100px' }}>
               <Button style={{ height: '5px', width: '0px' }} onClick={() => { setAllPageNumber(allPageNumber + 1) }}>▲</Button>
               <Button style={{ height: '5px', width: '0px' }} onClick={() => { setAllPageNumber(allPageNumber - 1) }}>▼</Button>
             </div>
           </div>
-
-          <div style={{width: '25px', height: '25px', backgroundColor: 'red'}}></div>
       
           <FormControlLabel
             control={<Checkbox checked={changeBackground} onChange={handleChangeBackground} />}
-            label="Use pattern"
+            label={choosenLanguage === 'EN' ? (`Background color`) : (`Kolor tła`)}
           />
           {changeBackground && (
             <div style={{ marginLeft: '20%' }}>

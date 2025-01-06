@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -18,9 +18,12 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-const SignIn = ({ setUser }) => {
+const SignIn = ({ setUser, choosenLanguage }) => {
   const theme = useTheme();
   const navigate = useNavigate();
+
+  const [currentView, setCurrentView] = useState('beforeCode')
+  const [userEmailCode, setUserEmailCode] = useState('C-')
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -31,20 +34,21 @@ const SignIn = ({ setUser }) => {
     };
 
     try {
-      const response = await fetch('http://localhost:3001/login', {
+      const response = await fetch('http://localhost:3001/loginBeforeCode', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(userData),
-        credentials: 'include'
       });
 
       if (response.ok) {
         const result = await response.json();
-        setUser(result); // Ustawienie imienia użytkownika
-        console.log(result)
-        navigate('/');
+        //setUser(result.result[0]); // Ustawienie imienia użytkownika
+        console.log('success!!!')
+        setCurrentView('afterCode')
+        
+        //navigate('/');
       } else {
         console.error('Login failed:', response.statusText);
       }
@@ -52,6 +56,42 @@ const SignIn = ({ setUser }) => {
       console.error('Error:', error);
     }
   };
+
+  const handleUserEmailCodeChange = (event) => {
+    const newText = event.target.value
+    
+    if(newText.startsWith('C-')){
+      setUserEmailCode(event.target.value)
+    }
+    
+    console.log(userEmailCode)
+  }
+
+  const verifyCode = async(code) =>{
+    console.log(code)
+
+    try {
+      const response = await fetch('http://localhost:3001/loginAfterCode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({code: code}),
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setUser(result.result[0]); // Ustawienie imienia użytkownika
+        console.log('CODE FITS!')
+        navigate('/');
+      } else {
+        console.error('Login failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -69,115 +109,148 @@ const SignIn = ({ setUser }) => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5" color="secondary">
-            Sign in
+            {choosenLanguage === 'EN' ? (`Sign in`) : (`Zaloguj się`)}
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="username"
-            label="username"
-            name="username"
-            autoComplete="username"
-            autoFocus
-            sx={{
-              '& .MuiInputLabel-root': { 
-                color: theme.palette.secondary.main, // Kolor etykiety w stanie normalnym
-              },
-              '& .MuiInputLabel-root.Mui-focused': { 
-                color: theme.palette.secondary.main, // Kolor etykiety w stanie fokusu
-              },
-              '& .MuiInputBase-input': { 
-                color: 'white',
-              },
-              '& .MuiOutlinedInput-root': { 
-                '& fieldset': { 
-                  borderColor: theme.palette.secondary.main,
-                },
-                '&:hover fieldset': { 
-                  borderColor: theme.palette.secondary.main,
-                },
-                '&.Mui-focused fieldset': { 
-                  borderColor: theme.palette.secondary.main,
-                },
-              },
-              backgroundColor: 'rgba(255, 255, 255, 0.1)', // Tło pola tekstowego
-              borderRadius: '8px',
-            }}
-          />
+            {currentView === 'beforeCode' ? (
 
-            <TextField
+            
+            <div style={{width: '500px'}}>
+              <TextField
                 margin="normal"
                 required
                 fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
+                id="username"
+                label={choosenLanguage === 'EN' ? (`username`) : (`nazwa użytkownika`)}
+                name="username"
+                autoComplete="username"
+                autoFocus
                 sx={{
-                  '& .MuiInputLabel-root': {
-                    color: theme.palette.secondary.main, // Kolor etykiety
+                  '& .MuiInputLabel-root': { 
+                    color: theme.palette.secondary.main, // Kolor etykiety w stanie normalnym
                   },
                   '& .MuiInputLabel-root.Mui-focused': { 
                     color: theme.palette.secondary.main, // Kolor etykiety w stanie fokusu
                   },
-                  '& .MuiInputBase-input': {
-                    color: 'white', // Kolor tekstu
+                  '& .MuiInputBase-input': { 
+                    color: 'white',
                   },
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      borderColor: theme.palette.secondary.main, // Kolor obramowania
+                  '& .MuiOutlinedInput-root': { 
+                    '& fieldset': { 
+                      borderColor: theme.palette.secondary.main,
                     },
-                    '&:hover fieldset': {
-                      borderColor: theme.palette.secondary.main, // Kolor obramowania podczas najechania
+                    '&:hover fieldset': { 
+                      borderColor: theme.palette.secondary.main,
                     },
-                    '&.Mui-focused fieldset': {
-                      borderColor: theme.palette.secondary.main, // Kolor obramowania podczas fokusu
+                    '&.Mui-focused fieldset': { 
+                      borderColor: theme.palette.secondary.main,
                     },
                   },
                   backgroundColor: 'rgba(255, 255, 255, 0.1)', // Tło pola tekstowego
                   borderRadius: '8px',
                 }}
               />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="secondary" />}
-              label="Remember me"
-              sx={{
-                '& .MuiTypography-root': {
-                  color: theme.palette.secondary.main, // Kolor tekstu etykiety
-                },
-                '& .MuiSvgIcon-root': {
-                  color: theme.palette.secondary.main, // Kolor ikonki
-                },
-                '&.Mui-checked': {
-                  '& .MuiSvgIcon-root': {
-                    color: theme.palette.secondary.main, // Kolor ikonki zaznaczonej
-                  },
-                },
-              }}
-            />
 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color='secondary'
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
-            <Login setUser={setUser} /><br/>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label={choosenLanguage === 'EN' ? (`password`) : (`hasło`)}
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  sx={{
+                    '& .MuiInputLabel-root': {
+                      color: theme.palette.secondary.main, // Kolor etykiety
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': { 
+                      color: theme.palette.secondary.main, // Kolor etykiety w stanie fokusu
+                    },
+                    '& .MuiInputBase-input': {
+                      color: 'white', // Kolor tekstu
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: theme.palette.secondary.main, // Kolor obramowania
+                      },
+                      '&:hover fieldset': {
+                        borderColor: theme.palette.secondary.main, // Kolor obramowania podczas najechania
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: theme.palette.secondary.main, // Kolor obramowania podczas fokusu
+                      },
+                    },
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Tło pola tekstowego
+                    borderRadius: '8px',
+                  }}
+                />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color='secondary'
+                sx={{ mt: 3, mb: 2 }}
+              >
+                {choosenLanguage === 'EN' ? (`Sign in`) : (`Zaloguj się`)}
+              </Button>
+              <Login setUser={setUser} /><br/>
+            </div>
+          ) : (<div style={{width: '500px'}}>
+            <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="EmailCode"
+                  label={choosenLanguage === 'EN' ? (`Email Code`) : (`Kod z emaila`)}
+                  type="EmailCode"
+                  id="EmailCode"
+                  value={userEmailCode}
+                  onChange={handleUserEmailCodeChange}
+                  autoComplete="current-password"
+                  sx={{
+                    '& .MuiInputLabel-root': {
+                      color: theme.palette.secondary.main, // Kolor etykiety
+                    },
+                    '& .MuiInputLabel-root.Mui-focused': { 
+                      color: theme.palette.secondary.main, // Kolor etykiety w stanie fokusu
+                    },
+                    '& .MuiInputBase-input': {
+                      color: 'white', // Kolor tekstu
+                    },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': {
+                        borderColor: theme.palette.secondary.main, // Kolor obramowania
+                      },
+                      '&:hover fieldset': {
+                        borderColor: theme.palette.secondary.main, // Kolor obramowania podczas najechania
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: theme.palette.secondary.main, // Kolor obramowania podczas fokusu
+                      },
+                    },
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Tło pola tekstowego
+                    borderRadius: '8px',
+                  }}
+                />
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color='secondary'
+                  sx={{ mt: 3, mb: 2 }}
+                  onClick={() => verifyCode(userEmailCode)}
+                >
+                  {choosenLanguage === 'EN' ? (`Sign in`) : (`Zaloguj się`)}
+                </Button>
+
+          </div>)}
+          
+
+            
             <div style={{width: '100%', display: 'flex'}}>
-              <div style={{width: '50%'}}>
-                <Link href="#" variant="body2" color='secondary'>
-                  Forgot password?
-                </Link>
-              </div>
-              <div style={{width: '50%'}}>
+              <div style={{width: '100%'}}>
                 <Link href="#" variant="body2" color='secondary' onClick={() => navigate('/signup')}>
-                  {"Don't have an account? Sign Up"}
+                {choosenLanguage === 'EN' ? (`Don't have an account? Sign Up`) : (`Nie masz konta? Stwórz je`)}
                 </Link>
               </div>
             </div>

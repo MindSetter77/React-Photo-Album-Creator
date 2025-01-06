@@ -27,7 +27,7 @@ function getFirstName(currentUser) {
   return "";
 }
 
-function Navbar({ currentUser, dataOnline, setDataOnline }) {
+function Navbar({ currentUser, dataOnline, setDataOnline, choosenLanguage, setChoosenLanguage }) {
   const [visiblePage, setVisiblePage] = React.useState(null);
   const navigate = useNavigate();
   const location = useLocation();  // Now inside the Navbar component
@@ -58,6 +58,12 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
     closeMenu(); // Zamknięcie menu w wersji mobilnej
   };
 
+  const handleLanguageChange = () => {
+    if(choosenLanguage === 'EN'){
+      setChoosenLanguage('PL')
+    } else { setChoosenLanguage('EN') }
+  }
+
   return (
     <AppBar position="relative" color="primary">
       <Toolbar>
@@ -71,7 +77,7 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
             display: { xs: "none", md: "flex" },
           }}
         >
-          Album generator
+          PhotoCraft
         </Typography>
         {isEditorPage === true ? (
           <Typography style={{width: '300px', marginRight: '5px', marginTop: '2px', color: theme.palette.secondary.main}}>
@@ -90,7 +96,7 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
         sx={{ fontSize: "23px", color: theme.palette.secondary.main, textTransform: "none", marginLeft: 'auto' }}
         onClick={() => handleNavigation("/create-album")}
       >
-        Create album!
+        {choosenLanguage === 'EN' ? (`Create album!`) : (`Stwórz album!`)}
       </Button>
             )
           }
@@ -101,7 +107,7 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
               sx={{ fontSize: "23px", color: theme.palette.secondary.main, textTransform: "none" }}
               onClick={() => handleNavigation(path)}
             >
-              {["Home", "Albums"][index]}
+              {[choosenLanguage === 'EN' ? (`Home`) : (`Strona główna`), choosenLanguage === 'EN' ? (`Albums`) : (`Albumy`)][index]}
             </Button>
           ))}
           {isEmptyObject(currentUser) ? (
@@ -110,7 +116,7 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
               sx={{ fontSize: "23px", color: theme.palette.secondary.main, textTransform: "none" }}
               onClick={() => handleNavigation("/login")}
             >
-              Login
+              {choosenLanguage === 'EN' ? (`Login`) : (`Zaloguj`)}
             </Button>
           ) : (
             <Button
@@ -133,6 +139,7 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
               {getFirstName(currentUser)}
             </Button>
           )}
+          <div onClick={() => handleLanguageChange()} style={{cursor: 'pointer', height: '30px', width: '60px', backgroundImage: choosenLanguage === 'EN' ? 'url(/pl-flag.png)' : 'url(/uk-flag.png)', backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px'}}></div>
         </Box>
 
         {/* Menu mobilne */}
@@ -167,8 +174,6 @@ function Navbar({ currentUser, dataOnline, setDataOnline }) {
           Album Generator
         </Typography>
       </Toolbar>
-
-      {/* Gradient pod navbar */}
       <Box
         sx={{
           position: "absolute",

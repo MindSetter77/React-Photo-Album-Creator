@@ -3,9 +3,13 @@ import '@fontsource/dm-sans';
 import '@fontsource/roboto';
 import { Button, useTheme } from '@mui/material';
 
-function Home({ currentUser, setCurrentPage, setUser }) {
+import { useNavigate } from 'react-router-dom';
+
+function Home({ currentUser, setCurrentPage, setUser, choosenLanguage }) {
   const isEmptyObject = (obj) => obj && Object.keys(obj).length === 0 && obj.constructor === Object;
   const theme = useTheme();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Funkcja, która pobiera todos oraz wszystkich użytkowników
@@ -26,8 +30,7 @@ function Home({ currentUser, setCurrentPage, setUser }) {
         
   
       } catch (err) {
-        console.log('gownatus')
-        console.error(err);
+
       }
     };
 
@@ -120,7 +123,7 @@ function Home({ currentUser, setCurrentPage, setUser }) {
             <Button
               variant="contained"
               color="third"
-              onClick={() => setCurrentPage('login')}
+              onClick={() => navigate('/login')}
               disableElevation
               disableRipple
               sx={{
@@ -133,31 +136,32 @@ function Home({ currentUser, setCurrentPage, setUser }) {
                 ':hover': { backgroundColor: '#5d337f' },
               }}
             >
-              Login to create!
+              {choosenLanguage === 'EN' ? (`Login to create!`) : (`Zaloguj by stworzyć`)}
             </Button>
           ) : (
             <Button
-              variant="contained"
+              variant="outlined"
               onClick={() => setCurrentPage('editor')}
               disableElevation
               disableRipple
               sx={{
-                backgroundColor: '#ab64e5',
+                
                 fontSize: '16px',
                 borderRadius: '15px',
                 fontWeight: 'bold',
                 height: '50px',
                 width: '220px',
-                color: theme.palette.primary.main,
+                border: '2px solid #00e7ad',
+                color: '#00e7ad',
                 ':hover': { backgroundColor: '#1DDDC0' },
               }}
             >
-              Create flipbook
+              {choosenLanguage === 'EN' ? (`Create flipbook`) : (`Stwórz album`)}
             </Button>
           )}
           <Button
             variant="outlined"
-            onClick={() => setCurrentPage('profile')}
+            onClick={() => navigate('/albums')}
             disableElevation
             disableRipple
             sx={{
@@ -169,15 +173,15 @@ function Home({ currentUser, setCurrentPage, setUser }) {
               height: '50px',
               border: '2px solid #f02984',
               ':hover': {
-                backgroundColor: '#ECDFCC',
-                border: '2px solid #ECDFCC',
+                backgroundColor: '#f02984',
+                border: '2px solid #f02984',
                 color: theme.palette.primary.main,
               },
               '@media (max-width: 424px)': { marginLeft: '0px' },
               '@media (max-width: 404px)': { marginTop: '20px' },
             }}
           >
-            See examples
+            {choosenLanguage === 'EN' ? (`See examples`) : (`Zobacz przykłady`)}
           </Button>
         </div>
 
@@ -196,13 +200,13 @@ function Home({ currentUser, setCurrentPage, setUser }) {
           }}
         >
           <li style={{ marginBottom: '15px', fontWeight: '500', color: '#ffffff' }}>
-            • Create digital flipbooks with your own photos
+            • {choosenLanguage === 'EN' ? (`Create digital flipbooks with your own photos.`) : (`Stwórz cyfrowe albumy z własnych zdjęć.`)}
           </li>
           <li style={{ marginBottom: '15px', fontWeight: '500', color: '#ffffff' }}>
-            • Edit templates to make the perfect flipbook
+            • {choosenLanguage === 'EN' ? (`Edit templates to make the perfect flipbook.`) : (`Edytuj szablony, aby stworzyć idealny album.`)}
           </li>
           <li style={{ marginBottom: '0', fontWeight: '500', color: '#ffffff' }}>
-            • Share your flipbook with the link
+            • {choosenLanguage === 'EN' ? (`Share your flipbook with the link.`) : (`Udostępnij album za pomocą linka.`)}
           </li>
         </ul>
       </div>

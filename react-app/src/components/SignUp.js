@@ -45,9 +45,11 @@ const validatePassword = (password) => {
   return true;
 };
 
-const SignUp = () => {
+const SignUp = ({choosenLanguage}) => {
   const theme = useTheme();
   const navigate = useNavigate();
+
+  console.log(choosenLanguage)
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -115,7 +117,7 @@ const SignUp = () => {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5" color="secondary">
-              Sign up
+            {choosenLanguage === 'EN' ? (`Sign up`) : (`Zarejestruj się`)}
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
               <Grid container spacing={2}>
@@ -126,7 +128,7 @@ const SignUp = () => {
                     required
                     fullWidth
                     id="firstName"
-                    label="First Name"
+                    label={choosenLanguage === 'EN' ? (`First Name`) : (`Imię`)}
                     autoFocus
                     sx={{
                       '& .MuiInputLabel-root': { color: theme.palette.secondary.main },
@@ -147,7 +149,7 @@ const SignUp = () => {
                     required
                     fullWidth
                     id="lastName"
-                    label="Last Name"
+                    label={choosenLanguage === 'EN' ? (`Last name`) : (`Nazwisko`)}
                     name="lastName"
                     autoComplete="family-name"
                     sx={{
@@ -191,7 +193,7 @@ const SignUp = () => {
                     required
                     fullWidth
                     id="email"
-                    label="Email Address"
+                    label={choosenLanguage === 'EN' ? (`Email Address`) : (`Adres email`)}
                     name="email"
                     autoComplete="email"
                     sx={{
@@ -213,7 +215,7 @@ const SignUp = () => {
                     required
                     fullWidth
                     name="password"
-                    label="Password"
+                    label={choosenLanguage === 'EN' ? (`Password`) : (`Hasło`)}
                     type="password"
                     id="password"
                     autoComplete="new-password"
@@ -232,15 +234,7 @@ const SignUp = () => {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <FormControlLabel
-                    control={<Checkbox value="allowExtraEmails" color="secondary" />}
-                    label="I want to receive inspiration, marketing promotions and updates via email."
-                    sx={{
-                      '& .MuiTypography-root': { color: theme.palette.secondary.main },
-                      '& .MuiSvgIcon-root': { color: theme.palette.secondary.main },
-                      '&.Mui-checked .MuiSvgIcon-root': { color: theme.palette.secondary.main },
-                    }}
-                  />
+                  
                 </Grid>
               </Grid>
               <Button
@@ -250,15 +244,15 @@ const SignUp = () => {
                 color="secondary"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign Up
+                {choosenLanguage === 'EN' ? (`Sign up`) : (`Zarejestruj się`)}
               </Button>
             </Box>
           </Box>
           <Box mt={5}>
             <Typography variant="body2" color="secondary" align="center">
-              Already have an account?{' '}
+            {choosenLanguage === 'EN' ? (`Already have an account?`) : (`Masz już konto?`)}{' '}
               <Link href="#" variant="body2" color="secondary" onClick={() => navigate('/login')}>
-                Sign In
+              {choosenLanguage === 'EN' ? (`Sign in`) : (`Zaloguj się`)}
               </Link>
             </Typography>
           </Box>

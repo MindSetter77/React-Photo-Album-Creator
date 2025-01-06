@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Box, Typography } from '@mui/material';
 
-const FileDropzone = ({setImages, setUploadedFileCount, album_id}) => {
+const FileDropzone = ({setImages, setUploadedFileCount, album_id, choosenLanguage}) => {
   const [isDragOver, setIsDragOver] = useState(false);
   
   const fileInputRef = useRef(null);

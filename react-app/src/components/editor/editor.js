@@ -23,12 +23,36 @@ import PhotosPanel from './editor-comp/PhotosPanel';
 import LayersPanel from './editor-comp/LayersPanel';
 import Share from './editor-comp/Share';
 
-const Editor = ({ user, album_id, setDataOnline }) => {
+import { useNavigate } from 'react-router-dom';
+
+const Editor = ({ user, album_id, setDataOnline, choosenLanguage, setUser }) => {
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAlbumPhotos(album_id)
     getSharedData(album_id)
+    getUserFromCookie()
   }, [])
+
+  const getUserFromCookie = async () => {
+    try {
+      // Pobranie todos
+      const todosResponse = await fetch('http://localhost:3001/todos', {
+        method: 'GET',
+        credentials: 'include', // Ważne, aby wysłać ciasteczka
+      });
+      
+      if (!todosResponse.ok) {
+        console.log("NOT OK")
+        throw new Error('Failed to fetch todos');
+      }
+      const todosData = await todosResponse.json();
+      setUser(todosData)
+    } catch (err) {
+      navigate('/')
+    }
+  };
 
   const fonts = [
     { name: 'Roboto', value: 'Roboto, sans-serif' },
@@ -174,15 +198,33 @@ const Editor = ({ user, album_id, setDataOnline }) => {
   
 
   const fetchAlbumPhotos = async (albumId) => {
+    console.log("HEREH")
     try {
-      const response = await fetch(`http://localhost:3001/albums/${albumId}/photos`);
+      const response = await fetch('http://localhost:3001/image-date', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ album_id: albumId }),
+      });
       
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
   
       const data = await response.json();
-      setPhotosOfPanel(data.images);
+      console.log("DATA IMAGES!!!!!")
+
+      let new_data_table = []
+
+      for(let i = 0; i < data.length; i++){
+        new_data_table.push(data[i].url)
+      }
+
+      console.log(new_data_table)
+      
+
+      setPhotosOfPanel(new_data_table);
       console.log("fetched!")
     } catch (error) {
       console.error('Error fetching album photos:', error);
@@ -285,7 +327,9 @@ const Editor = ({ user, album_id, setDataOnline }) => {
       shadowTableCpy[pageNumber].unshift(0)
       setShadowTable(shadowTableCpy)
 
-      setLayoutOnPage("None")
+      let layoutOnPageCpy = [...layoutOnPage]
+      layoutOnPageCpy[pageNumber] = "None"
+      setLayoutOnPage(layoutOnPageCpy)
 
       setDataOnline(false)
     }
@@ -774,19 +818,19 @@ const Editor = ({ user, album_id, setDataOnline }) => {
     return show
   }
 
-  const setRealPageNumber = (pageNumber, value) => {
-    console.log(pageNumber, value)
+  const setRealPageNumber = (officialPageNumber, value) => {
+    
 
     if(value === 1){
-      if(pageNumber<allPageNumber){
-        pageNumber++
+      if(officialPageNumber<allPageNumber){
+        officialPageNumber++
       }
     } else {
-      if(pageNumber!==1){
-        pageNumber--
+      if(officialPageNumber!==1){
+        officialPageNumber--
       }
     }
-    setPageNumber(pageNumber)
+    setPageNumber(officialPageNumber)
 
   }
 
@@ -895,6 +939,57 @@ const Editor = ({ user, album_id, setDataOnline }) => {
     setColorPickerColor(color)
   }
 
+  const getPanelName = () => {
+
+    let return_text = ''
+
+    switch (leftPanel) {
+      case 'info':
+        if(choosenLanguage === 'EN'){
+          return_text = 'Information'
+        } else {
+          return_text = 'Informacje'
+        }
+        break;
+
+        case 'customize':
+          if(choosenLanguage === 'EN'){
+            return_text = 'Customisation'
+          } else {
+            return_text = 'Informacje'
+          }
+          break;
+        case 'photos':
+          if(choosenLanguage === 'EN'){
+            return_text = 'Photos'
+          } else {
+            return_text = 'Zdjęcia'
+          }
+          break;
+
+        case 'settings':
+          if(choosenLanguage === 'EN'){
+            return_text = 'Layers'
+          } else {
+            return_text = 'Warstwy'
+          }
+          break;
+
+        case 'share':
+          if(choosenLanguage === 'EN'){
+            return_text = 'Share'
+          } else {
+            return_text = 'Udostępnij'
+          }
+          break;
+
+
+        
+    }
+
+    return return_text
+  }
+
 
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
@@ -931,7 +1026,7 @@ const Editor = ({ user, album_id, setDataOnline }) => {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'left', flexDirection: 'column', marginLeft: '5px', marginTop: '10px' }}>
-              <Typography style={{ fontWeight: 'bold', fontSize: '18px', textAlign: 'left'}}>{leftPanel === 'info' ? ('Information') : leftPanel === 'customize' ? ('Customisation') : leftPanel === 'photos' ? ('Photos') : leftPanel === 'settings' ? ('Layers') : ('Share')}</Typography>
+              <Typography style={{ fontWeight: 'bold', fontSize: '18px', textAlign: 'left'}}>{getPanelName()}</Typography>
               <Typography style={{ fontSize: '18px', color: 'gray' }}>{album_id}</Typography>
             </div>
           </div>
@@ -942,15 +1037,15 @@ const Editor = ({ user, album_id, setDataOnline }) => {
         {leftPanel === 'info' ? (
           <InfoPanel/>
         ) : leftPanel === 'customize' ? (
-          <CustomizePanel pageSize={pageSize} changePageSize={changePageSize} allPageNumber={allPageNumber} setAllPageNumber={setAllPageNumber} changeBackground={changeBackground} handleChangeBackground={handleChangeBackground} setChangeBackground={setChangeBackground} setBackgroundColor={setBackgroundColor} colorPickerColor={colorPickerColor}/>
+          <CustomizePanel pageSize={pageSize} changePageSize={changePageSize} allPageNumber={allPageNumber} setAllPageNumber={setAllPageNumber} changeBackground={changeBackground} handleChangeBackground={handleChangeBackground} setChangeBackground={setChangeBackground} setBackgroundColor={setBackgroundColor} colorPickerColor={colorPickerColor} choosenLanguage={choosenLanguage} />
         ) : leftPanel === 'photos' ? (
-          <PhotosPanel photosOfPanel={photosOfPanel} getPhotoName={getPhotoName} deletePhoto={deletePhoto}/>
+          <PhotosPanel photosOfPanel={photosOfPanel} getPhotoName={getPhotoName} deletePhoto={deletePhoto} choosenLanguage={choosenLanguage} />
 
         ) : leftPanel === 'settings' ? (
-          <LayersPanel setDataOnline={setDataOnline} pageNumber={pageNumber} layoutOnPage={layoutOnPage} photosOfPanel={photosOfPanel} photoChooseClick={photoChooseClick} getPhotoName={getPhotoName} typographyChooseClick={typographyChooseClick} layerTable={layerTable} lessMoreTable={lessMoreTable} lessMoreClick={lessMoreClick} makeLayerUP={makeLayerUP} makeLayerDown={makeLayerDown} handleWidthSliderChange={handleWidthSliderChange} rmPhotoClick={rmPhotoClick} xTable={xTable} originalPageWidth={originalPageWidth} handleXSliderChange={handleXSliderChange} yTable={yTable} originalPageHeight={originalPageHeight} handleYSliderChange={handleYSliderChange} alignWidth={alignWidth} getLayerTitle={getLayerTitle} editText={editText} fonts={fonts} handleColorPickerVisibility={handleColorPickerVisibility} textColor={textColor} showLayerPicker={showLayerPicker} setSingleColorText={setSingleColorText} rotateTable={rotateTable} setRotateTable={setRotateTable} borderTable={borderTable} setBorderTable={setBorderTable} shadowTable={shadowTable} setShadowTable={setShadowTable}/>
+          <LayersPanel setDataOnline={setDataOnline} pageNumber={pageNumber} layoutOnPage={layoutOnPage} photosOfPanel={photosOfPanel} photoChooseClick={photoChooseClick} getPhotoName={getPhotoName} typographyChooseClick={typographyChooseClick} layerTable={layerTable} lessMoreTable={lessMoreTable} lessMoreClick={lessMoreClick} makeLayerUP={makeLayerUP} makeLayerDown={makeLayerDown} handleWidthSliderChange={handleWidthSliderChange} rmPhotoClick={rmPhotoClick} xTable={xTable} originalPageWidth={originalPageWidth} handleXSliderChange={handleXSliderChange} yTable={yTable} originalPageHeight={originalPageHeight} handleYSliderChange={handleYSliderChange} alignWidth={alignWidth} getLayerTitle={getLayerTitle} editText={editText} fonts={fonts} handleColorPickerVisibility={handleColorPickerVisibility} textColor={textColor} showLayerPicker={showLayerPicker} setSingleColorText={setSingleColorText} rotateTable={rotateTable} setRotateTable={setRotateTable} borderTable={borderTable} setBorderTable={setBorderTable} shadowTable={shadowTable} setShadowTable={setShadowTable} choosenLanguage={choosenLanguage} />
         ) : (
           <div>
-            <Share shareAlbumData={shareAlbumData} getSharedData={getSharedData} album_id={album_id} user={user}/>
+            <Share shareAlbumData={shareAlbumData} getSharedData={getSharedData} album_id={album_id} user={user} choosenLanguage={choosenLanguage} />
             
           </div>
         )}
@@ -963,9 +1058,9 @@ const Editor = ({ user, album_id, setDataOnline }) => {
 
           
 
-          <ZoomInOutpanel zoomOut={zoomOut} zoom={zoom} zoomIn={zoomIn} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} allPageNumber={allPageNumber} />
+          <ZoomInOutpanel zoomOut={zoomOut} zoom={zoom} zoomIn={zoomIn} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} allPageNumber={allPageNumber} choosenLanguage={choosenLanguage} />
       </div>
-      {layerTable[pageNumber].filter(item => typeof item === 'string' && item.startsWith('http')).length >= 1 ? (<LayoutPanel setDataOnline={setDataOnline} layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} layerTable={layerTable} pageNumber={pageNumber} originalPageWidth={originalPageWidth} originalPageHeight={originalPageHeight} onlyPhotosTable={onlyPhotosTable} setWidthTable={setWidthTable} widthTable={widthTable}/>) : (<div></div>) }
+      {layerTable[pageNumber].filter(item => typeof item === 'string' && item.startsWith('http')).length >= 1 ? (<LayoutPanel setDataOnline={setDataOnline} layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} layerTable={layerTable} pageNumber={pageNumber} originalPageWidth={originalPageWidth} originalPageHeight={originalPageHeight} onlyPhotosTable={onlyPhotosTable} setWidthTable={setWidthTable} widthTable={widthTable} choosenLanguage={choosenLanguage} />) : (<div></div>) }
       
       
     </div>

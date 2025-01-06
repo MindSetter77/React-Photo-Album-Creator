@@ -25,8 +25,8 @@ function Login({ setUser }) {
 
       if (response.ok) {
         const newUser = await response.json();
-        console.log('User logged in front-end', newUser);
-        setUser(newUser); // Ustawienie użytkownika w stanie
+        console.log('User logged in front-end', newUser.result[0]);
+        setUser(newUser.result[0]); // Ustawienie użytkownika w stanie
         navigate('/'); // Przekierowanie na stronę "home"
       } else {
         console.error('Error adding user to database:', response.statusText);

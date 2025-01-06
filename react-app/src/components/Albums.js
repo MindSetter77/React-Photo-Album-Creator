@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const Albums = ({ currentUser, setCurrentPage }) => {
+const Albums = ({ choosenLanguage }) => {
   const theme = useTheme();
   const [albums, setAlbums] = useState([]);
   const navigate = useNavigate();
+
+  
 
   useEffect(() => {
     const getAlbums = async () => {
@@ -29,7 +31,7 @@ const Albums = ({ currentUser, setCurrentPage }) => {
     };
 
     getAlbums();
-  }, [currentUser]);
+  }, []);
 
   const viewClick = (album_id) => {
     let url = `/viewer/${album_id}`; 
@@ -58,7 +60,7 @@ const Albums = ({ currentUser, setCurrentPage }) => {
           textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', // Shadow for better contrast on dark background
         }}
       >
-        Public Albums
+        {choosenLanguage === 'EN' ? (`Public Albums`) : (`Publiczne albumy`)}
       </Typography>
 
       {/* Albums container */}
@@ -119,29 +121,19 @@ const Albums = ({ currentUser, setCurrentPage }) => {
                 {album.title}
               </Typography>
               <Typography variant="body2" sx={{ color: '#B0C4DE' }}>
-                Created at: {new Date(album.created_at).toLocaleString()}
+
+              {choosenLanguage === 'EN' ? (`Created at: ${new Date(album.createdAt).toLocaleString()}`) : (`Data utworzenia: ${new Date(album.createdAt).toLocaleString()}`)}
+
+                
               </Typography>
               <Typography variant="body2" sx={{ color: '#B0C4DE' }}>
-                Privacy: {album.privacy || 'N/A'}
+              {choosenLanguage === 'EN' ? (`Privacy: ${album.privacy || 'N/A'}`) : (`Prywatność: ${album.privacy || 'N/A'}`)}
+
               </Typography>
             </Box>
 
             {/* Action buttons */}
             <Box>
-              <Button
-                size="small"
-                sx={{
-                  color: 'white',
-                  backgroundColor: '#1abc9c',
-                  mb: 1,
-                  borderRadius: 2,
-                  '&:hover': {
-                    backgroundColor: '#16a085',
-                  },
-                }}
-              >
-                Download
-              </Button>
               <Button
                 onClick={() => viewClick(album.album_id)}
                 size="small"
@@ -155,7 +147,7 @@ const Albums = ({ currentUser, setCurrentPage }) => {
                   },
                 }}
               >
-                View
+                {choosenLanguage === 'EN' ? (`View`) : (`Wyświetl`)}
               </Button>
             </Box>
           </Box>

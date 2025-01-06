@@ -10,7 +10,7 @@ function getFullName(currentUser) {
   return ''; // Default value if data is missing
 }
 
-const UserProfile = ({ currentUser, setChoosenAlbum }) => {
+const UserProfile = ({ currentUser, setChoosenAlbum, setUser, choosenLanguage }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [albums, setAlbums] = useState([]);
@@ -44,6 +44,8 @@ const UserProfile = ({ currentUser, setChoosenAlbum }) => {
     }
   }, [currentUser]);
 
+  
+
   const navigateToEditor = (album_id) => {
     setChoosenAlbum(album_id);
     navigate('/editor');
@@ -54,6 +56,13 @@ const UserProfile = ({ currentUser, setChoosenAlbum }) => {
     let url = `/viewer/${album_id}`; // Create the URL
     navigate(url); // Navigate to the URL
   };
+
+  const logout = () => {
+    document.cookie = `WebPhotoSession=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    navigate('/')
+    setUser({})
+    console.log("Done")
+  }
 
   return (
     <div style={{ background: 'linear-gradient(to bottom, #002d5b, #000f1e)', height: 'calc(100vh - 64px)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 10px' }}>
@@ -70,7 +79,7 @@ const UserProfile = ({ currentUser, setChoosenAlbum }) => {
       {/* Albums container */}
       <Box sx={{ width: '100%', maxWidth: '900px', backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '15px', padding: '20px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)', backdropFilter: 'blur(10px)' }}>
         <Typography variant="h5" sx={{ marginBottom: '20px', color: 'white', fontWeight: 'bold', fontSize: '2rem', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}>
-          Albums
+        {choosenLanguage === 'EN' ? (`Albums`) : (`Albumy`)}
         </Typography>
 
         <Box sx={{ height: '300px', overflowY: 'scroll', padding: '10px 0' }}>
@@ -124,14 +133,13 @@ const UserProfile = ({ currentUser, setChoosenAlbum }) => {
                   {album.title}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#B0C4DE' }}>
-                  Created at: {new Date(album.created_at).toLocaleString()}
+                  {choosenLanguage === 'EN' ? (`Created at: ${new Date(album.createdAt).toLocaleString()}`) : (`Stworzono: ${new Date(album.createdAt).toLocaleString()}`)}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#B0C4DE' }}>
-                  Privacy: {album.privacy || 'N/A'}
+                {choosenLanguage === 'EN' ? (`Privacy: ${album.privacy || 'N/A'}`) : (`Prywatność: ${album.privacy || 'N/A'}`)}
                 </Typography>
               </Box>
 
-              {/* Action buttons */}
               <Box>
                 <Button
                   onClick={() => navigateToEditor(album.album_id)}
@@ -146,7 +154,7 @@ const UserProfile = ({ currentUser, setChoosenAlbum }) => {
                     },
                   }}
                 >
-                  Customize
+                  {choosenLanguage === 'EN' ? (`Customize`) : (`Edytuj`)}
                 </Button>
                 <Button
                   onClick={() => viewClick(album.album_id)}
@@ -161,13 +169,14 @@ const UserProfile = ({ currentUser, setChoosenAlbum }) => {
                     },
                   }}
                 >
-                  View
+                  {choosenLanguage === 'EN' ? (`View`) : (`Wyświetl`)}
                 </Button>
               </Box>
             </Box>
           ))}
         </Box>
       </Box>
+      <div onClick={() => logout()} style={{width: '400px', height: '50px', marginTop: '10px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid #1DDDC0', color: '#1DDDC0'}}><Typography>{choosenLanguage === 'EN' ? (`Logout`) : (`Wyloguj`)}</Typography></div>
     </div>
   );
 };

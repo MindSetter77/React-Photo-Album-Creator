@@ -7,11 +7,16 @@ const path = require('path');
 const fs = require('fs');
 const session = require('express-session')
 const uuidv4 = require('uuid').v4;
+const bcrypt = require('bcryptjs');
+
+const PDFDocument = require('pdfkit');
 
 require('dotenv').config();
 
 
 const { OAuth2Client } = require('google-auth-library');
+
+const exifParser = require('exif-parser');
 
 const app = express();
 const port = 3001;
@@ -47,12 +52,160 @@ db.connect((err) => {
   console.log('MySQL connected...');
 });
 
+const nodemailer = require('nodemailer');
+
+let email_code_storage = {}
+
+function generateEmailCode() {
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+      const randomDigit = Math.floor(Math.random() * 10); // Losuje liczbę od 0 do 9
+      result += randomDigit;
+  }
+  return result;
+}
+
+function sendEmail(user_id, email, result){
+  console.log(`sending to email: ${email}`)
+  const transporter = nodemailer.createTransport({
+      service: 'gmail', // Możesz użyć innych usług, np. Outlook, Yahoo
+      auth: {
+          user: 'mygtaemaillol@gmail.com', // Twój adres e-mail
+          pass: process.env.EMAIL_PASS // Twoje hasło lub hasło aplikacji
+      }
+  });
+
+  const code = generateEmailCode()
+  console.log(`code is: ${code}`)
+  email_code_storage[code] = {user_id, result}
+  // Konfiguracja wiadomości
+  const mailOptions = {
+    from: 'mygtaemaillol@gmail.com', // Nadawca
+    to: `${email}`, // Odbiorca
+    subject: 'Authentication Photo Craft Code',
+    text: `Hello! Your authentication code is: ${code}`, // Treść wiadomości
+    html: `<p>Your Photo Craft authentication code is: <b>${code}</b>.</p>` // Treść HTML
+  };
+
+    // Wysyłanie wiadomości
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+        return console.log('Błąd podczas wysyłania wiadomości:', error);
+    }
+    console.log('E-mail wysłany:', info.response);
+  });
+}
+
+
+app.get('/sendEmail', (req, res) => {
+  sendEmail(1)
+  res.status(201).json({ message: 'success' });
+})
+
+
+
+
+function getDatesFromFolder(folderPath, album_id) {
+  return new Promise((resolve, reject) => {
+    const imageData = []; // Tablica do przechowywania danych o zdjęciach
+
+    fs.readdir(folderPath, (err, files) => {
+      if (err) {
+        reject('Błąd podczas odczytu folderu');
+        return;
+      }
+
+      let processedCount = 0;
+
+      files.forEach((file) => {
+        const filePath = path.join(folderPath, file);
+
+        // Sprawdź, czy plik jest obrazem
+        if (!/\.(jpg|jpeg|png)$/i.test(file)) {
+          console.log(`Pomijam nieobsługiwany plik: ${file}`);
+          processedCount++;
+          if (processedCount === files.length) resolve(imageData);
+          return;
+        }
+
+        // Wczytaj plik jako bufor i parsuj dane EXIF
+        fs.readFile(filePath, (readErr, data) => {
+          if (readErr) {
+            console.error(`Błąd podczas odczytu pliku ${file}:`, readErr);
+            processedCount++;
+            if (processedCount === files.length) resolve(imageData);
+            return;
+          }
+
+          try {
+            const parser = exifParser.create(data);
+            const result = parser.parse();
+            const dateTaken = result.tags.DateTimeOriginal;
+
+            url = `http://localhost:${port}/albums/${album_id}/${file}`
+
+            if (dateTaken) {
+              imageData.push({ url: url, date: new Date(dateTaken * 1000) });
+            } else {
+              imageData.push({ url: url, date: null }); // Jeśli brak daty
+            }
+          } catch (parseErr) {
+            url = `http://localhost:${port}/albums/${album_id}/${file}`
+
+            console.error(`Błąd podczas parsowania EXIF dla pliku ${file}:`, parseErr);
+            imageData.push({ url: url, date: null }); // Brak daty w przypadku błędu
+          } finally {
+            processedCount++;
+            if (processedCount === files.length) resolve(imageData);
+          }
+        });
+      });
+    });
+  });
+}
+
+
+
+// Endpoint zwracający dane o zdjęciach w JSON
+app.post('/image-date', async (req, res) => {
+  const album_id = req.body.album_id;
+
+  console.log(album_id)
+
+  const albumPath = path.join(__dirname, 'albums', album_id);
+
+  try {
+    const imageData = await getDatesFromFolder(albumPath, album_id);
+
+    // Sortowanie zdjęć od najszybciej zrobionych do najstarszych
+    imageData.sort((a, b) => {
+      if (a.date && b.date) {
+        return a.date - b.date; // Od najmłodszych do najstarszych
+      }
+      if (a.date) return -1;
+      if (b.date) return 1;
+      return 0; // Jeśli oba nie mają daty, pozostaw je w obecnej kolejności
+    });
+
+    
+
+    // Zwrócenie danych jako JSON
+    res.json(imageData);
+  } catch (error) {
+    console.error('Błąd przy pobieraniu danych:', error);
+    res.status(500).json({ error: 'Wystąpił błąd podczas pobierania danych' });
+  }
+});
 
 //LOGOWANIE
 
+
+
 // Endpoint do rejestracji użytkownika
-app.post('/signup', (req, res) => {
+app.post('/signup', async(req, res) => {
   const { firstName, lastName, nickname, email, password } = req.body;
+
+  const hashed_password = await bcrypt.hash(password, 10);
 
   selectSQL = `SELECT * FROM users WHERE email = ? OR nickname = ?`
 
@@ -66,7 +219,7 @@ app.post('/signup', (req, res) => {
       }else{
         
         const sql = 'INSERT INTO users (firstName, lastName, nickname, email, password) VALUES (?, ?, ?, ?, ?)';
-        db.query(sql, [firstName, lastName, nickname, email, password], (err, result) => {
+        db.query(sql, [firstName, lastName, nickname, email, hashed_password], (err, result) => {
           if (err) {
             console.log(err)
             return res.status(500).json({ error: err.message });
@@ -74,7 +227,7 @@ app.post('/signup', (req, res) => {
           } else {
             console.log(`LOG: User created: ${nickname}`)
           }
-          res.status(201).json({ id: result.insertId, firstName, lastName, email, password });
+          res.status(201).json({ id: result.insertId, firstName, lastName, email });
         });
       }
     }
@@ -82,6 +235,81 @@ app.post('/signup', (req, res) => {
 });
 
 const session_memory = {}
+
+app.post('/loginBeforeCode', async(req, res) => {
+
+  const { username, password } = req.body;
+
+  const hashed_password = await bcrypt.hash(password, 10);
+
+  console.log(username)
+
+  const sql = 'SELECT * FROM users WHERE nickname = ?';
+  db.query(sql, [username], async(err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    if (result.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const user = result[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if(isMatch){
+      const id = result[0].id
+      const email = result[0].email
+
+      sendEmail(id, email, result)
+
+      res.status(200).json({status: 'success'});
+    } else {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    
+  });
+});
+
+app.post('/loginAfterCode', (req, res) => {
+
+  const { code } = req.body;
+  let userCode = code.slice(2)  
+
+  if (email_code_storage[userCode] !== '' && email_code_storage[userCode] !== undefined) {
+
+    const id = email_code_storage[userCode].user_id
+
+    console.log('Log: Logged for: ', id);
+
+    const result = email_code_storage[userCode].result
+
+    email_code_storage[userCode] = undefined
+
+    const session_id = uuidv4();
+    session_memory[session_id] = {id}
+    
+    // Ustawienie ciasteczka
+    res.cookie('WebPhotoSession', session_id, {
+      httpOnly: false, // zabezpieczenie przed dostępem z JavaScript
+      secure: process.env.NODE_ENV === 'production', // tylko przez HTTPS w produkcji
+      sameSite: 'Strict', // zapewnia, że ciasteczko nie jest wysyłane w zapytaniach międzydomenowych
+      maxAge: 3600000, // Czas życia ciasteczka (np. 1 godzina)
+      path: '/', // Ciasteczko dostępne w całej aplikacji
+    });
+
+    res.status(200).json({result});
+
+  } else {
+    console.log(email_code_storage[code])
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  
+
+  
+  
+});
 
 // Endpoint do logowania użytkownika
 app.post('/login', (req, res) => {
@@ -100,7 +328,7 @@ app.post('/login', (req, res) => {
     }
 
     const id = result[0].id
-
+    
     console.log('Log: Logged for: ', id);
 
     const session_id = uuidv4();
@@ -326,6 +554,8 @@ app.get('/albums/:album_id/photos', (req, res) => {
     }
 
     const imageUrls = files.map(file => `http://localhost:${port}/albums/${album_id}/${file}`);
+    console.log(`IMAGE URLS!`)
+    console.log(imageUrls)
     res.status(200).json({ images: imageUrls }); // Zwracamy listę URL-i
   });
 });

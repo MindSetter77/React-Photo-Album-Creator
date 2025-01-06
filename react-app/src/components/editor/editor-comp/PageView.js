@@ -11,16 +11,113 @@ import { Button, Typography, TextField, Card, CardMedia, Slider, Select, MenuIte
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 
-const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, pageHeight, layerTable, pageNumber, xTable, zoom, yTable, widthTable, textColor, onlyPhotosTable, onlyTextTable, rotateTable, borderTable, shadowTable}) => {
-
+const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, pageHeight, layerTable, pageNumber, xTable, zoom, yTable, widthTable, textColor, onlyPhotosTable, onlyTextTable, rotateTable, borderTable, shadowTable, setRealPageNumber, allPageNumber, setPageNumber, zoom100}) => {
   
+  const generatePDF = async () => {
+
+    const element = document.getElementById(layoutOnPage[1]);
+    const rect = element.getBoundingClientRect();
+    const width = rect.width; // Szerokość elementu w px
+    const height = rect.height; // Wysokość elementu w px
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: [width, height], // Możesz dostosować rozmiar strony do swoich potrzeb
+    });
+
+    
+  
+    try {
+
+      setPageNumber(1)
+      //zoom100()
+      
+      for(let i = 1; i <= allPageNumber; i++){
+        if(i == 1){
+          setTimeout(async () => {
+            await addPageToPdf(pdf, layoutOnPage[i]);
+            setPageNumber(2)
+          }, i*1000);
+        } else if(i == allPageNumber){
+          setTimeout(async () => {
+            pdf.addPage();
+            await addPageToPdf(pdf, layoutOnPage[i]);
+            pdf.save('album.pdf')
+          }, i*1000);
+        } else {
+          setTimeout(async () => {
+            pdf.addPage();
+            await addPageToPdf(pdf, layoutOnPage[i]);
+            setPageNumber(i+1)
+          }, i*1000);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  const addPageToPdf = (pdf, elementId) => {
+    const element = document.getElementById(elementId);
+  
+    return new Promise((resolve, reject) => {
+      html2canvas(element, { scale: 2, useCORS: true })
+        .then((canvas) => {
+          const imgData = canvas.toDataURL('image/png');
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+  
+          pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
+          resolve(); // Strona została dodana do PDF
+          setRealPageNumber(pageNumber, +1);
+        })
+        .catch((error) => {
+          reject(`Error generating page for ${elementId}: ${error}`);
+        });
+        
+    });
+    
+  };
+  
+  
+  
+
+  const convertImageToBase64 = async (url) => {
+    const response = await fetch(url, { mode: 'cors' });
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+  };
+
+  const loadImagesAsBase64 = async () => {
+      for (let i = 0; i < layerTable[pageNumber].length; i++) {
+          const item = layerTable[pageNumber][i];
+          if (item.slice(0, 10) !== 'TYPOGRAPHY') {
+              layerTable[pageNumber][i] = await convertImageToBase64(item);
+          }
+      }
+  };
+
+  const handleDownload = async () => {
+
+    await loadImagesAsBase64();
+    generatePDF();
+
+  };
 
   return (
     <>
     {layoutOnPage[pageNumber] === '11' ? (
-        <Card style={{
+        <Card id="11" style={{
             backgroundColor: colorPickerColor,
             width: pageWidth,
             height: pageHeight,
@@ -43,7 +140,7 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
         </Card>
     ) : layoutOnPage[pageNumber] === '12' ? (
 
-        <Card style={{
+        <Card id="12" style={{
             backgroundColor: colorPickerColor,
             width: pageWidth,
             height: pageHeight,
@@ -68,7 +165,8 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
         </Card>
     ) : layoutOnPage[pageNumber] === '21' ? (
 
-        <Card style={{
+        <Card id="21" style={{
+          
             backgroundColor: colorPickerColor,
             width: pageWidth,
             height: pageHeight,
@@ -94,7 +192,7 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
 
     ) : layoutOnPage[pageNumber] === '22' ? (
 
-      <Card style={{
+      <Card id="22" style={{
           backgroundColor: colorPickerColor,
           width: pageWidth,
           height: pageHeight,
@@ -119,7 +217,7 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
       </Card>
     ) : layoutOnPage[pageNumber] === '31' ? (
 
-        <Card style={{
+        <Card id="31" style={{
             backgroundColor: colorPickerColor,
             width: pageWidth,
             height: pageHeight,
@@ -143,7 +241,7 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
 
     ) : layoutOnPage[pageNumber] === '32' ? (
 
-        <Card style={{
+        <Card id="32" style={{
             backgroundColor: colorPickerColor,
             width: pageWidth,
             height: pageHeight,
@@ -176,7 +274,7 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
 
     ) : layoutOnPage[pageNumber] === '33' ? (
 
-        <Card style={{
+        <Card id="33" style={{
             backgroundColor: colorPickerColor,
             width: pageWidth,
             height: pageHeight,
@@ -211,7 +309,7 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
 
     ) : layoutOnPage[pageNumber] === '34' ? (
 
-        <Card style={{
+        <Card id="34" style={{
             backgroundColor: colorPickerColor,
             width: pageWidth,
             height: pageHeight,
@@ -247,8 +345,9 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
 
 
     ) : (
+      <div style={{display: 'flex'}}>
+      <Card id="None" style={{
         
-      <Card style={{
         backgroundColor: colorPickerColor,
         width: pageWidth,
         height: pageHeight,
@@ -270,11 +369,11 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
                 transform: `rotate(${rotateTable[pageNumber][reversedIndex]}deg)`,
                 width: `${widthTable[pageNumber][reversedIndex]}%`,
                 border: `${borderTable[pageNumber][reversedIndex]}`,
-                boxShadow: `${shadowTable[pageNumber][index] * 1.2}px ${shadowTable[pageNumber][index] * 1.2}px ${shadowTable[pageNumber][index] * 2}px ${shadowTable[pageNumber][index] * 0.5}px rgba(0, 0, 0, 0.5)`
+                boxShadow: `${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 2}px ${shadowTable[pageNumber][reversedIndex] * 0.5}px rgba(0, 0, 0, 0.5)`
               }} 
             />
           ) : (
-            <div 
+            <div
               key={index}
               style={{
                 color: `${textColor[pageNumber][reversedIndex]}`, 
@@ -293,6 +392,8 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
           );
         })}
     </Card>
+    
+    </div>
 
     )}
     </>

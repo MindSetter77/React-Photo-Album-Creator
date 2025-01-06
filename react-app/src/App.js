@@ -19,24 +19,26 @@ function App() {
   const [choosenAlbum, setChoosenAlbum] = useState("asd")
   const [dataOnline, setDataOnline] = useState(true)
 
+  const [choosenLanguage, setChoosenLanguage] = useState('EN')
+
   //<Route path="/viewer:album_id" element={<Viewer user={user} album_id={choosenAlbum}/>} />
   
 
   return (
     <Router>
       <div className="App">
-        <Navbar currentUser={user} dataOnline={dataOnline} setDataOnline={setDataOnline}/>
+        <Navbar currentUser={user} dataOnline={dataOnline} setDataOnline={setDataOnline} choosenLanguage={choosenLanguage} setChoosenLanguage={setChoosenLanguage}/>
 
         <Routes>
-          <Route path="/" element={<Home currentUser={user} setUser={setUser} />} />
-          <Route path="/albums" element={<Albums />} />
-          <Route path="/login" element={<SignIn setUser={setUser} />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/profile" element={<UserProfile currentUser={user} setChoosenAlbum={setChoosenAlbum} />} />
+          <Route path="/" element={<Home currentUser={user} setUser={setUser} choosenLanguage={choosenLanguage} />} />
+          <Route path="/albums" element={<Albums choosenLanguage={choosenLanguage}/>} />
+          <Route path="/login" element={<SignIn setUser={setUser} choosenLanguage={choosenLanguage} />} />
+          <Route path="/signup" element={<SignUp choosenLanguage={choosenLanguage}/>} />
+          <Route path="/profile" element={<UserProfile currentUser={user} setChoosenAlbum={setChoosenAlbum} setUser={setUser} choosenLanguage={choosenLanguage} />}  />
           <Route path="/creator" element={<Creator user={user} />} />
-          <Route path="/create-album" element={<Creator user={user}/>} />
-          <Route path="/editor" element={<Editor user={user} album_id={choosenAlbum} setDataOnline={setDataOnline}/>} />
-          <Route path="/viewer/:album_id" element={<Viewer user={user}/>} />
+          <Route path="/create-album" element={<Creator user={user} choosenLanguage={choosenLanguage} />} />
+          <Route path="/editor" element={<Editor user={user} album_id={choosenAlbum} setDataOnline={setDataOnline} choosenLanguage={choosenLanguage} setUser={setUser} />} />
+          <Route path="/viewer/:album_id" element={<Viewer user={user} setUser={setUser} choosenLanguage={choosenLanguage} />}/>
           <Route path="*" element={<div>404 - Page Not Found</div>} />
         </Routes>
       </div>

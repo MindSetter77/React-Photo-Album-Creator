@@ -8,7 +8,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import { useNavigate } from 'react-router-dom';
 
-const Creator = ({user}) => {
+const Creator = ({user, choosenLanguage}) => {
   const navigate = useNavigate()
 
   const [images, setImages] = useState([]);
@@ -33,7 +33,13 @@ const Creator = ({user}) => {
     if (buttonClick === '1') {
       try {
         if(title === ''){
-          setErrorMessage('Title cant be empty!')
+          setErrorMessage( choosenLanguage === 'EN' ? ('Title cant be empty!') : ('Tytuł nie może być pusty!'))
+
+          return
+        }
+
+        if(title.includes(' ')){
+          setErrorMessage( choosenLanguage === 'EN' ? ('Space in title is forbidden!') : ('Spacja w tytule jest niedozwolona!') )
           return
         }
         
@@ -83,13 +89,14 @@ const Creator = ({user}) => {
   
 
   return (
-    <div className='main-groundd'>
+    <div style={{display: 'flex', justifyContent: 'center', height: 'calc(100vh - 64px)', background: `linear-gradient(to bottom, #002d5b, #000f1e)`,}}>
+    <div className='main-groundd' style={{width: '500px', height: '640px', marginTop: '30px', borderRadius: '25px', border: '2px solid cyan', backgroundColor: 'rgb(209, 209, 209, 0.2)',overflow: 'hidden'  }}>
       {
         buttonClick === '2' ? (
           <div className='et1'>
-            <div className='text1' style={{ marginBottom: '50px', marginTop: '50px', fontSize: "40px"}}>Upload Your photos!</div>
+            <div className='text1' style={{ marginBottom: '50px', marginTop: '50px', fontSize: "40px", color: 'white'}}>{choosenLanguage === 'EN' ? (`Upload Your photos!`) : (`Wrzuć swoje zdjęcia!`)}</div>
 
-            <FileDropzone setImages={setImages} setUploadedFileCount={setUploadedFileCount} album_id={album_id}/>
+            <FileDropzone setImages={setImages} setUploadedFileCount={setUploadedFileCount} album_id={album_id} choosenLanguage={choosenLanguage}/>
             
             {errorMessage === '' ? (null):(
               <div style={{alignContent: 'center' , backgroundColor: 'pink', border: '1px solid red', height: '40px', marginTop: '20px'}}>
@@ -98,7 +105,7 @@ const Creator = ({user}) => {
             )}
             
             
-            <Typography style={{marginTop: '10px', fontFamily: 'Roboto', fontSize: '18px'}}>Number of photos found: {uploadedFileCount}</Typography>
+            <Typography style={{marginTop: '10px', fontFamily: 'Roboto', fontSize: '18px', color: 'white',}}>{choosenLanguage === 'EN' ? (`Number of photos found: ${uploadedFileCount}`) : (`Ilość znalezionych zdjęć: ${uploadedFileCount}`)}</Typography>
             <Box 
               sx={{
                 border: '2px dashed grey',
@@ -109,24 +116,16 @@ const Creator = ({user}) => {
                 position: 'relative',
                 marginTop: '10px',
                 maxHeight: '400px', // Ustawia maksymalną wysokość kontenera
-                overflowY: 'auto' 
+                overflowY: 'auto', 
+                maxHeight: '200px'
               }}
             >
               {images.length === 0 ? (
-                <Typography style={{fontFamily: 'Roboto', fontSize: '20px'}}>No photos selected</Typography>
+                <Typography style={{fontFamily: 'Roboto', fontSize: '20px', color: 'white'}}>{choosenLanguage === 'EN' ? (`No photos selected`) : (`Nie wybrano zdjęć`)}</Typography>
               ) : (
                 images.map((image, index) => (
-                  <div>
-                  <Box 
-                    key={index} 
-                    sx={{ 
-                      marginBottom: '10px', 
-                      display: 'flex', 
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <div key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
                       <img src={image.url} alt={image.name} style={{ maxWidth: '100px', maxHeight: '100px' }} />
                       <Typography 
                         variant="body2" 
@@ -134,20 +133,19 @@ const Creator = ({user}) => {
                       >
                         {image.name.length > 10 ? image.name.slice(0, 20) + '...' : image.name}
                       </Typography>
-                    </Box>
+                    </div>
                     <CheckCircleIcon style={{ color: 'green', marginLeft: 'auto' }} />
-                  </Box>
                   </div>
                 ))
+                
               )}
             </Box>
           </div>
         ) : (
-          <SettingsPanel albumName={albumName} setAlbumName={setAlbumName} errorMessage={errorMessage} setPrivacy={setPrivacy} privacy={privacy}/>
+          <SettingsPanel albumName={albumName} setAlbumName={setAlbumName} errorMessage={errorMessage} setPrivacy={setPrivacy} privacy={privacy} choosenLanguage={choosenLanguage}/>
         )}
       <Button
         variant="contained"
-        color='primary'
         onClick={handleButtonClick}
         disableElevation
         disableRipple
@@ -157,11 +155,18 @@ const Creator = ({user}) => {
           borderRadius: '20px',
           fontWeight: 'bold',
           height: '50px',
-          width: '200px'
+          width: '200px',
+          color: 'black',
+          backgroundColor: 'rgb(255, 253, 240)',
+          '&:hover': {
+            backgroundColor: 'rgb(255, 230, 120)', // Zmieniony kolor tła przy hover
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)', // Cień przy hover
+          },
         }}
       >
-        Continue
+        {choosenLanguage === 'EN' ? (`Continue`) : (`Kontynuuj`)}
       </Button>
+    </div>
     </div>
   );
 };
