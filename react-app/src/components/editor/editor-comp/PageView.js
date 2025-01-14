@@ -127,16 +127,11 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
           }}>
             {layerTable[pageNumber].slice().reverse().map((item, index) => {
               const reversedIndex = layerTable[pageNumber].length - 1 - index;
-
               return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
                 <img key={index} src={item} style={{position: 'absolute', left: `${-(xTable[pageNumber][reversedIndex]*(zoom/100))}px`, top: `0px`, height: '100%'}} />
             ):(
               <div style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
-              
             )})}
-
-            
-            
         </Card>
     ) : layoutOnPage[pageNumber] === '12' ? (
 
@@ -148,7 +143,6 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
             position: 'relative',
             boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)', // Dodanie cienia            
           }}>
-
             {layerTable[pageNumber].slice().reverse().map((item, index) => {
               const reversedIndex = layerTable[pageNumber].length - 1 - index;
 
@@ -160,8 +154,6 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
               <div key={index} style={{color: `${textColor[pageNumber][reversedIndex]}` , position: 'absolute', left: `${xTable[pageNumber][reversedIndex]*(zoom/100)}px`, top: `${yTable[pageNumber][reversedIndex]*(zoom/100)}px`, fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', fontSize: `${item.split(".")[4]*(zoom/100)}px`, fontFamily: `${item.split(".")[6]}`}}>{`${item.split(".")[5]}`}</div>
               
             )})}
-            
-            
         </Card>
     ) : layoutOnPage[pageNumber] === '21' ? (
 
@@ -346,54 +338,51 @@ const PageView = ({layoutOnPage, setLayoutOnPage, colorPickerColor, pageWidth, p
 
     ) : (
       <div style={{display: 'flex'}}>
-      <Card id="None" style={{
-        
-        backgroundColor: colorPickerColor,
-        width: pageWidth,
-        height: pageHeight,
-        objectFit: 'contain',
-        position: 'relative',
-        boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)' // Dodanie cienia
-      }}>
-        {layerTable[pageNumber].slice().reverse().map((item, index) => {
-          const reversedIndex = layerTable[pageNumber].length - 1 - index; // Obliczenie odwróconego indeksu
-
-          return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
-            <img 
-              key={index} 
-              src={item} 
-              style={{
-                position: 'absolute', 
-                left: `${xTable[pageNumber][reversedIndex] * (zoom / 100)}px`, 
-                top: `${yTable[pageNumber][reversedIndex] * (zoom / 100)}px`, 
-                transform: `rotate(${rotateTable[pageNumber][reversedIndex]}deg)`,
-                width: `${widthTable[pageNumber][reversedIndex]}%`,
-                border: `${borderTable[pageNumber][reversedIndex]}`,
-                boxShadow: `${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 2}px ${shadowTable[pageNumber][reversedIndex] * 0.5}px rgba(0, 0, 0, 0.5)`
-              }} 
-            />
-          ) : (
-            <div
-              key={index}
-              style={{
-                color: `${textColor[pageNumber][reversedIndex]}`, 
-                position: 'absolute', 
-                left: `${xTable[pageNumber][reversedIndex] * (zoom / 100)}px`, 
-                top: `${yTable[pageNumber][reversedIndex] * (zoom / 100)}px`,
-                fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', 
-                fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', 
-                textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', 
-                fontSize: `${item.split(".")[4] * (zoom / 100)}px`, 
-                fontFamily: `${item.split(".")[6]}`
-              }}
-            >
-              {`${item.split(".")[5]}`}
-            </div>
-          );
-        })}
-    </Card>
-    
-    </div>
+        <Card id="None" style={{
+          backgroundColor: colorPickerColor,
+          width: pageWidth,
+          height: pageHeight,
+          objectFit: 'contain',
+          position: 'relative',
+          boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)' // Dodanie cienia
+        }}>
+          {layerTable[pageNumber].slice().reverse().map((item, index) => {
+            const reversedIndex = layerTable[pageNumber].length - 1 - index; // Obliczenie odwróconego indeksu
+            return item.slice(0, 10) !== 'TYPOGRAPHY' ? (
+              <img 
+                key={index} 
+                src={item} 
+                style={{
+                  position: 'absolute', 
+                  left: `${xTable[pageNumber][reversedIndex] * (zoom / 100)}px`, 
+                  top: `${yTable[pageNumber][reversedIndex] * (zoom / 100)}px`, 
+                  transform: `rotate(${rotateTable[pageNumber][reversedIndex]}deg)`,
+                  width: `${widthTable[pageNumber][reversedIndex]}%`,
+                  border: `${borderTable[pageNumber][reversedIndex]}`,
+                  boxShadow: `${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 1.2}px ${shadowTable[pageNumber][reversedIndex] * 2}px ${shadowTable[pageNumber][reversedIndex] * 0.5}px rgba(0, 0, 0, 0.5)`
+                }} 
+              />
+            ) : (
+              <div
+                key={index}
+                style={{
+                  color: `${textColor[pageNumber][reversedIndex]}`, 
+                  position: 'absolute', 
+                  left: `${xTable[pageNumber][reversedIndex] * (zoom / 100)}px`, 
+                  top: `${yTable[pageNumber][reversedIndex] * (zoom / 100)}px`,
+                  fontWeight: item.split(".")[1] === 'true' ? 'bold' : 'normal', 
+                  fontStyle: item.split(".")[2] === "true" ? 'italic' : 'normal', 
+                  textDecoration: item.split(".")[3] === "true" ? 'underline' : 'none', 
+                  fontSize: `${item.split(".")[4] * (zoom / 100)}px`, 
+                  fontFamily: `${item.split(".")[6]}`
+                }}
+              >
+                {`${item.split(".")[5]}`}
+              </div>
+            );
+            })}
+        </Card>
+      </div>
 
     )}
     </>

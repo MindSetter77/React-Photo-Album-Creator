@@ -215,7 +215,6 @@ const Comments = ({user, album_id, layoutOnPage, setPageNumber, allPageNumber, s
     setIsDownloading(true); // Ustaw stan pobierania na true
     try {
       await loadImagesAsBase64();
-      console.log('started');
       await generatePDF();
     } catch (error) {
       console.error('Błąd podczas pobierania:', error);

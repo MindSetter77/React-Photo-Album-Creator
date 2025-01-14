@@ -198,7 +198,6 @@ const Editor = ({ user, album_id, setDataOnline, choosenLanguage, setUser }) => 
   
 
   const fetchAlbumPhotos = async (albumId) => {
-    console.log("HEREH")
     try {
       const response = await fetch('http://localhost:3001/image-date', {
         method: 'POST',
@@ -213,7 +212,6 @@ const Editor = ({ user, album_id, setDataOnline, choosenLanguage, setUser }) => 
       }
   
       const data = await response.json();
-      console.log("DATA IMAGES!!!!!")
 
       let new_data_table = []
 
@@ -704,8 +702,6 @@ const Editor = ({ user, album_id, setDataOnline, choosenLanguage, setUser }) => 
     setDataOnline(false)
 
     let indexInOnlyPhotos = onlyPhotosTable[pageNumber].indexOf(photoUrl)
-    console.log(indexInOnlyPhotos)
-    console.log(onlyPhotosTable[pageNumber].length)
 
     if(indexInOnlyPhotos !== -1){
       let onlyPhotosTableCpy = [...onlyPhotosTable]
@@ -717,7 +713,7 @@ const Editor = ({ user, album_id, setDataOnline, choosenLanguage, setUser }) => 
 
   const printTables = () => {
     console.log('Print table start============================')
-    console.log(`Layer table: ${layerTable[pageNumber].length}`)
+    console.log(`Layer table:`)
     console.log(layerTable[pageNumber])
     console.log(`Width table: ${widthTable[pageNumber].length}`)
     console.log(widthTable[pageNumber])
@@ -849,7 +845,6 @@ const Editor = ({ user, album_id, setDataOnline, choosenLanguage, setUser }) => 
   }
 
   const shareAlbumData = () => {
-    console.log(lessMoreTable)
       const jsonData = {
         album_id: album_id,
         leftPanel: leftPanel,
@@ -870,14 +865,12 @@ const Editor = ({ user, album_id, setDataOnline, choosenLanguage, setUser }) => 
         zoom: zoom,
         onlyPhotos: onlyPhotosTable,
         onlyText: onlyTextTable,
-
         layoutOnPage: layoutOnPage,
         shadowTable: shadowTable,
         borderTable: borderTable,
         rotateTable: rotateTable
     };
     const jsonString = JSON.stringify(jsonData, null, 2); // `null, 2` dodaje wcięcia dla czytelności
-    console.log(jsonString);
 
     fetch('http://localhost:3001/getSharedData', {
       method: 'POST',

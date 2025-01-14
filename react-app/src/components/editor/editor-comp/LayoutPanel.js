@@ -75,11 +75,11 @@ const LayoutPanel = ({setDataOnline, layoutOnPage, setLayoutOnPage, layerTable, 
                 <div onClick={() => {layoutChoosen(pageNumber, 2, 2)}} style={{ display: 'flex', width: `${originalPageWidth / 8}px`, height: `${originalPageHeight / 7}px`, backgroundColor: 'white', overflow: 'hidden', position: 'relative', boxShadow: layoutOnPage[pageNumber] === "22" ? boxShadowStr : "", border: '2px solid black' }}>
                   <img 
                     src={onlyPhotosTable[pageNumber][0]} 
-                    style={{ width: '90%', objectFit: 'contain', position: 'absolute', top: '50px', left: '0', margin: 'auto', right: '0', zIndex: 1 }} 
+                    style={{ height: '50%', objectFit: 'contain', position: 'absolute', top: '0px', left: '0', margin: 'auto', right: '0', zIndex: 1 }} 
                   />
                   <img 
                     src={onlyPhotosTable[pageNumber][1]} 
-                    style={{ width: '80%', objectFit: 'contain', position: 'absolute', top: '100px', left: '20px', margin: 'auto', right: '0', bottom: '0', zIndex: 2, transform: 'rotate(-15deg)' }} 
+                    style={{ height: '50%', objectFit: 'contain', position: 'absolute', top: '125px', margin: 'auto', right: '0', bottom: '0', zIndex: 2 }} 
                   />
                 </div>
                 </div>

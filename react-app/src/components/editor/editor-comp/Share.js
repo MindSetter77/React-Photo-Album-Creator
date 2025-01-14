@@ -10,6 +10,7 @@ const Share = ({shareAlbumData, getSharedData, album_id, user, choosenLanguage})
 
     const [allUsers, setAllUsers] = useState([])
     const [allowedUsers, setAllowedUsers] = useState([])
+    const [priv, setPriv] = useState('')
 
     const getAllUsersList = async() => {
         try{
@@ -37,6 +38,7 @@ const Share = ({shareAlbumData, getSharedData, album_id, user, choosenLanguage})
           const data = await response.json();
           let usersStr = data[0].allowedUsers
           setAllowedUsers(usersStr.split(',').map(id => parseInt(id, 10))) // Zmieniamy na liczby
+          setPriv(data[0].privacy)
 
         } catch (error) {
           console.error(`Error getting privacy: ${error}`)
@@ -107,6 +109,8 @@ const Share = ({shareAlbumData, getSharedData, album_id, user, choosenLanguage})
             </div>
         </div>
 
+        {priv === 'public' ? (null) : (
+
         <div style={{  width: '95%', backgroundColor: 'white', border: '2px solid black', marginLeft: 'auto', marginRight: 'auto', marginTop: '10px', borderRadius: '12px', zIndex: 3, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', overflow: 'hidden'}}>
             <div style={{ width: '100%', height: '30px', backgroundColor: 'black', borderTopLeftRadius: '10px', borderTopRightRadius: '10px', color: 'white' }}>
                 <div style={{ display: 'flex', color: 'white' }}>
@@ -125,6 +129,7 @@ const Share = ({shareAlbumData, getSharedData, album_id, user, choosenLanguage})
                 </div>
             </div>
         </div>
+        )}
     </div>
     )
 };

@@ -7,6 +7,17 @@ import { ChromePicker } from 'react-color';
 
 const CustomizePanel = ({pageSize, changePageSize, allPageNumber, setAllPageNumber, changeBackground, handleChangeBackground, setChangeBackground, setBackgroundColor, colorPickerColor, choosenLanguage}) => {
 
+  const addPage = (number) => {
+    if(number <1){
+      return
+    }
+    setAllPageNumber(number)
+  }
+
+  
+
+
+
   return (
     
     <div style={{
@@ -65,8 +76,8 @@ const CustomizePanel = ({pageSize, changePageSize, allPageNumber, setAllPageNumb
           <div style={{ display: 'flex' }}>
             <Typography style={{ fontSize: '20px' }}>{choosenLanguage === 'EN' ? (`Amount of pages: ${allPageNumber}`) : (`Liczba stron: ${allPageNumber}`)}</Typography>
             <div style={{ display: 'flex', flexDirection: 'column', width: '100px' }}>
-              <Button style={{ height: '5px', width: '0px' }} onClick={() => { setAllPageNumber(allPageNumber + 1) }}>▲</Button>
-              <Button style={{ height: '5px', width: '0px' }} onClick={() => { setAllPageNumber(allPageNumber - 1) }}>▼</Button>
+              <Button style={{ height: '5px', width: '0px' }} onClick={() => { addPage(allPageNumber + 1) }}>▲</Button>
+              <Button style={{ height: '5px', width: '0px' }} onClick={() => { addPage(allPageNumber - 1) }}>▼</Button>
             </div>
           </div>
       

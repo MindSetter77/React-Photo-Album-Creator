@@ -45,7 +45,6 @@ const SignIn = ({ setUser, choosenLanguage }) => {
       if (response.ok) {
         const result = await response.json();
         //setUser(result.result[0]); // Ustawienie imienia użytkownika
-        console.log('success!!!')
         setCurrentView('afterCode')
         
         //navigate('/');

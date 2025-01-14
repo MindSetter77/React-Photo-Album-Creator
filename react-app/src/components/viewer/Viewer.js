@@ -257,7 +257,9 @@ const Viewer = ({user, setUser, choosenLanguage}) => {
       setPageWidth(data.pageWidth)
       setChangeBackground(data.changeBackground)
       setColorPickerColor(data.colorPickerColor)
+
       fetchAlbumPhotos(data.album_id)
+
       setAllPageNumber(data.allPageNumber)
       setlayerTable(data.layerTable)
       setWidthTable(data.widthTable)
@@ -273,7 +275,7 @@ const Viewer = ({user, setUser, choosenLanguage}) => {
       setLayoutOnPage(data.layoutOnPage)
       setShadowTable(data.shadowTable)
       setBorderTable(data.borderTable)
-      setRotateTable(rotateTable)
+      setRotateTable(data.rotateTable)
 
       
     } catch (error) {
@@ -331,20 +333,20 @@ const Viewer = ({user, setUser, choosenLanguage}) => {
 
   return (
   
-    <div style={{ background: `linear-gradient(180deg,rgb(136, 196, 255),rgb(118, 186, 255))`, height: 'calc(100vh - 64px)', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ background: `linear-gradient(180deg,rgb(90, 141, 192),rgb(118, 186, 255))`, height: 'calc(100vh - 64px)', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {privacyStatus === 'private' && isEmptyObject(user)? (
             <div><Typography style={{fontSize: '20px'}}>You need to login to view the private album!</Typography></div>
           
-          ) : privacyStatus === 'private' && !isEmptyObject(user) && !getAllowedUsersFromList() ? (<div><Typography style={{fontSize: '20px'}}>You are not allowed to view the album by the creator!</Typography></div>)
+          ) : privacyStatus === 'private' && !isEmptyObject(user) && !getAllowedUsersFromList() ? (
+          <div><Typography style={{fontSize: '20px'}}>You are not allowed to view the album by the creator!</Typography>
+          </div>)
 
           : (privacyStatus === 'public') || (privacyStatus === 'private' && !isEmptyObject(user) && getAllowedUsersFromList()) ?(
             <div style={{display: 'flex'}}>
               <PageView layoutOnPage={layoutOnPage} setLayoutOnPage={setLayoutOnPage} colorPickerColor={colorPickerColor} pageWidth={pageWidth} pageHeight={pageHeight} layerTable={layerTable} pageNumber={pageNumber} xTable={xTable} zoom={zoom} yTable={yTable} widthTable={widthTable} textColor={textColor} onlyPhotosTable={onlyPhotosTable} onlyTextTable={onlyTextTable} rotateTable={rotateTable} borderTable={borderTable} shadowTable={shadowTable} setRealPageNumber={setRealPageNumber} allPageNumber={allPageNumber} setPageNumber={setPageNumber} zoom100={zoom100}/>
               <div style={{width: '300px', height: 'calc(100vh - 100px)', marginRight: '5px', marginLeft: '100px', position: 'absolute', right: 0, top: 70}}>
                 <Comments user={user} album_id={album_id} layoutOnPage={layoutOnPage} setPageNumber={setPageNumber} allPageNumber={allPageNumber} setRealPageNumber={setRealPageNumber} pageNumber={pageNumber} layerTable={layerTable} choosenLanguage={choosenLanguage} />
-                
               </div>
-              
             </div>
           ) : (<div>Something went wrong</div>)}
           

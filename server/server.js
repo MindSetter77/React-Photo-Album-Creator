@@ -76,6 +76,7 @@ function sendEmail(user_id, email, result){
   });
 
   const code = generateEmailCode()
+  
   console.log(`code is: ${code}`)
   email_code_storage[code] = {user_id, result}
   // Konfiguracja wiadomości
@@ -215,7 +216,7 @@ app.post('/signup', async(req, res) => {
     } else {
       if(result.length > 0){
         console.log(`Log: User already exists for user: ${result[0].id}`)
-        res.status(201).json({ id: "ERROR"});
+        res.status(201).json({ id: "USER_EXISTS"});
       }else{
         
         const sql = 'INSERT INTO users (firstName, lastName, nickname, email, password) VALUES (?, ?, ?, ?, ?)';
@@ -239,8 +240,6 @@ const session_memory = {}
 app.post('/loginBeforeCode', async(req, res) => {
 
   const { username, password } = req.body;
-
-  const hashed_password = await bcrypt.hash(password, 10);
 
   console.log(username)
 
@@ -348,7 +347,6 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/todos', (req, res) => {
-  console.log('todos reached');
   
   const cookies = req.headers.cookie; // Odczytaj wszystkie ciasteczka z nagłówka
 
@@ -410,7 +408,30 @@ app.post('/google-login', async (req, res) => {
           console.log("err2")
           return res.status(500).json({ error: err.message });
         } else {
-          console.log("New user created in database!")
+          const sqlGetNewUser = `SELECT * FROM users WHERE username = ${givenName+familyName}`;
+          db.query(sqlGetNewUser, [insertResult.insertId], (err, newUserResult) => {
+            if (err) {
+              console.log("err3");
+              return res.status(500).json({ error: err.message });
+            }
+
+            delete newUserResult[0].password; // Usuń hasło z odpowiedzi
+            const id = newUserResult[0].id;
+            const username = givenName+familyName
+
+            const session_id = uuidv4();
+            session_memory[session_id] = { id, username };
+
+            res.cookie('WebPhotoSession', session_id, {
+              httpOnly: false,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'Strict',
+              maxAge: 3600000,
+              path: '/',
+            });
+
+            res.status(200).json({ result: newUserResult[0] });
+          })
         }
       });
     } else {
@@ -451,7 +472,6 @@ app.post('/addComment', (req, res) => {
 
   // Dodajemy bieżącą datę (current date) do zapytania
   const comment_date = new Date().toISOString().split('T')[0]; // Formatowanie daty w formacie YYYY-MM-DD
-
   const sql = 'INSERT INTO comments(user_id, album_id, comment, comment_date, nickname) values (?, ?, ?, ?, ?)';
   
   db.query(sql, [user_id, album_id, comment, comment_date, nickname], (err, result) => {
@@ -656,7 +676,7 @@ app.get('/getAllowedUsers/:album_id', (req, res) => {
 
   const album_id = req.params.album_id
 
-  const sql = 'SELECT allowedUsers FROM Album WHERE album_id = ?';
+  const sql = 'SELECT allowedUsers, privacy FROM Album WHERE album_id = ?';
 
   db.query(sql,[album_id] ,(err, result) => {
     if (err) {

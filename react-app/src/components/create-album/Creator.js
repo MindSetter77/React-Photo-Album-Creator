@@ -47,7 +47,6 @@ const Creator = ({user, choosenLanguage}) => {
         
         setAlbumId(albumAjDi)
         
-        
         const response = await fetch('http://localhost:3001/albums', {
           method: 'POST',
           headers: {
@@ -81,6 +80,7 @@ const Creator = ({user, choosenLanguage}) => {
         setErrorMessage("You need to choose alteast 8 photos")
         return
       }
+      
 
       navigate("/profile")
       //USENAVIGATE

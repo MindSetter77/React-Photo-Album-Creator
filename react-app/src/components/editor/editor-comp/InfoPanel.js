@@ -16,7 +16,7 @@ const InfoPanel = () => {
                 disabled
                 id="outlined-disabled"
                 label="Title"
-                defaultValue="Album title"
+                defaultValue="1_awdawdawd"
                 style={{ marginBottom: '20px' }}
               />
               <TextField

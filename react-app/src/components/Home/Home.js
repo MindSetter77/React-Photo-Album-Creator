@@ -22,7 +22,6 @@ function Home({ currentUser, setCurrentPage, setUser, choosenLanguage }) {
         });
         
         if (!todosResponse.ok) {
-          console.log("NOT OK")
           throw new Error('Failed to fetch todos');
         }
         const todosData = await todosResponse.json();
